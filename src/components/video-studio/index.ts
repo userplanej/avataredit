@@ -1,0 +1,1 @@
+export { VideoStudioEditor } from './VideoStudioEditor';

@@ -91,6 +91,10 @@
 		"node-name-required": "노드 이름을 입력하세요",
 		"node-description-required": "노드 설명을 입력하세요"
 	},
+	"videoStudio": {
+		"videoStudio": "Video Studio",
+		"videoStudio-editor": "Video Studio Editor"
+	},
 	"flow": {
 		"flow": "플로우",
 		"list": "플로우 목록",

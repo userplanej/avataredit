@@ -7,8 +7,9 @@ import Title from './Title';
 import FlowEditor from '../components/flow/FlowEditor';
 import FlowContainer from './FlowContainer';
 import HexGrid from '../components/hexgrid/HexGrid';
+import { VideoStudioEditor } from '../components/video-studio/VideoStudioEditor';
 
-type EditorType = 'imagemap' | 'workflow' | 'flow' | 'hexgrid';
+type EditorType = 'imagemap' | 'workflow' | 'flow' | 'hexgrid' | 'videoStudio';
 
 interface IState {
 	activeEditor?: EditorType;
@@ -35,6 +36,8 @@ class App extends Component<any, IState> {
 				return <FlowEditor />;
 			case 'hexgrid':
 				return <HexGrid />;
+			case 'videoStudio':
+				return <VideoStudioEditor />
 		}
 	};
 
