@@ -41,8 +41,8 @@
 	"peerDependencies": {
 		"animejs": "^3.0.0",
 		"fabric": "^3.4.0",
-		"react": "^16.4.1",
-		"react-dom": "^16.4.1",
+		"react": "^16.14.0",
+		"react-dom": "^16.14.0",
 		"react-dom-factories": "^1.0.2"
 	},
 	"dependencies": {
@@ -59,12 +59,12 @@
 		"lodash": "^4.17.10",
 		"mediaelement": "^4.2.9",
 		"prop-types": "^15.6.2",
-		"react": "^16.4.1",
+		"react": "^16.14.0",
 		"react-ace": "^8.1.0",
 		"react-color": "^2.14.1",
 		"react-custom-scrollbars": "^4.2.1",
 		"react-design-editor": "^0.0.34",
-		"react-dom": "^16.4.1",
+		"react-dom": "^16.14.0",
 		"react-dom-factories": "^1.0.2",
 		"react-helmet": "^5.2.0",
 		"react-hot-loader": "^4.12.20",
