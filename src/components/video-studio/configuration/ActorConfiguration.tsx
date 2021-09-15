@@ -1,7 +1,7 @@
-import { Card, Col, Radio, Row, Typography } from 'antd';
-import classnames from 'classnames';
+import { Radio } from 'antd';
 import * as React from 'react';
-import { defaultImagePlaceholder } from '../imagePlaceholder';
+import { defaultImagePlaceholder } from '../data/imagePlaceholder';
+import { SelectableImageCard } from './SelectableImageCard';
 
 type ActorConfigurationProps = React.PropsWithChildren<{
 	actors: string[];
@@ -13,29 +13,19 @@ export function ActorConfiguration(props: ActorConfigurationProps) {
 	const { actors, activeActor, onActorSelect } = props;
 	return (
 		<React.Fragment>
-			<Typography.Title level={4} style={{ fontSize: 14, margin: 8 }}>
-				Select actor, size and alignment
-			</Typography.Title>
-			<Row style={{ padding: '0 8px 8px' }}>
+			<div className="rde-editor-image-tile-holder">
 				{actors.map(name => (
-					<Col xs={8} style={{ marginBottom: 8 }}>
-						<Card
-							key={name}
-							size="small"
-							hoverable
-							bordered
-							style={{ width: 100 }}
+					<div key={name}>
+						<SelectableImageCard
+							name={name}
+							src={defaultImagePlaceholder}
+							isActive={name === activeActor}
 							onClick={() => onActorSelect(name)}
-							className={classnames({
-								'rde-editor-configurations-active-actor': name === activeActor,
-							})}
-							cover={<img alt="example" width={100} height={900 / 16} src={defaultImagePlaceholder} />}
-						>
-							<Card.Meta description={name} />
-						</Card>
-					</Col>
+						/>
+					</div>
 				))}
-			</Row>
+			</div>
+
 			<div className="rde-editor-configurations-alignment-holder">
 				<Radio.Group defaultValue="center" buttonStyle="solid" style={{ marginTop: 16 }}>
 					<Radio.Button value="left">Left</Radio.Button>

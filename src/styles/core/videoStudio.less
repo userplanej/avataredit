@@ -1,3 +1,6 @@
+@image-card-width: 100px;
+@image-card-height: (@image-card-width * 9)/16px; // calculate the ratio of 16:9 for height
+
 .rde-editor {
 	&-video-preview {
 		flex: 1;
@@ -11,14 +14,32 @@
 		margin: auto;
 	}
 	&-configurations {
-		&-active-actor.ant-card-bordered {
+		&-active-image-card.ant-card-bordered {
 			border-color: darken(#e8e8e8, 20);
 			&:hover {
 				border-color: darken(#e8e8e8, 20);
 			}
 		}
+		&-image-cover {
+			width: @image-card-width;
+			height: @image-card-height;
+		}
 		&-alignment-holder {
 			text-align: center;
+		}
+	}
+	&-video-collapse {
+		.ant-collapse-content-box {
+			padding: 8px;
+		}
+	}
+	&-image-tile-holder {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, @image-card-width);
+		justify-content: space-between;
+		grid-gap: 4px;
+		> div {
+			margin-bottom: 8px;
 		}
 	}
 }

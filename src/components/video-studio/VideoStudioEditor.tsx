@@ -2,18 +2,13 @@ import { Input, Tabs, Typography } from 'antd';
 import * as React from 'react';
 import { Container } from '../common';
 import Icon from '../icon/Icon';
-import { ActorConfiguration } from './configuration/ActorConfiguration';
-import { defaultImagePlaceholder } from './imagePlaceholder';
+import { VideoConfiguration } from './configuration/VideoConfiguration';
+import { defaultImagePlaceholder } from './data/imagePlaceholder';
 import { VideoStudioTitle } from './VideoStudioTitle';
-
-// FIXME get all actors from the backend
-const ACTORS = ['Anna', 'Tom', 'Mia', 'Jack', 'Rose'];
 
 type VideoStudioEditorProps = React.PropsWithChildren<{}>;
 
 export function VideoStudioEditor(props: VideoStudioEditorProps) {
-	const [activeActor, setActiveActor] = React.useState(ACTORS[0]);
-
 	return (
 		<Container title={<VideoStudioTitle />} className="">
 			<div className="rde-editor">
@@ -35,11 +30,7 @@ export function VideoStudioEditor(props: VideoStudioEditorProps) {
 				<div className="rde-editor-configurations">
 					<Tabs tabPosition="right" style={{ height: '100%' }} activeKey="actor">
 						<Tabs.TabPane tab={<Icon name="user" />} key="actor">
-							<ActorConfiguration
-								actors={ACTORS}
-								activeActor={activeActor}
-								onActorSelect={setActiveActor}
-							/>
+							<VideoConfiguration />
 						</Tabs.TabPane>
 					</Tabs>
 				</div>
