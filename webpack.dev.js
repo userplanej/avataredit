@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
 
 const devPort = 4000;
-const host = 'localhost';
+const host = '0.0.0.0';
 
 module.exports = merge(baseConfig, {
 	mode: 'development',
@@ -14,7 +14,7 @@ module.exports = merge(baseConfig, {
 		bundle: [
 			'@babel/polyfill',
 			'react-hot-loader/patch',
-			`webpack-dev-server/client?http://${host}:${devPort}`,
+			`webpack-dev-server/client`,
 			'webpack/hot/only-dev-server',
 			path.resolve(__dirname, 'src/index.js'),
 		],
