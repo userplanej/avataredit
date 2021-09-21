@@ -8,6 +8,9 @@ import FlowEditor from '../components/flow/FlowEditor';
 import FlowContainer from './FlowContainer';
 import HexGrid from '../components/hexgrid/HexGrid';
 import { VideoStudioEditor } from '../components/video-studio/VideoStudioEditor';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 type EditorType = 'imagemap' | 'workflow' | 'flow' | 'hexgrid' | 'videoStudio';
 
@@ -37,7 +40,7 @@ class App extends Component<any, IState> {
 			case 'hexgrid':
 				return <HexGrid />;
 			case 'videoStudio':
-				return <VideoStudioEditor />
+				return <VideoStudioEditor />;
 		}
 	};
 
@@ -71,7 +74,9 @@ class App extends Component<any, IState> {
 					<Title onChangeMenu={this.onChangeMenu} current={activeEditor} />
 				</div>
 				<FlowContainer>
-					<div className="rde-content">{this.renderEditor(activeEditor)}</div>
+					<QueryClientProvider client={queryClient}>
+						<div className="rde-content">{this.renderEditor(activeEditor)}</div>
+					</QueryClientProvider>
 				</FlowContainer>
 			</div>
 		);

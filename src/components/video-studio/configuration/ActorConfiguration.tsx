@@ -1,12 +1,13 @@
 import { Radio } from 'antd';
 import * as React from 'react';
+import { Actor } from '../../../types/Actor';
 import { defaultImagePlaceholder } from '../data/imagePlaceholder';
 import { SelectableImageCard } from './SelectableImageCard';
 
 type ActorConfigurationProps = React.PropsWithChildren<{
-	actors: string[];
-	activeActor: string;
-	onActorSelect: (actor: string) => void;
+	actors: Actor[];
+	activeActor: Actor;
+	onActorSelect: (id: string) => void;
 }>;
 
 export function ActorConfiguration(props: ActorConfigurationProps) {
@@ -14,13 +15,13 @@ export function ActorConfiguration(props: ActorConfigurationProps) {
 	return (
 		<React.Fragment>
 			<div className="rde-editor-image-tile-holder">
-				{actors.map(name => (
-					<div key={name}>
+				{actors.map(actor => (
+					<div key={actor.id}>
 						<SelectableImageCard
-							name={name}
-							src={defaultImagePlaceholder}
-							isActive={name === activeActor}
-							onClick={() => onActorSelect(name)}
+							name={actor.name}
+							src={actor.thumbnailMediumUrl}
+							isActive={actor.id === activeActor.id}
+							onClick={() => onActorSelect(actor.id)}
 						/>
 					</div>
 				))}
