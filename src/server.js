@@ -14,7 +14,7 @@ export function makeServer({ environment = 'test' } = {}) {
 			for (let actor of actors.slice(0, 10)) {
 				server.create('actor', actor);
 			}
-			for (let slide of slides.slice(0, 0)) {
+			for (let slide of slides.slice(0, 10)) {
 				server.create('slide', slide);
 			}
 		},
