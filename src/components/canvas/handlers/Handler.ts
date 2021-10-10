@@ -715,6 +715,8 @@ class Handler implements HandlerOptions {
 		// Create canvas object
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
+		} else if (obj.type ==='background'){
+			createdObj = this.addBackground(newOption);
 		} else if (obj.type === 'group') {
 			// TODO...
 			// Group add function needs to be fixed
@@ -724,6 +726,7 @@ class Handler implements HandlerOptions {
 		} else {
 			createdObj = this.fabricObjects[obj.type].create(newOption);
 		}
+		this.canvas.add(createdObj);
 		this.canvas.add(createdObj);
 		this.objects = this.getObjects();
 		if (!editable && !(obj.superType === 'element')) {
@@ -800,6 +803,23 @@ class Handler implements HandlerOptions {
 			filters: this.imageHandler.createFilters(filters),
 		});
 		this.setImage(createdObj, obj.src || obj.file);
+		return createdObj;
+	};
+	public addBackground = (obj: FabricImage) => {
+		const { objectOption } = this;
+		const { filters = [], ...otherOption } = obj;
+		const image = new Image();
+		if (obj.src) {
+			image.src = obj.src;
+		}
+		const createdObj = new fabric.Image(image, {
+			...objectOption,
+			...otherOption,
+		}) as FabricImage;
+		createdObj.set({
+			filters: this.imageHandler.createFilters(filters),
+		});
+		// this.setImage(createdObj, obj.src || obj.file);
 		return createdObj;
 	};
 

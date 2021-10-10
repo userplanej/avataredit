@@ -7,6 +7,8 @@ import ImageMapFooterToolbar from './ImageMapFooterToolbar';
 import ImageMapItems from './ImageMapItems';
 import Background from './Background';
 import Slide from './Slide';
+import Avatar from './Avatar';
+import Bg from './Bg';
 import ImageMapTitle from './ImageMapTitle';
 import ImageMapHeaderToolbar from './ImageMapHeaderToolbar';
 import ImageMapPreview from './ImageMapPreview';
@@ -94,30 +96,14 @@ class ImageMapEditor extends Component {
 		descriptors: {},
 		avatars:{},
 		objects: undefined,
+		src: undefined,
 		slideList : [{
-			id: null,
+			id: 0,
 			thumbnail : null,
 			file_dir: null,
-			url: './sample1.json'
-		},
-		{
-			id: null,
-			thumbnail : null,
-			file_dir: null,
-			url: './sample2.json'
-		},
-		{
-			id: null,
-			thumbnail : null,
-			file_dir: null,
-			url: './sample3.json'
-		},
-		{
-			id: null,
-			thumbnail : null,
-			file_dir: null,
-			url: './sample4.json'
-		}]
+			url: 'sample1.json'
+		}
+	]
 	};
 
 
@@ -623,14 +609,15 @@ class ImageMapEditor extends Component {
 			inputEl.remove();
 		},
 		onLoadSlide: () => {
+			// console.log(e.target, "-------------------index---------------------")
 			fetch('/api/slides')
 			.then(res => res.json())
 			.then(({ slides }) => {
-			const { objects, animations, styles, dataSources } = JSON.parse(JSON.stringify(slides[0]));
+			const { objects, animations, styles, dataSources} = JSON.parse(JSON.stringify(slides[0]));
 				this.setState({
 					animations,
 					styles,
-					dataSources,
+					dataSources
 				});
 				if (objects) {
 					this.canvasRef.handler.clear(true);
@@ -643,6 +630,98 @@ class ImageMapEditor extends Component {
 					this.canvasRef.handler.importJSON(data);
 				}
 			});
+			
+		},
+		onBackgroundChange: () => {
+			const originalObjects = this.canvasRef.handler.exportJSON().filter(obj => {
+				if (!obj.id) {
+					return false;
+				}
+				return true;
+			});
+			const newObjects = {
+				
+					type: "image",
+					version: "3.6.6",
+					originX: "left",
+					originY: "top",
+					left: 830,
+					top: 403.6,
+					width: 600,
+					height: 400,
+					backgroundColor: "rgba(50, 50, 10, 1)",
+					crossOrigin: "",
+					cropX: 0,
+					cropY: 0,
+				    id: "workarea",
+					name: "",
+					link: {},
+					layout: "fixed",
+					workareaWidth: 600,
+					workareaHeight: 400,
+					src: "",
+					filters: []
+				
+			};
+			
+				const combinedObject = [newObjects, originalObjects[0]];
+				if (combinedObject) {
+					const data = combinedObject.filter(obj => {
+						if (!obj.id) {
+							return false;
+						}
+						return true;
+					});
+					this.canvasRef.handler.importJSON(data);
+			}
+		
+			
+			
+		},
+		onAvatarChange: () => {
+			const originalObjects = this.canvasRef.handler.exportJSON().filter(obj => {
+				if (!obj.id) {
+					return false;
+				}
+				return true;
+			});
+			const newObjects = {
+				
+					type: "image",
+					version: "3.6.6",
+					originX: "left",
+					originY: "top",
+					left: 830,
+					top: 403.6,
+					width: 600,
+					height: 400,
+					backgroundColor: "rgba(255, 255, 255, 1)",
+					crossOrigin: "",
+					cropX: 0,
+					cropY: 0,
+				    id: "workarea",
+					name: "",
+					link: {},
+					layout: "fixed",
+					workareaWidth: 600,
+					workareaHeight: 400,
+					src: "http://localhost:4000/images/sample/avatar.png",
+					filters: []
+				
+			};
+			
+				const combinedObject = [newObjects, originalObjects[0]];
+				if (combinedObject) {
+					const data = combinedObject.filter(obj => {
+						if (!obj.id) {
+							return false;
+						}
+						return true;
+					});
+					this.canvasRef.handler.importJSON(data);
+			}
+		
+			
 			
 		},
 		onDownload: () => {
@@ -761,7 +840,9 @@ class ImageMapEditor extends Component {
 			onChangeStyles,
 			onChangeDataSources,
 			onSaveImage,
-			onLoadSlide
+			onLoadSlide,
+			onBackgroundChange,
+			onAvatarChange
 		} = this.handlers;
 		const action = (
 			<React.Fragment>
@@ -829,9 +910,10 @@ class ImageMapEditor extends Component {
 				/>
 				<Slide
 					slides = {this.state.slideList}
-					onClick={onLoadSlide}
 					canvasRef={this.canvasRef}
+					onActivate={onLoadSlide}
 				/>
+				
 				<div className="rde-editor-canvas-container">
 					
 					<div className="rde-editor-header-toolbar">
@@ -879,15 +961,17 @@ class ImageMapEditor extends Component {
 						/>
 					</div>
 				</div>
-				<Background
-					ref={c => {
-						this.itemsRef = c;
-					}}
+				<Avatar
+					slides = {this.state.slideList}
+					onAvatarChange={onAvatarChange}
 					canvasRef={this.canvasRef}
-					avatars={avatars}
-					slides={this.state.slideList}
 				/>
-				<ImageMapConfigurations
+				<Bg
+					slides = {this.state.slideList}
+					onBackgroundChange={onBackgroundChange}
+					canvasRef={this.canvasRef}
+				/>
+				{/* <ImageMapConfigurations
 					canvasRef={this.canvasRef}
 					onChange={onChange}
 					selectedItem={selectedItem}
@@ -904,7 +988,7 @@ class ImageMapEditor extends Component {
 					onTooltip={onTooltip}
 					onClick={onClick}
 					objects={objects}
-				/>
+				/> */}
 			</div>
 		);
 		return <Container title={title} content={content} loading={loading} className="" />;

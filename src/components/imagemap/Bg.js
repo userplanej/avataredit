@@ -33,12 +33,12 @@ notification.config({
 });
 const { Meta } = Card;
 
-class Slide extends Component {
+class Bg extends Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,
 		slides: PropTypes.Array,
-		onActivate : PropTypes.func
+		onBackgroundChange : PropTypes.func
 	};
 
 	state = {
@@ -304,7 +304,7 @@ class Slide extends Component {
 		);
 
 	render() {
-		const { descriptors, slides, onActivate } = this.props;
+		const { descriptors, slides, onBackgroundChange } = this.props;
 		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption } = this.state;
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
@@ -357,7 +357,7 @@ class Slide extends Component {
 													shape={this.props.shape}
 													size={this.props.size}
 													index={slide.id}
-													onClick={onActivate}
+													onClick={onBackgroundChange}
 													type={this.props.type}
 													disabled={this.props.disabled}
 													loading={this.props.loading}
@@ -375,4 +375,4 @@ class Slide extends Component {
 	}
 }
 
-export default Slide;
+export default Bg;

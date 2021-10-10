@@ -17,7 +17,6 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
@@ -33,12 +32,12 @@ notification.config({
 });
 const { Meta } = Card;
 
-class Slide extends Component {
+class Avatar extends Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,
 		slides: PropTypes.Array,
-		onActivate : PropTypes.func
+		onAvatarChange : PropTypes.func
 	};
 
 	state = {
@@ -304,7 +303,7 @@ class Slide extends Component {
 		);
 
 	render() {
-		const { descriptors, slides, onActivate } = this.props;
+		const { descriptors, slides, onAvatarChange } = this.props;
 		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption } = this.state;
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
@@ -357,7 +356,7 @@ class Slide extends Component {
 													shape={this.props.shape}
 													size={this.props.size}
 													index={slide.id}
-													onClick={onActivate}
+													onClick={onAvatarChange}
 													type={this.props.type}
 													disabled={this.props.disabled}
 													loading={this.props.loading}
@@ -375,4 +374,4 @@ class Slide extends Component {
 	}
 }
 
-export default Slide;
+export default Avatar;
