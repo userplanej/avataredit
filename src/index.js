@@ -8,11 +8,11 @@ import enUS from 'antd/lib/locale-provider/en_US';
 import { i18nClient } from './i18n';
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
-import { makeServer } from './server';
+// import { makeServer } from './exam.server';
 
-if (process.env.NODE_ENV === 'development') {
-	makeServer({ environment: 'development' });
-}
+// if (process.env.NODE_ENV === 'development') {
+// 	makeServer({ environment: 'development' });
+// }
 
 const antResources = {
 	ko: koKR,
@@ -28,7 +28,7 @@ document.body.appendChild(root);
 const render = Component => {
 	const rootElement = document.getElementById('root');
 	ReactDom.render(
-		<AppContainer>
+		<AppContainer >
 			<LocaleProvider locale={antResources[i18nClient.language]}>
 				<Component />
 			</LocaleProvider>

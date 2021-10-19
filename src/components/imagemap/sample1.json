@@ -4,6 +4,7 @@
 			"objects": [
 				{
 					"type": "image",
+					"avatarId": "A1234",
 					"version": "3.6.6",
 					"originX": "left",
 					"originY": "top",

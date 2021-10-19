@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Badge, Button, Popconfirm, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
-
+import axios from "axios";
 import ImageMapFooterToolbar from './ImageMapFooterToolbar';
 import ImageMapItems from './ImageMapItems';
 import Background from './Background';
@@ -21,7 +21,8 @@ import Container from '../common/Container';
 import CommonButton from '../common/CommonButton';
 import Canvas from '../canvas/Canvas';
 import { code } from '../canvas/constants';
-
+import { Config } from '../../../config';
+import { FemaleSharp } from '@mui/icons-material';
 const propertiesToInclude = [
 	'id',
 	'name',
@@ -84,17 +85,18 @@ const defaultOption = {
 
 class ImageMapEditor extends Component {
 	state = {
+		updatedValue : false,
 		selectedItem: null,
 		zoomRatio: 1,
 		preview: false,
 		loading: false,
 		progress: 0,
+		avatars: [],
 		animations: [],
 		styles: [],
 		dataSources: [],
 		editing: false,
 		descriptors: {},
-		avatars:{},
 		objects: undefined,
 		src: undefined,
 		slideList : [{
@@ -107,9 +109,26 @@ class ImageMapEditor extends Component {
 	};
 
 
-
+	// UserList() {
+	// 	console.log("---------------reached here---------------");
+	// 	$.getJSON(`http://localhost:3000/api/v1/avatar/list?page=${0}&limit=${20}`)
+	// 	.then(({res}) =>{
+	// 		console.log("here it is");
+	// 	});
+	
+	// }
 
 	componentDidMount() {
+		
+		// fetch('http://localhost:3000/api/v1/avatar/list')
+		// .then(res => res.json())
+		// .then((result) => {
+		// 	console.log("--printed--", result.body.rows);
+		// 	this.setState({
+		// 		avatars : result.body.rows
+		// 	  });
+		// 	  console.log("---------------reached here---------------", this.state.avatars);
+		// });
 		this.showLoading(true);
 		import('./Descriptors.json').then(descriptors => {
 			this.setState(
@@ -121,16 +140,7 @@ class ImageMapEditor extends Component {
 				},
 			);
 		});
-		import('./Avatars.json').then(avatars => {
-			this.setState(
-				{
-					avatars,
-				},
-				() => {
-					this.showLoading(false);
-				},
-			);
-		});
+		
 
 		this.setState({
 			selectedItem: null
@@ -678,52 +688,55 @@ class ImageMapEditor extends Component {
 			
 			
 		},
-		onAvatarChange: () => {
-			const originalObjects = this.canvasRef.handler.exportJSON().filter(obj => {
-				if (!obj.id) {
-					return false;
-				}
-				return true;
-			});
-			const newObjects = {
+
+		// onAvatarChange : (url) => {
+		// 	// alert("this is reached;");
+		// 	console.log("----------here is the url----------", url);
+		// 	const originalObjects = this.canvasRef.handler.exportJSON().filter(obj => {
+		// 		if (!obj.id) {
+		// 			return false;
+		// 		}
+		// 		return true;
+		// 	});
+		// 	const newObjects = {
 				
-					type: "image",
-					version: "3.6.6",
-					originX: "left",
-					originY: "top",
-					left: 830,
-					top: 403.6,
-					width: 600,
-					height: 400,
-					backgroundColor: "rgba(255, 255, 255, 1)",
-					crossOrigin: "",
-					cropX: 0,
-					cropY: 0,
-				    id: "workarea",
-					name: "",
-					link: {},
-					layout: "fixed",
-					workareaWidth: 600,
-					workareaHeight: 400,
-					src: "http://localhost:4000/images/sample/avatar.png",
-					filters: []
+		// 			type: "image",
+		// 			version: "3.6.6",
+		// 			originX: "left",
+		// 			originY: "top",
+		// 			left: 830,
+		// 			top: 403.6,
+		// 			width: 600,
+		// 			height: 400,
+		// 			backgroundColor: "rgba(255, 255, 255, 1)",
+		// 			crossOrigin: "",
+		// 			cropX: 0,
+		// 			cropY: 0,
+		// 		    id: "workarea",
+		// 			name: "",
+		// 			link: {},
+		// 			layout: "fixed",
+		// 			workareaWidth: 600,
+		// 			workareaHeight: 400,
+		// 			src: url,
+		// 			filters: []
 				
-			};
+		// 	};
 			
-				const combinedObject = [newObjects, originalObjects[0]];
-				if (combinedObject) {
-					const data = combinedObject.filter(obj => {
-						if (!obj.id) {
-							return false;
-						}
-						return true;
-					});
-					this.canvasRef.handler.importJSON(data);
-			}
+		// 		const combinedObject = [newObjects, originalObjects[0]];
+		// 		if (combinedObject) {
+		// 			const data = combinedObject.filter(obj => {
+		// 				if (!obj.id) {
+		// 					return false ;
+		// 				}
+		// 				return true;
+		// 			});
+		// 			this.canvasRef.handler.importJSON(data);
+		// 	}
 		
 			
 			
-		},
+		// },
 		onDownload: () => {
 			this.showLoading(true);
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
@@ -803,8 +816,13 @@ class ImageMapEditor extends Component {
 			editing,
 		});
 	};
-
+	componentDidUpdate(prevProps) {
+		if(prevProps.value !== this.props.value) {
+		  this.setState({value: this.props.value});
+		}
+	  }
 	render() {
+		
 		const {
 			preview,
 			selectedItem,
@@ -819,6 +837,7 @@ class ImageMapEditor extends Component {
 			descriptors,
 			objects,
 			slideList,
+			updatedValue
 		} = this.state;
 		const {
 			onAdd,
@@ -844,7 +863,9 @@ class ImageMapEditor extends Component {
 			onBackgroundChange,
 			onAvatarChange
 		} = this.handlers;
+
 		const action = (
+			
 			<React.Fragment>
 				<CommonButton
 					className="rde-action-btn"
@@ -900,14 +921,6 @@ class ImageMapEditor extends Component {
 		const content = (
 			<div className="rde-editor">
 
-				<ImageMapItems
-					ref={c => {
-						this.itemsRef = c;
-					}}
-					canvasRef={this.canvasRef}
-					descriptors={descriptors}
-					slides={this.state.slideList}
-				/>
 				<Slide
 					slides = {this.state.slideList}
 					canvasRef={this.canvasRef}
@@ -961,16 +974,24 @@ class ImageMapEditor extends Component {
 						/>
 					</div>
 				</div>
-				<Avatar
-					slides = {this.state.slideList}
-					onAvatarChange={onAvatarChange}
+				<ImageMapItems
+					ref={c => {
+						this.itemsRef = c;
+					}}
 					canvasRef={this.canvasRef}
+					descriptors={descriptors}
+					slides={this.state.slideList}
 				/>
-				<Bg
+				<Avatar
+				
+					canvasRef={this.canvasRef}
+					
+				/>
+				{/* <Bg
 					slides = {this.state.slideList}
 					onBackgroundChange={onBackgroundChange}
 					canvasRef={this.canvasRef}
-				/>
+				/> */}
 				{/* <ImageMapConfigurations
 					canvasRef={this.canvasRef}
 					onChange={onChange}

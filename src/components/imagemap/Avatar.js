@@ -25,6 +25,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Block from 'react-color/lib/components/block/Block';
+import { avatarClasses } from '@mui/material';
 
 notification.config({
 	top: 80,
@@ -35,12 +36,12 @@ const { Meta } = Card;
 class Avatar extends Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
-		descriptors: PropTypes.object,
-		slides: PropTypes.Array,
-		onAvatarChange : PropTypes.func
+		descriptors: PropTypes.object
 	};
-
+	
 	state = {
+		loading: true,
+		avatars: [],
 		activeKey: [],
 		collapse: false,
 		textSearch: '',
@@ -72,9 +73,30 @@ class Avatar extends Component {
 		loading: false,
 	};
 	componentDidMount() {
-		const { canvasRef } = this.props;
+		const { canvasRef, avatars } = this.props;
 		this.waitForCanvasRender(canvasRef);
+		fetch('http://localhost:3000/api/v1/avatar/list')
+		.then(res => res.json())
+		.then((result) => {
+			console.log("--printed--", result.body.rows);
+			this.setState({
+				avatars : result.body.rows,
+				loading: false
+			  },
+			  this.findRoutes);
+			  this.forceUpdate()
+			  console.log("---------------reached here---------------", this.state.avatars);
+		});
+		// this.setState({
+		// 	avatars : this.props.avatars
+		// });
+		// console.log("-----------avatars are called-------", avatars);
 	}
+	// componentDidUpdate(prevProps) {
+	// 		if(prevProps.avatars !== this.props.avatars) {
+	// 		this.setState({avatars: this.props.avatars});
+	// 	  }
+	// }
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		if (JSON.stringify(this.props.descriptors) !== JSON.stringify(nextProps.descriptors)) {
@@ -119,7 +141,11 @@ class Avatar extends Component {
 			this.waitForCanvasRender(canvasRef);
 		}, 5);
 	};
-
+	// onAvatarChange = (url) =>{
+	// 	if (typeof this.props.onChange ===  'function') {
+    //         this.props.onChange(url);
+    //     }
+	// }
 	attachEventListener = canvas => {
 		canvas.canvas.wrapperEl.addEventListener('dragenter', this.events.onDragEnter, false);
 		canvas.canvas.wrapperEl.addEventListener('dragover', this.events.onDragOver, false);
@@ -136,6 +162,55 @@ class Avatar extends Component {
 
 	/* eslint-disable react/sort-comp, react/prop-types */
 	handlers = {
+			onAvatarChange : (url) => {
+			// alert("this is reached;");
+			const { canvasRef } = this.props;
+			console.log("----------here is the url----------", url);
+			const originalObjects = canvasRef.handler.exportJSON().filter(obj => {
+				if (!obj.id) {
+					return false;
+				}
+				return true;
+			});
+			const newObjects = {
+				
+					type: "image",
+					version: "3.6.6",
+					originX: "left",
+					originY: "top",
+					left: 830,
+					top: 403.6,
+					width: 600,
+					height: 400,
+					backgroundColor: "rgba(255, 255, 255, 1)",
+					crossOrigin: "",
+					cropX: 0,
+					cropY: 0,
+				    id: "workarea",
+					name: "",
+					link: {},
+					layout: "fixed",
+					workareaWidth: 600,
+					workareaHeight: 400,
+					src: url,
+					filters: []
+				
+			};
+			
+				const combinedObject = [newObjects, originalObjects[0]];
+				if (combinedObject) {
+					const data = combinedObject.filter(obj => {
+						if (!obj.id) {
+							return false ;
+						}
+						return true;
+					});
+					canvasRef.handler.importJSON(data);
+			}
+		
+			
+			
+		},
 		onAddItem: (item, centered) => {
 			const { canvasRef } = this.props;
 			if (canvasRef.handler.interactionMode === 'polygon') {
@@ -301,14 +376,14 @@ class Avatar extends Component {
 				{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
 			</div>
 		);
-
+			
 	render() {
-		const { descriptors, slides, onAvatarChange } = this.props;
-		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption } = this.state;
+		const { descriptors} = this.props;
+		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption, avatars } = this.state;
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
 		});
-		console.log("-------------slides------------", slides);
+		console.log("-------------avatars here------------", this.state.avatars);
 		const styles = {
 			grid: {
 				justifyContent: 'center',
@@ -336,41 +411,53 @@ class Avatar extends Component {
 				textAlign:'center',
 			},
 		};
-		return (
-			<div className={className}>
-							{slides.map(slide=>{
-								console.log("reached----------------")
-								console.log(slide, "----------slide url--------", slide.url);
-								return(
-									<>
+	
+		return (<>
+				{this.state?.loading  && this.state?.avatars.length == 0 && 
+				
+					<div className={className}>
+					<p>Loading...</p>
+					</div>
+					
+					
+		}
+			{!this.state?.loading  && this.state?.avatars !== 0 && 
+					<div className={className}>
+					{this.state.avatars.map(avatar=>{
+						console.log("reached----------------");
+						if(avatar.image?.directory == null || avatar.image?.directory == undefined || avatar.image?.directory == ""){
+							return null
+						}else{
+							return(
+								<>
+								
+								<Tooltip title={this.props.tooltipTitle} placement={this.props.tooltipPlacement}>
+								
+										<span style={this.props.wrapperStyle} className={this.props.wrapperClassName}>
+										<button>
+											<img 
+												height={400}
+												width={"100%"}
+												style={{borderRadius:10 , border: '0 none'}}
+												src={
+													'http://localhost:3000/uploads/' +
+													avatar.image?.directory
+												} alt="my image" 
+												onClick={e=>this.handlers.onAvatarChange('http://localhost:3000/uploads/' + avatar.image?.directory)} />
+										</button>
+										</span>
 									
-									<Tooltip title={this.props.tooltipTitle} placement={this.props.tooltipPlacement}>
-									
-											<span style={this.props.wrapperStyle} className={this.props.wrapperClassName}>
-												<Button
-													id={this.props.id}
-													className={this.props.className}
-													name={this.props.name}
-													style={this.props.style}
-													url={slide.url}
-													shape={this.props.shape}
-													size={this.props.size}
-													index={slide.id}
-													onClick={onAvatarChange}
-													type={this.props.type}
-													disabled={this.props.disabled}
-													loading={this.props.loading}
-												>
-											   		
-												</Button>
-											</span>
-										
-									</Tooltip>
-								  </>
-								)
-							})}
-			</div>
-		);
+								</Tooltip>
+							  </>
+							)
+						}
+						
+					})}
+					</div>
+					
+				}
+				</>
+			);
 	}
 }
 

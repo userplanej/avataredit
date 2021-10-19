@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-
+import axios from "axios";
 import ImageMapEditor from '../components/imagemap/ImageMapEditor';
 import WorkflowEditor from '../components/workflow/WorkflowEditor';
 import Title from './Title';
@@ -9,7 +9,7 @@ import FlowContainer from './FlowContainer';
 import HexGrid from '../components/hexgrid/HexGrid';
 import { VideoStudioEditor } from '../components/video-studio/VideoStudioEditor';
 import { QueryClient, QueryClientProvider } from 'react-query';
-
+// import { Config } from '../../config';
 const queryClient = new QueryClient();
 
 type EditorType = 'imagemap' | 'workflow' | 'flow' | 'hexgrid' | 'videoStudio';

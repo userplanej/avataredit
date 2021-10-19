@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Collapse, notification, Input, message } from 'antd';
+import { Collapse, notification, Input, message, Typography } from 'antd';
 import { v4 } from 'uuid';
 import classnames from 'classnames';
 import i18n from 'i18next';
-
+import Button from '@mui/material/Button';
 import { Flex } from '../flex';
 import Icon from '../icon/Icon';
 import Scrollbar from '../common/Scrollbar';
 import CommonButton from '../common/CommonButton';
 import { SVGModal } from '../common';
+import { view } from 'react-dom-factories';
+import { Row, Col } from 'antd';
 
 notification.config({
 	top: 80,
@@ -29,6 +31,7 @@ class ImageMapItems extends Component {
 		descriptors: {},
 		filteredDescriptors: [],
 		svgModalVisible: false,
+		optionValue: null
 	};
 
 	componentDidMount() {
@@ -261,6 +264,11 @@ class ImageMapItems extends Component {
 				{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
 			</div>
 		);
+	viewActivated = () =>{
+		this.setState({
+			optionValue : "bezier-curve"
+		});
+	}
 
 	render() {
 		const { descriptors } = this.props;
@@ -270,54 +278,30 @@ class ImageMapItems extends Component {
 		});
 		return (
 			<div className={className}>
-				<Flex flex="1" flexDirection="column" style={{ height: '100%' }}>
-					<Flex justifyContent="center" alignItems="center" style={{ height: 40 }}>
-						<CommonButton
-							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
-							shape="circle"
-							className="rde-action-btn"
-							style={{ margin: '0 4px' }}
-							onClick={this.handlers.onCollapse}
-						/>
-						{collapse ? null : (
-							<Input
-								style={{ margin: '8px' }}
-								placeholder={i18n.t('action.search-list')}
-								onChange={this.handlers.onSearchNode}
-								value={textSearch}
-								allowClear
-							/>
-						)}
-					</Flex>
-					<Scrollbar>
-						<Flex flex="1" style={{ overflowY: 'hidden' }}>
-							{(textSearch.length && this.renderItems(filteredDescriptors)) ||
-								(collapse ? (
-									<Flex
-										flexWrap="wrap"
-										flexDirection="column"
-										style={{ width: '100%' }}
-										justifyContent="center"
-									>
-										{this.handlers.transformList().map(item => this.renderItem(item))}
-									</Flex>
-								) : (
-									<Collapse
-										style={{ width: '100%' }}
-										bordered={false}
-										activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
-										onChange={this.handlers.onChangeActiveKey}
-									>
-										{Object.keys(descriptors).map(key => (
-											<Collapse.Panel key={key} header={key} showArrow={!collapse}>
-												{this.renderItems(descriptors[key])}
-											</Collapse.Panel>
-										))}
-									</Collapse>
-								))}
-						</Flex>
-					</Scrollbar>
-				</Flex>
+				<Row sx={{ flexGrow: 1 }}>
+				<Col span={16}>
+					
+					<Collapse
+						style={{ width: '100%' }}
+						bordered={false}
+						activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
+						onChange={this.handlers.onChangeActiveKey}
+					>
+						{Object.keys(descriptors).map(key => (
+							<Collapse.Panel key={key} header={key} showArrow={!collapse}>
+								{this.renderItems(descriptors[key])}
+							</Collapse.Panel>
+						))}
+					</Collapse>
+				</Col>
+				<Col span={8}>
+					<Button
+							value={"bezier-curve"}
+							onClick={this.viewActivated}>
+						Here is the button
+					</Button>
+				</Col>
+				</Row>
 				<SVGModal
 					visible={svgModalVisible}
 					onOk={this.handlers.onAddSVG}
