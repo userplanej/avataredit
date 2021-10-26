@@ -9,6 +9,8 @@ import FlowContainer from './FlowContainer';
 import HexGrid from '../components/hexgrid/HexGrid';
 import { VideoStudioEditor } from '../components/video-studio/VideoStudioEditor';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import Authentication from './Authentication';
+import Main from '../components-site/Main';
 // import { Config } from '../../config';
 const queryClient = new QueryClient();
 
@@ -47,7 +49,7 @@ class App extends Component<any, IState> {
 	render() {
 		const { activeEditor } = this.state;
 		return (
-			<div className="rde-main">
+			<div className="rde-main" style={{height: '100%'}}>
 				<Helmet>
 					<meta charSet="utf-8" />
 					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -70,12 +72,12 @@ class App extends Component<any, IState> {
 					</script>
 					<script async={true} src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
 				</Helmet>
-				<div className="rde-title">
+				{/* <div className="rde-title">
 					<Title onChangeMenu={this.onChangeMenu} current={activeEditor} />
-				</div>
+				</div> */}
 				<FlowContainer>
 					<QueryClientProvider client={queryClient}>
-						<div className="rde-content">{this.renderEditor(activeEditor)}</div>
+						<div className="rde-content" style={{height: '100%'}}><Main /></div>
 					</QueryClientProvider>
 				</FlowContainer>
 			</div>
