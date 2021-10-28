@@ -98,9 +98,11 @@ const ToolsView = (props) => {
         </TabPanel>
         <TabPanel value={value} index={1}>
           <Typography variant="h5">Select avatar</Typography>
+          {props.avatars}
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <Typography variant="h5">Select background</Typography>
+          <Typography variant="h5" sx={{ mb: '10px' }}>Select background</Typography>
+          {props.backgrounds}
         </TabPanel>
         <TabPanel value={value} index={3}>
           <Typography variant="h5" sx={{ mb: '10px' }}> Select text</Typography>

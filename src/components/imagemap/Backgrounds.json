@@ -1,0 +1,164 @@
+{
+	"IMAGE": [
+		{
+			"name": "Green screen",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"backgroundColor": "#00b140",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"left": 830,
+				"top": 403.66,
+				"width": 600,
+				"height": 400
+			}
+		},
+		{
+			"name": "Off-white",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"backgroundColor": "#f5f5f5",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"left": 830,
+				"top": 403.66,
+				"width": 600,
+				"height": 400
+			}
+		},
+		{
+			"name": "Warm white",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"backgroundColor": "#fdf4dc",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"left": 830,
+				"top": 403.66,
+				"width": 600,
+				"height": 400
+			}
+		},
+		{
+			"name": "Light pink",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"backgroundColor": "#ffb6c1",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"left": 830,
+				"top": 403.66,
+				"width": 600,
+				"height": 400
+			}
+		},
+		{
+			"name": "Soft pink",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"backgroundColor": "#fadadd",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"left": 830,
+				"top": 403.66,
+				"width": 600,
+				"height": 400
+			}
+		},
+		{
+			"name": "Light blue",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"backgroundColor": "#add8e6",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"left": 830,
+				"top": 403.66,
+				"width": 600,
+				"height": 400
+			}
+		},
+		{
+			"name": "Dark blue",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"backgroundColor": "#00008b",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"left": 830,
+				"top": 403.66,
+				"width": 600,
+				"height": 400
+			}
+		},
+		{
+			"name": "Soft cyan",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"backgroundColor": "#b2f3f3",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"left": 830,
+				"top": 403.66,
+				"width": 600,
+				"height": 400
+			}
+		}
+	]
+}

@@ -110,12 +110,13 @@ class ImageMapEditor extends Component {
 		preview: false,
 		loading: false,
 		progress: 0,
-		avatars: [],
+		avatars: {},
 		animations: [],
 		styles: [],
 		dataSources: [],
 		editing: false,
 		descriptors: {},
+		backgrounds: {},
 		objects: undefined,
 		src: undefined,
 		slideList : [{
@@ -151,21 +152,25 @@ class ImageMapEditor extends Component {
 		// 	  console.log("---------------reached here---------------", this.state.avatars);
 		// });
 		this.showLoading(true);
-		import('./Descriptors.json').then(descriptors => {
-			this.setState(
-				{
-					descriptors,
-				},
-				() => {
-					this.showLoading(false);
-				},
-			);
-		});
-		
+
+		Promise.all([
+			import('./Descriptors.json').then(descriptors => {
+				// listDescriptors = descriptors;
+				this.setState({ descriptors });
+			}),
+			import('./Backgrounds.json').then(backgrounds => {
+				// listBackgrounds = backgrounds;
+				this.setState({ backgrounds });
+			}),
+			import('./Avatars.json').then(avatars => {
+				// listAvatars = avatars;
+				this.setState({ avatars });
+			})
+		]);
 
 		this.setState({
 			selectedItem: null
-		});
+		}, () => this.showLoading(false));
 		this.shortcutHandlers.esc();
 	}
 
@@ -861,6 +866,7 @@ class ImageMapEditor extends Component {
 			avatars,
 			editing,
 			descriptors,
+			backgrounds,
 			objects,
 			slideList,
 			updatedValue,
@@ -951,12 +957,12 @@ class ImageMapEditor extends Component {
 			<div className="rde-editor">
 				<ThemeProvider theme={theme}>
         	<CssBaseline />
-					<Appbar drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} handleDrawerToggle={() => this.handleDrawerToggle()} />
+					<Appbar drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} handleDrawerToggle={() => this.handleDrawerToggle()} onExport={() => this.canvasRef.handler.workarea} />
 					<Sidebar isMinimal={isMinimal} drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>
 					
 					<Grid container sx={{ height: '100%' }} columns={13}>
 						<Grid item md={2} sx={{  backgroundColor: '#e8dff4', height: '100%' }}>
-							<Slides />
+							<Slides canvasRef={this.canvasRef} />
 						</Grid>
 						<Grid item md={6}>
 							<div
@@ -971,7 +977,7 @@ class ImageMapEditor extends Component {
 										this.canvasRef = c;
 									}}
 									className="rde-canvas"
-									minZoom={300}
+									minZoom={30}
 									maxZoom={300}
 									zoomEnabled={false}
 									objectOption={defaultOption}
@@ -998,6 +1004,8 @@ class ImageMapEditor extends Component {
 								}}
 								canvasRef={this.canvasRef}
 								descriptors={descriptors}
+								backgrounds={backgrounds}
+								avatars={avatars}
 								slides={this.state.slideList}
 							/>
 						</Grid>

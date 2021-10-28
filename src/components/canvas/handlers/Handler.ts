@@ -690,6 +690,11 @@ class Handler implements HandlerOptions {
 		};
 		if (obj.type === 'i-text') {
 			option.editable = false;
+		} else if (obj.type === 'background') {
+			option.editable = false;
+			option.selectable = false;
+			option.lockMovementX = true;
+			option.lockMovementY = true;
 		} else {
 			option.editable = editable;
 		}
@@ -716,6 +721,7 @@ class Handler implements HandlerOptions {
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
 		} else if (obj.type ==='background'){
+			this.canvas.getObjects().filter(obj => obj.type === 'background').map((background) => this.canvas.remove(background));
 			createdObj = this.addBackground(newOption);
 		} else if (obj.type === 'group') {
 			// TODO...
@@ -726,7 +732,6 @@ class Handler implements HandlerOptions {
 		} else {
 			createdObj = this.fabricObjects[obj.type].create(newOption);
 		}
-		this.canvas.add(createdObj);
 		this.canvas.add(createdObj);
 		this.objects = this.getObjects();
 		if (!editable && !(obj.superType === 'element')) {

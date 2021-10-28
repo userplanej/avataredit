@@ -13,6 +13,7 @@ import { SVGModal } from '../common';
 import { view } from 'react-dom-factories';
 import { Row, Col } from 'antd';
 import ToolsView from '../../components-site/editor/ToolsView';
+import Image from '@mui/icons-material/Image';
 
 notification.config({
 	top: 80,
@@ -28,6 +29,8 @@ class ImageMapItems extends Component {
 			collapse: false,
 			textSearch: '',
 			descriptors: {},
+			backgrounds: {},
+			avatars: {},
 			filteredDescriptors: [],
 			svgModalVisible: false,
 			optionValue: null,
@@ -38,6 +41,8 @@ class ImageMapItems extends Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,
+		backgrounds: PropTypes.object,
+		avatars: PropTypes.object
 	};
 
 	componentDidMount() {
@@ -54,10 +59,30 @@ class ImageMapItems extends Component {
 				descriptors,
 			});
 		}
+		if (JSON.stringify(this.props.backgrounds) !== JSON.stringify(nextProps.backgrounds)) {
+			const backgrounds = Object.keys(nextProps.backgrounds).reduce((prev, key) => {
+				return prev.concat(nextProps.backgrounds[key]);
+			}, []);
+			this.setState({
+				backgrounds,
+			});
+		}
+		if (JSON.stringify(this.props.avatars) !== JSON.stringify(nextProps.avatars)) {
+			const avatars = Object.keys(nextProps.avatars).reduce((prev, key) => {
+				return prev.concat(nextProps.avatars[key]);
+			}, []);
+			this.setState({
+				avatars,
+			});
+		}
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
 		if (JSON.stringify(this.state.descriptors) !== JSON.stringify(nextState.descriptors)) {
+			return true;
+		} else if (JSON.stringify(this.state.backgrounds) !== JSON.stringify(nextState.backgrounds)) {
+			return true;
+		} else if (JSON.stringify(this.state.avatars) !== JSON.stringify(nextState.avatars)) {
 			return true;
 		} else if (JSON.stringify(this.state.filteredDescriptors) !== JSON.stringify(nextState.filteredDescriptors)) {
 			return true;
@@ -240,8 +265,10 @@ class ImageMapItems extends Component {
 		</Flex>
 	);
 
-	renderItem = (item, centered) =>
-		item.type === 'drawing' ? (
+	renderItem = (item, centered) => {
+		const isBackground = item.type === 'background';
+		const isAvatar = item.type === 'avatar';
+		return item.type === 'drawing' ? (
 			<div
 				key={item.name}
 				draggable
@@ -255,25 +282,39 @@ class ImageMapItems extends Component {
 				{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
 			</div>
 		) : (
-			<div style={{ marginRight: '12px' }}>
+			<div style={{ marginRight: '12px' }} key={item.name}>
 				<div
 					key={item.name}
 					draggable
-					onClick={e => this.handlers.onAddItem(item, centered)}
+					onClick={e => { 
+						this.handlers.onAddItem(item, centered); 
+						if (isBackground) {
+							this.props.canvasRef.handler?.sendToBack();
+						}
+					}}
 					onDragStart={e => this.events.onDragStart(e, item)}
 					onDragEnd={e => this.events.onDragEnd(e, item)}
 					style={{ justifyContent: this.state.collapse ? 'center' : null, display: 'flex', flexDirection: 'column' }}
 				>
 					<span 
 						className="rde-editor-items-item-icon" 
-						style={{ width: '168px', height: '136px', backgroundColor: 'white', display: 'flex', flexDirection: 'column', textAlign: 'center' }}
+						style={{ 
+							width: '168px', 
+							height: '136px', 
+							backgroundColor: isBackground ? item.option.backgroundColor : 'white', 
+							display: 'flex', 
+							flexDirection: 'column', 
+							textAlign: 'center' 
+						}}
 					>
-						<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
+						{!isBackground && !isAvatar && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
+						{isAvatar && <img src={item.option.src} />}
 					</span>
 				</div>
 			{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
 			</div>
-		);
+		)
+	}
 
 	viewActivated = () =>{
 		this.setState({
@@ -282,7 +323,7 @@ class ImageMapItems extends Component {
 	}
 
 	render() {
-		const { descriptors } = this.props;
+		const { descriptors, backgrounds, avatars } = this.props;
 		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption, indexTab } = this.state;
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
@@ -290,11 +331,16 @@ class ImageMapItems extends Component {
 		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key));
 		const shapes = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
 		const images = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key));
+		const backgroundsItems = Object.keys(backgrounds).map(key => this.renderItems(backgrounds[key], key));
+		const avatarsItems = Object.keys(avatars).map(key => this.renderItems(avatars[key], key));
+		console.log(avatarsItems)
 		return (
 			<ToolsView 
 				texts={texts}
 				shapes={shapes}
 				images={images}
+				backgrounds={backgroundsItems}
+				avatars={avatarsItems}
 			/>
 			
 			// <div className={className}>

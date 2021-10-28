@@ -8,10 +8,11 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import Box from '@mui/material/Box';
 import Input from '@mui/material/Input';
+import Button from '@mui/material/Button';
 
 const ariaLabel = { 'aria-label': 'title' };
 
-const Appbar = ({ drawerWidth, handleDrawerToggle }) => {
+const Appbar = ({ drawerWidth, handleDrawerToggle, onExport }) => {
   const [isEditTitle, setIsEditTitle] = useState(false);
 
   return (
@@ -39,6 +40,7 @@ const Appbar = ({ drawerWidth, handleDrawerToggle }) => {
           {isEditTitle && <Input sx={{ mx: '10px' }} placeholder="Add title here" inputProps={ariaLabel} />}
           {!isEditTitle && <BorderColorIcon fontSize="small" onClick={() => setIsEditTitle(true)} />}
         </Box>
+        {/* <Button onClick={() => console.log(onExport())}>Export</Button> */}
       </Toolbar>
     </AppBar>
   );

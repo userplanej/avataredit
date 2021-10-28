@@ -14,7 +14,10 @@ const slideContainerStyle = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  ':hover': {
+    backgroundColor: 'rgba(232, 233, 233, 0.7)',
+  }
 }
 
 const slideActiveContainerStyle = {
@@ -72,14 +75,54 @@ const addTransitionTextStyle = {
 
 }
 
-const Slides = () => {
-  const [slidesData, setSlidesData] = useState([{ id: 1 }]);
+const Slides = (props) => {
+  const [slidesData, setSlidesData] = useState([{ id: 1, objects: [] }]);
   const [activeSlide, setActiveSlide] = useState(1);
 
   const addSlide = () => {
+    const currentSlide = slidesData[activeSlide - 1];
+    saveSlide(currentSlide);
+
     const id = slidesData.length + 1;
-    const newSlide = { id };
+    const newSlide = { id, objects: [] };
     setSlidesData([...slidesData, newSlide]);
+
+    props.canvasRef.handler.clear();
+    props.canvasRef.handler.importJSON(newSlide.objects);
+    setActiveSlide(id);
+  }
+
+  const saveSlide = (slide) => {
+    const objects = props.canvasRef.handler.exportJSON();
+    const currentObjects = slide.objects;
+    
+    const newObjects = [];
+    objects.map(obj => {
+      if (obj.id === 'workarea') {
+        const workarea = currentObjects.find(obj => obj.id === 'workarea');
+        if (workarea) {
+          return;
+        }
+      }
+      newObjects.push(obj);
+    });
+
+    slide.objects = newObjects;
+  }
+
+  const loadSlide = (id) => {
+    if (id === activeSlide) {
+      return;
+    }
+    const currentSlide = slidesData[activeSlide - 1];
+    saveSlide(currentSlide);
+
+    const slideToLoad = slidesData.find(slide => slide.id === id);
+    if (slideToLoad) {
+      props.canvasRef.handler.clear();
+      props.canvasRef.handler.importJSON(slideToLoad.objects);
+    }
+
     setActiveSlide(id);
   }
 
@@ -91,6 +134,7 @@ const Slides = () => {
           <ListItem
             key={slide.id}
             sx={activeSlide === slide.id ? {...slideActiveContainerStyle} : { ...slideContainerStyle }}
+            onClick={() => loadSlide(slide.id)}
           >
             <Grid container sx={{ borderLeft: '4px solid #df678c'}}>
               <Grid item md={1} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

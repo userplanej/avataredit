@@ -12,7 +12,7 @@ import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
 import '../../styles/fabricjs/fabricjs.less';
 
-import { TextField, Box } from '@mui/material';
+import { TextField, Box, Tabs, Tab } from '@mui/material';
 
 export type CanvasProps = HandlerOptions & {
 	responsive?: boolean;
@@ -23,6 +23,7 @@ export type CanvasProps = HandlerOptions & {
 interface IState {
 	id: string;
 	loaded: boolean;
+	activeTab: number;
 }
 
 class Canvas extends Component<CanvasProps, IState> {
@@ -44,6 +45,7 @@ class Canvas extends Component<CanvasProps, IState> {
 	state: IState = {
 		id: v4(),
 		loaded: false,
+		activeTab: 0
 	};
 
 	componentDidMount() {
@@ -154,40 +156,63 @@ class Canvas extends Component<CanvasProps, IState> {
 		);
 	};
 
+	handleChangeTab = (value: number) => {
+		this.setState({ activeTab: value });
+	}
+
 	render() {
 		const { style } = this.props;
-		const { id } = this.state;
+		const { id, activeTab } = this.state;
 		return (
 			<div
 				ref={this.container}
 				id={id}
 				className="rde-canvas"
-				style={{ width: '100%', height: '500px', ...style }}
+				style={{ width: '100%', height: '450px', ...style }}
 			>
 				<canvas id={`canvas_${id}`} />
 				
-				{/* <Box sx={{ mt: '16px', width: '100%', justifyContent: 'center' }}>
-					<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-						<Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-							<Tab label="Item One" id="simple-tab-1" />
-							<Tab label="Item Two" id="simple-tab-2" />
+				<Box sx={{ mt: '16px', width: '95%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+					<Box sx={{ borderBottom: 1, borderColor: 'divider', width: '90%' }}>
+						<Tabs value={activeTab} onChange={(event, value) => this.handleChangeTab(value)} aria-label="basic tabs example">
+							<Tab label="Type your script" id="simple-tab-1" />
+							<Tab label="Upload your voice" id="simple-tab-2" />
 						</Tabs>
 					</Box>
-					<TabPanel value={value} index={0}>
-						<TextField
-							id="filled-multiline-flexible"
-							multiline
-							minRows={10}
-							maxRows={10}
-							// value={value}
-							// onChange={handleChange}
-							variant="filled"
-						/>
-					</TabPanel>
-					<TabPanel value={value} index={1}>
-						Item Two
-					</TabPanel>
-				</Box> */}
+					<div
+						role="tabpanel"
+						hidden={activeTab !== 0}
+						id={`vertical-tabpanel-${0}`}
+						aria-labelledby={`vertical-tab-${0}`}
+						style={{ width: '90%' }}
+					>
+						{activeTab === 0 && (
+							<Box sx={{ p: 3, width: '100%' }}>
+								<TextField
+									id="filled-multiline-flexible"
+									multiline
+									minRows={8}
+									maxRows={8}
+									// value={value}
+									// onChange={handleChange}
+									variant="filled"
+									sx={{ width: "100%" }}
+								/>
+							</Box>
+						)}
+					</div>
+					<div
+						role="tabpanel"
+						hidden={activeTab !== 1}
+						id={`vertical-tabpanel-${1}`}
+						aria-labelledby={`vertical-tab-${1}`}
+					>
+						{activeTab === 1 && (
+							<Box sx={{ p: 3 }}>
+							</Box>
+						)}
+					</div>
+				</Box>
 			</div>
 		);
 	}
