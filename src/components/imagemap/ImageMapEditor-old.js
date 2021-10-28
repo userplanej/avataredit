@@ -17,21 +17,12 @@ import SandBox from '../sandbox/SandBox';
 
 import '../../libs/fontawesome-5.2.0/css/all.css';
 import '../../styles/index.less';
-// import Container from '../common/Container';
+import Container from '../common/Container';
 import CommonButton from '../common/CommonButton';
 import Canvas from '../canvas/Canvas';
 import { code } from '../canvas/constants';
 import { Config } from '../../../config';
 import { FemaleSharp } from '@mui/icons-material';
-
-import Appbar from '../../components-site/Appbar';
-import Sidebar from '../../components-site/Sidebar';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Slides from '../../components-site/editor/Slides';
-import ToolsView from '../../components-site/editor/ToolsView';
-import { Grid, Container, TextField } from '@mui/material';
-
 const propertiesToInclude = [
 	'id',
 	'name',
@@ -92,16 +83,6 @@ const defaultOption = {
 	},
 };
 
-const drawerMaxWidth = 264;
-const drawerMinWidth = 80;
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Omnes',
-    fontWeight: '500'
-  },
-});
-
 class ImageMapEditor extends Component {
 	state = {
 		updatedValue : false,
@@ -123,10 +104,8 @@ class ImageMapEditor extends Component {
 			thumbnail : null,
 			file_dir: null,
 			url: 'sample1.json'
-		}],
-		isMinimal: true,
-		mobileOpen: false
-
+		}
+	]
 	};
 
 
@@ -841,12 +820,7 @@ class ImageMapEditor extends Component {
 		if(prevProps.value !== this.props.value) {
 		  this.setState({value: this.props.value});
 		}
-	}
-
-	handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  }
-
+	  }
 	render() {
 		
 		const {
@@ -863,9 +837,7 @@ class ImageMapEditor extends Component {
 			descriptors,
 			objects,
 			slideList,
-			updatedValue,
-			isMinimal,
-			mobileOpen
+			updatedValue
 		} = this.state;
 		const {
 			onAdd,
@@ -940,156 +912,108 @@ class ImageMapEditor extends Component {
 				/>
 			</React.Fragment>
 		);
-		// const titleContent = (
-		// 	<React.Fragment>
-		// 		<span>{i18n.t('imagemap.imagemap-editor')}</span>
-		// 	</React.Fragment>
-		// );
-		// const title = null //<ImageMapTitle title={titleContent} action={action} />;
-		// const content = (
-			return (
+		const titleContent = (
+			<React.Fragment>
+				<span>{i18n.t('imagemap.imagemap-editor')}</span>
+			</React.Fragment>
+		);
+		const title = null //<ImageMapTitle title={titleContent} action={action} />;
+		const content = (
 			<div className="rde-editor">
-				<ThemeProvider theme={theme}>
-        	<CssBaseline />
-					<Appbar drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} handleDrawerToggle={() => this.handleDrawerToggle()} />
-					<Sidebar isMinimal={isMinimal} drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>
-					
-					<Grid container sx={{ height: '100%' }} columns={13}>
-						<Grid item md={2} sx={{  backgroundColor: '#e8dff4', height: '100%' }}>
-							<Slides />
-						</Grid>
-						<Grid item md={6}>
-							<div
-								ref={c => {
-									this.container = c;
-								}}
-								className="rde-editor-canvas"
-								style={{ marginTop: '64px' }}
-							>
-								<Canvas
-									ref={c => {
-										this.canvasRef = c;
-									}}
-									className="rde-canvas"
-									minZoom={300}
-									maxZoom={300}
-									zoomEnabled={false}
-									objectOption={defaultOption}
-									propertiesToInclude={propertiesToInclude}
-									onModified={onModified}
-									onAdd={onAdd}
-									onRemove={onRemove}
-									onSelect={onSelect}
-									onZoom={onZoom}
-									onTooltip={onTooltip}
-									onClick={onClick}
-									onContext={onContext}
-									onTransaction={onTransaction}
-									keyEvent={{
-										transaction: true,
-									}}
-								/>
-							</div>
-						</Grid>
-						<Grid item md={5}>
-							<ImageMapItems
-								ref={c => {
-									this.itemsRef = c;
-								}}
-								canvasRef={this.canvasRef}
-								descriptors={descriptors}
-								slides={this.state.slideList}
-							/>
-						</Grid>
-					</Grid>
 
-					{/* <Slide
-						slides = {this.state.slideList}
-						canvasRef={this.canvasRef}
-						onActivate={onLoadSlide}
-					/> */}
+				{/* <Slide
+					slides = {this.state.slideList}
+					canvasRef={this.canvasRef}
+					onActivate={onLoadSlide}
+				/> */}
+				
+				<div className="rde-editor-canvas-container">
 					
-					{/* <div className="rde-editor-canvas-container"> */}
-						{/* <div className="rde-editor-header-toolbar">
-							<ImageMapHeaderToolbar
-								canvasRef={this.canvasRef}
-								selectedItem={selectedItem}
-								onSelect={onSelect}
-							/>
-						</div> */}
-						{/* <div
+					{/* <div className="rde-editor-header-toolbar">
+						<ImageMapHeaderToolbar
+							canvasRef={this.canvasRef}
+							selectedItem={selectedItem}
+							onSelect={onSelect}
+						/>
+					</div> */}
+					<div
+						ref={c => {
+							this.container = c;
+						}}
+						className="rde-editor-canvas"
+					>
+						<Canvas
 							ref={c => {
-								this.container = c;
+								this.canvasRef = c;
 							}}
-							className="rde-editor-canvas"
-							style={{ marginTop: '64px' }}
-						>
-							<Canvas
-								ref={c => {
-									this.canvasRef = c;
-								}}
-								className="rde-canvas"
-								minZoom={300}
-								maxZoom={300}
-								zoomEnabled={false}
-								objectOption={defaultOption}
-								propertiesToInclude={propertiesToInclude}
-								onModified={onModified}
-								onAdd={onAdd}
-								onRemove={onRemove}
-								onSelect={onSelect}
-								onZoom={onZoom}
-								onTooltip={onTooltip}
-								onClick={onClick}
-								onContext={onContext}
-								onTransaction={onTransaction}
-								keyEvent={{
-									transaction: true,
-								}}
-							/>
-						</div> */}
-
-						{/* <div className="rde-editor-footer-toolbar">
-							<ImageMapFooterToolbar
-								canvasRef={this.canvasRef}
-								preview={preview}
-								onChangePreview={onChangePreview}
-								zoomRatio={zoomRatio}
-							/>
-						</div> */}
-					{/* </div> */}
-					{/* <Avatar
+							className="rde-canvas"
+							minZoom={300}
+							maxZoom={300}
+							zoomEnabled={false}
+							objectOption={defaultOption}
+							propertiesToInclude={propertiesToInclude}
+							onModified={onModified}
+							onAdd={onAdd}
+							onRemove={onRemove}
+							onSelect={onSelect}
+							onZoom={onZoom}
+							onTooltip={onTooltip}
+							onClick={onClick}
+							onContext={onContext}
+							onTransaction={onTransaction}
+							keyEvent={{
+								transaction: true,
+							}}
+						/>
+					</div>
+					{/* <div className="rde-editor-footer-toolbar">
+						<ImageMapFooterToolbar
+							canvasRef={this.canvasRef}
+							preview={preview}
+							onChangePreview={onChangePreview}
+							zoomRatio={zoomRatio}
+						/>
+					</div> */}
+				</div>
+				{/* <ImageMapItems
+					ref={c => {
+						this.itemsRef = c;
+					}}
+					canvasRef={this.canvasRef}
+					descriptors={descriptors}
+					slides={this.state.slideList}
+				/> */}
+				{/* <Avatar
+				
+					canvasRef={this.canvasRef}
 					
-						canvasRef={this.canvasRef}
-						
-					/> */}
-					{/* <Bg
-						slides = {this.state.slideList}
-						onBackgroundChange={onBackgroundChange}
-						canvasRef={this.canvasRef}
-					/> */}
-					{/* <ImageMapConfigurations
-						canvasRef={this.canvasRef}
-						onChange={onChange}
-						selectedItem={selectedItem}
-						onChangeAnimations={onChangeAnimations}
-						onChangeStyles={onChangeStyles}
-						onChangeDataSources={onChangeDataSources}
-						animations={animations}
-						styles={styles}
-						dataSources={dataSources}
-					/>
-					<ImageMapPreview
-						preview={preview}
-						onChangePreview={onChangePreview}
-						onTooltip={onTooltip}
-						onClick={onClick}
-						objects={objects}
-					/> */}
-      	</ThemeProvider>
+				/> */}
+				{/* <Bg
+					slides = {this.state.slideList}
+					onBackgroundChange={onBackgroundChange}
+					canvasRef={this.canvasRef}
+				/> */}
+				{/* <ImageMapConfigurations
+					canvasRef={this.canvasRef}
+					onChange={onChange}
+					selectedItem={selectedItem}
+					onChangeAnimations={onChangeAnimations}
+					onChangeStyles={onChangeStyles}
+					onChangeDataSources={onChangeDataSources}
+					animations={animations}
+					styles={styles}
+					dataSources={dataSources}
+				/>
+				<ImageMapPreview
+					preview={preview}
+					onChangePreview={onChangePreview}
+					onTooltip={onTooltip}
+					onClick={onClick}
+					objects={objects}
+				/> */}
 			</div>
 		);
-		// return <Container title={title} content={content} loading={loading} className="" />;
+		return <Container title={title} content={content} loading={loading} className="" />;
 	}
 }
 

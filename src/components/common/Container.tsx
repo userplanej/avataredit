@@ -38,6 +38,9 @@ class Container extends Component<IProps> {
 							overflowX: 'hidden',
 							minHeight: `calc(100vh - ${title ? 98 : 60}px)`,
 							height: `calc(100vh - ${title ? 98 : 60}px)`,
+							// minHeight: `0px`,
+							// height: `0px`,
+							// width: '100%'
 						}}
 						className={className}
 					>

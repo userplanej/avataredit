@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
+import '../styles/index.less';
 import axios from "axios";
 import ImageMapEditor from '../components/imagemap/ImageMapEditor';
 import WorkflowEditor from '../components/workflow/WorkflowEditor';
@@ -77,7 +78,10 @@ class App extends Component<any, IState> {
 				</div> */}
 				<FlowContainer>
 					<QueryClientProvider client={queryClient}>
-						<div className="rde-content" style={{height: '100%'}}><Main /></div>
+						{/* <div className="rde-content" style={{height: '100%'}}> */}
+							<ImageMapEditor />
+							{/* {this.renderEditor(activeEditor)} */}
+						{/* </div> */}
 					</QueryClientProvider>
 				</FlowContainer>
 			</div>

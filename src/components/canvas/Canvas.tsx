@@ -12,6 +12,8 @@ import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
 import '../../styles/fabricjs/fabricjs.less';
 
+import { TextField, Box } from '@mui/material';
+
 export type CanvasProps = HandlerOptions & {
 	responsive?: boolean;
 	style?: React.CSSProperties;
@@ -160,9 +162,32 @@ class Canvas extends Component<CanvasProps, IState> {
 				ref={this.container}
 				id={id}
 				className="rde-canvas"
-				style={{ width: '100%', height: '100%', ...style }}
+				style={{ width: '100%', height: '500px', ...style }}
 			>
 				<canvas id={`canvas_${id}`} />
+				
+				{/* <Box sx={{ mt: '16px', width: '100%', justifyContent: 'center' }}>
+					<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+						<Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+							<Tab label="Item One" id="simple-tab-1" />
+							<Tab label="Item Two" id="simple-tab-2" />
+						</Tabs>
+					</Box>
+					<TabPanel value={value} index={0}>
+						<TextField
+							id="filled-multiline-flexible"
+							multiline
+							minRows={10}
+							maxRows={10}
+							// value={value}
+							// onChange={handleChange}
+							variant="filled"
+						/>
+					</TabPanel>
+					<TabPanel value={value} index={1}>
+						Item Two
+					</TabPanel>
+				</Box> */}
 			</div>
 		);
 	}

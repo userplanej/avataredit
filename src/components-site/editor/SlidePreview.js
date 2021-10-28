@@ -3,6 +3,7 @@ import { Container } from '@mui/material';
 import Box from '@mui/material/Box';
 
 import Canvas from '../../components/canvas/Canvas';
+import ImageMapEditor from '../../components/imagemap/ImageMapEditor';
 
 const SlidePreview = () => {
   return ( 
@@ -14,10 +15,12 @@ const SlidePreview = () => {
           mt: '40px',
           width: '90%',
           height: '400px',
-          backgroundColor: 'lightblue'
+          border: '1px solid black'
+          // backgroundColor: 'lightblue'
         }}
       >
-        {/* <Canvas /> */}
+        {/* <canvas id={`canvas_1`} /> */}
+        <ImageMapEditor />
       </Box>
     </Container>
   );

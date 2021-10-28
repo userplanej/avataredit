@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Appbar from './Appbar';
@@ -7,6 +8,13 @@ import EditorView from './editor/EditorView';
 
 const drawerMaxWidth = 264;
 const drawerMinWidth = 80;
+
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Omnes',
+    fontWeight: '500'
+  },
+});
 
 export default function Main() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -18,10 +26,12 @@ export default function Main() {
 
   return (
     <Box sx={{ display: 'flex', height: '100%' }}>
-      <CssBaseline />
-      <Appbar drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} handleDrawerToggle={() => handleDrawerToggle()} />
-      <Sidebar isMinimal={isMinimal} drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>
-      <EditorView />
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Appbar drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} handleDrawerToggle={() => handleDrawerToggle()} />
+        <Sidebar isMinimal={isMinimal} drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>
+        <EditorView />
+      </ThemeProvider>
     </Box>
   );
 }

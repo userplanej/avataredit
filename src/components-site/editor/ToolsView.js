@@ -57,22 +57,22 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
   );
 }
 
-function a11yProps(index) {
+function a11yProps(index, value) {
   return {
     id: `vertical-tab-${index}`,
     'aria-controls': `vertical-tabpanel-${index}`,
-    sx: { minWidth: '80px', fontSize: '10px' }
+    sx: { minWidth: '80px', fontSize: '12px', backgroundColor: value === index ? '#e8dff4' : '' }
   };
 }
 
-const ToolsView = () => {
+const ToolsView = (props) => {
   const [value, setValue] = useState(0);
 
   const makeIcon = (index, icon) => {
@@ -90,32 +90,35 @@ const ToolsView = () => {
   return (
     <Grid
       container
-      sx={{ flexGrow: 1, display: 'flex', height: '100%' }}
+      sx={{ flexGrow: 1, display: 'flex', height: '100%', backgroundColor: '#e8dff4', mt: '64px' }}
     >
-      <Grid item md={10} sx={{ mt: '10px' }}>
+      <Grid item md={11}>
         <TabPanel value={value} index={0}>
-          Select template
+          <Typography variant="h5">Select template</Typography>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          Select avatar
+          <Typography variant="h5">Select avatar</Typography>
         </TabPanel>
         <TabPanel value={value} index={2}>
-          Select background
+          <Typography variant="h5">Select background</Typography>
         </TabPanel>
         <TabPanel value={value} index={3}>
-          Select text
+          <Typography variant="h5" sx={{ mb: '10px' }}> Select text</Typography>
+          {props.texts}
         </TabPanel>
         <TabPanel value={value} index={4}>
-          Select shape
+          <Typography variant="h5" sx={{ mb: '10px' }}>Select shape</Typography>
+          {props.shapes}
         </TabPanel>
         <TabPanel value={value} index={5}>
-          Select images
+          <Typography variant="h5" sx={{ mb: '10px' }}>Select images</Typography>
+          {props.images}
         </TabPanel>
         <TabPanel value={value} index={6}>
-          Select music
+          <Typography variant="h5">Select music</Typography>
         </TabPanel>
       </Grid>
-      <Grid item md={2} sx={{ backgroundColor: '#f5f0fa', height: '100%', mt: '10px' }}>
+      <Grid item md={2} sx={{ backgroundColor: '#f5f0fa', height: '100%' }}>
         <Tabs
           orientation="vertical"
           indicatorColor="secondary"
@@ -130,13 +133,13 @@ const ToolsView = () => {
             }
           }}
         >
-          <Tab icon={makeIcon(0, <AutoAwesomeMosaicIcon sx={value === 0 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Template" {...a11yProps(0)} />
-          <Tab icon={makeIcon(1, <AccountBoxIcon sx={value === 1 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Avatar" {...a11yProps(1)} />
-          <Tab icon={makeIcon(2, <TextureIcon sx={value === 2 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Background" {...a11yProps(2)} />
-          <Tab icon={makeIcon(3, <TextFieldsIcon sx={value === 3 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Text" {...a11yProps(3)} />
-          <Tab icon={makeIcon(4, <CategoryIcon sx={value === 4 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Shapes" {...a11yProps(4)} />
-          <Tab icon={makeIcon(5, <ImageIcon sx={value === 5 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Images" {...a11yProps(5)} />
-          <Tab icon={makeIcon(6, <MusicNoteIcon sx={value === 6 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Music" {...a11yProps(6)} />
+          <Tab icon={makeIcon(0, <AutoAwesomeMosaicIcon sx={value === 0 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Template" {...a11yProps(0, value)} />
+          <Tab icon={makeIcon(1, <AccountBoxIcon sx={value === 1 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Avatar" {...a11yProps(1, value)} />
+          <Tab icon={makeIcon(2, <TextureIcon sx={value === 2 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Background" {...a11yProps(2, value)} />
+          <Tab icon={makeIcon(3, <TextFieldsIcon sx={value === 3 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Text" {...a11yProps(3, value)} />
+          <Tab icon={makeIcon(4, <CategoryIcon sx={value === 4 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Shapes" {...a11yProps(4, value)} />
+          <Tab icon={makeIcon(5, <ImageIcon sx={value === 5 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Images" {...a11yProps(5, value)} />
+          <Tab icon={makeIcon(6, <MusicNoteIcon sx={value === 6 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Music" {...a11yProps(6, value)} />
         </Tabs>
       </Grid>
     </Grid>

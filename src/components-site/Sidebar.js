@@ -57,16 +57,16 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
     margin: '0px 0px 24px',
     padding: isMinimal ? '16px 0px' : ''
   }
-  
-  const listItemActiveStyle = {
-    margin: '0px 0px 24px',
-    backgroundColor: '#e8dff4',
-    padding: isMinimal ? '16px 0px' : ''
-  }
 
   return (
     <Stack justifyContent="space-between" height="100%">
-      <List>
+      <List 
+        sx={{ 
+          '& .Mui-selected': {
+            backgroundColor: '#e8dff4'
+          } 
+        }}
+      >
         <ListItem 
           sx={{ 
             justifyContent: 'center', 
@@ -99,7 +99,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         <ListItem 
           button 
           key={keys.home} 
-          sx={active === keys.home ? { ...listItemActiveStyle } : { ...listItemStyle }} 
+          sx={{ ...listItemStyle }} 
           selected={active === keys.home} 
           onClick={() => onClickMenu(keys.home)}
         >
@@ -112,7 +112,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         <ListItem 
           button 
           key={keys.videos} 
-          sx={active === keys.videos ? { ...listItemActiveStyle } : { ...listItemStyle }} 
+          sx={{ ...listItemStyle }} 
           selected={active === keys.videos} 
           onClick={() => onClickMenu(keys.videos)}
         >
@@ -125,7 +125,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         <ListItem 
           button 
           key={keys.templates} 
-          sx={active === keys.templates ? { ...listItemActiveStyle } : { ...listItemStyle }} 
+          sx={{ ...listItemStyle }} 
           selected={active === keys.templates}
           onClick={() => onClickMenu(keys.templates)}
         >
@@ -138,7 +138,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         <ListItem 
           button 
           key={keys.avatars} 
-          sx={active === keys.avatars ? { ...listItemActiveStyle } : { ...listItemStyle }} 
+          sx={{ ...listItemStyle }} 
           selected={active === keys.avatars} 
           onClick={() => onClickMenu(keys.avatars)}
         >

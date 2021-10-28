@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Collapse, notification, Input, message, Typography } from 'antd';
+import { Collapse, notification, Input, message } from 'antd';
 import { v4 } from 'uuid';
 import classnames from 'classnames';
 import i18n from 'i18next';
@@ -12,6 +12,7 @@ import CommonButton from '../common/CommonButton';
 import { SVGModal } from '../common';
 import { view } from 'react-dom-factories';
 import { Row, Col } from 'antd';
+import ToolsView from '../../components-site/editor/ToolsView';
 
 notification.config({
 	top: 80,
@@ -19,19 +20,24 @@ notification.config({
 });
 
 class ImageMapItems extends Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			activeKey: [],
+			collapse: false,
+			textSearch: '',
+			descriptors: {},
+			filteredDescriptors: [],
+			svgModalVisible: false,
+			optionValue: null,
+			indexTab: 0
+		};
+	}
+
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,
-	};
-
-	state = {
-		activeKey: [],
-		collapse: false,
-		textSearch: '',
-		descriptors: {},
-		filteredDescriptors: [],
-		svgModalVisible: false,
-		optionValue: null
 	};
 
 	componentDidMount() {
@@ -228,8 +234,8 @@ class ImageMapItems extends Component {
 		},
 	};
 
-	renderItems = items => (
-		<Flex flexWrap="wrap" flexDirection="column" style={{ width: '100%' }}>
+	renderItems = (items, key) => (
+		<Flex flexWrap="wrap" flexDirection="row" style={{ width: '100%' }} key={key}>
 			{items.map(item => this.renderItem(item))}
 		</Flex>
 	);
@@ -249,21 +255,26 @@ class ImageMapItems extends Component {
 				{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
 			</div>
 		) : (
-			<div
-				key={item.name}
-				draggable
-				onClick={e => this.handlers.onAddItem(item, centered)}
-				onDragStart={e => this.events.onDragStart(e, item)}
-				onDragEnd={e => this.events.onDragEnd(e, item)}
-				className="rde-editor-items-item"
-				style={{ justifyContent: this.state.collapse ? 'center' : null }}
-			>
-				<span className="rde-editor-items-item-icon">
-					<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
-				</span>
-				{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
+			<div style={{ marginRight: '12px' }}>
+				<div
+					key={item.name}
+					draggable
+					onClick={e => this.handlers.onAddItem(item, centered)}
+					onDragStart={e => this.events.onDragStart(e, item)}
+					onDragEnd={e => this.events.onDragEnd(e, item)}
+					style={{ justifyContent: this.state.collapse ? 'center' : null, display: 'flex', flexDirection: 'column' }}
+				>
+					<span 
+						className="rde-editor-items-item-icon" 
+						style={{ width: '168px', height: '136px', backgroundColor: 'white', display: 'flex', flexDirection: 'column', textAlign: 'center' }}
+					>
+						<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
+					</span>
+				</div>
+			{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
 			</div>
 		);
+
 	viewActivated = () =>{
 		this.setState({
 			optionValue : "bezier-curve"
@@ -272,43 +283,51 @@ class ImageMapItems extends Component {
 
 	render() {
 		const { descriptors } = this.props;
-		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption } = this.state;
+		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption, indexTab } = this.state;
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
 		});
+		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key));
+		const shapes = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
+		const images = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key));
 		return (
-			<div className={className}>
-				<Row sx={{ flexGrow: 1 }}>
-				<Col span={16}>
-					
-					<Collapse
-						style={{ width: '100%' }}
-						bordered={false}
-						activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
-						onChange={this.handlers.onChangeActiveKey}
-					>
-						{Object.keys(descriptors).map(key => (
-							<Collapse.Panel key={key} header={key} showArrow={!collapse}>
-								{this.renderItems(descriptors[key])}
-							</Collapse.Panel>
-						))}
-					</Collapse>
-				</Col>
-				<Col span={8}>
-					<Button
-							value={"bezier-curve"}
-							onClick={this.viewActivated}>
-						Here is the button
-					</Button>
-				</Col>
-				</Row>
-				<SVGModal
-					visible={svgModalVisible}
-					onOk={this.handlers.onAddSVG}
-					onCancel={this.handlers.onSVGModalVisible}
-					option={svgOption}
-				/>
-			</div>
+			<ToolsView 
+				texts={texts}
+				shapes={shapes}
+				images={images}
+			/>
+			
+			// <div className={className}>
+			// 	<Row>
+			// 	<Col span={16}>
+			// 		<Collapse
+			// 			style={{ width: '100%' }}
+			// 			bordered={false}
+			// 			activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
+			// 			onChange={this.handlers.onChangeActiveKey}
+			// 		>
+			// 			{Object.keys(descriptors).map(key => (
+			// 				<Collapse.Panel key={key} header={key} showArrow={!collapse}>
+			// 					{this.renderItems(descriptors[key])}
+			// 				</Collapse.Panel>
+			// 			))}
+			// 		</Collapse>
+			// 	</Col>
+			// 	{/* <Col span={8}>
+			// 		<Button
+			// 				value={"bezier-curve"}
+			// 				onClick={this.viewActivated}>
+			// 			Here is the button
+			// 		</Button>
+			// 	</Col> */}
+			// 	</Row>
+			// 	<SVGModal
+			// 		visible={svgModalVisible}
+			// 		onOk={this.handlers.onAddSVG}
+			// 		onCancel={this.handlers.onSVGModalVisible}
+			// 		option={svgOption}
+			// 	/>
+			// </div>
 		);
 	}
 }

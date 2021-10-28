@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import Box from '@mui/material/Box';
+import Input from '@mui/material/Input';
+
+const ariaLabel = { 'aria-label': 'title' };
 
 const Appbar = ({ drawerWidth, handleDrawerToggle }) => {
+  const [isEditTitle, setIsEditTitle] = useState(false);
+
   return (
     <AppBar
       position="fixed"
@@ -25,9 +33,12 @@ const Appbar = ({ drawerWidth, handleDrawerToggle }) => {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div">
-          Add title here
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ArrowBackIosNewIcon fontSize="small" />
+          {!isEditTitle && <Typography sx={{ mx: '10px' }} onClick={() => setIsEditTitle(true)}>Add title here</Typography>}
+          {isEditTitle && <Input sx={{ mx: '10px' }} placeholder="Add title here" inputProps={ariaLabel} />}
+          {!isEditTitle && <BorderColorIcon fontSize="small" onClick={() => setIsEditTitle(true)} />}
+        </Box>
       </Toolbar>
     </AppBar>
   );
