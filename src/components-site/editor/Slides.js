@@ -3,7 +3,6 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Grid, Box } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Typography from '@mui/material/Typography';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 const slideContainerStyle = {
@@ -33,7 +32,7 @@ const slideActiveContainerStyle = {
 }
 
 const addSlideContainerStyle = {
-  width: '100%',
+  width: '80%',
   height: '128px',
   borderRadius: '6px',
   border: 'solid 2px #e8e9e9',
@@ -50,7 +49,7 @@ const addSlideContainerStyle = {
 }
 
 const btnAddTransitionStyle = {
-  width: '90%',
+  width: '100%',
   height: '32px',
   marginTop: '8px',
   borderRadius: '10px',
@@ -136,14 +135,14 @@ const Slides = (props) => {
             sx={activeSlide === slide.id ? {...slideActiveContainerStyle} : { ...slideContainerStyle }}
             onClick={() => loadSlide(slide.id)}
           >
-            <Grid container sx={{ borderLeft: '4px solid #df678c'}}>
-              <Grid item md={1} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Grid container sx={activeSlide === slide.id ? { borderLeft: '4px solid #df678c'} : null}>
+              <Grid item md={2} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div>{slide.id}</div>
-                <DragIndicatorIcon sx={{ mt: '28px' }} />
+                <DragIndicatorIcon sx={{ mt: '28px', cursor: 'grab' }} />
               </Grid>
-              <Grid item md={11}>
+              <Grid item md={10}>
                 <div style={{ 
-                  width: '90%',
+                  width: '100%',
                   height: '128px',
                   borderRadius: '6px',
                   backgroundColor: 'white'
@@ -153,8 +152,8 @@ const Slides = (props) => {
             </Grid>
 
             <Grid container>
-              <Grid item md={1}></Grid>
-              <Grid item md={11}>
+              <Grid item md={2}></Grid>
+              <Grid item md={10}>
                 <button style={{ ...btnAddTransitionStyle }}>
                   <span style={{ ...addTransitionTextStyle }}>Add Transitions</span>
                 </button>
@@ -166,18 +165,13 @@ const Slides = (props) => {
       </Box>
 
       <ListItem 
-        // sx={{ ':hover': { backgroundColor: 'rgba(232, 233, 233, 0.7)', cursor: 'pointer' } }}
+        sx={{ display: 'flex', justifyContent: 'center' }}
         onClick={() => addSlide()}
       >
-        <Grid container>
-          <Grid item md={1}></Grid>
-          <Grid item md={10}>
-            <Box sx={{ ...addSlideContainerStyle }}>
-              <AddCircleIcon sx={{ color: '#0a1239', mb: '10px' }} />
-              <div style={{ fontSize: '14px'}}>Add slide</div>
-            </Box>
-          </Grid>
-        </Grid>
+        <Box sx={{ ...addSlideContainerStyle }}>
+          <AddCircleIcon sx={{ color: '#0a1239', mb: '10px' }} />
+          <div style={{ fontSize: '14px'}}>Add slide</div>
+        </Box>
       </ListItem>
     </List>
   );

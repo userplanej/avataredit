@@ -13,6 +13,7 @@ import '../../styles/core/contextmenu.less';
 import '../../styles/fabricjs/fabricjs.less';
 
 import { TextField, Box, Tabs, Tab } from '@mui/material';
+import { TabStyle } from '../../components-site/GlobalStyles.d';
 
 export type CanvasProps = HandlerOptions & {
 	responsive?: boolean;
@@ -168,13 +169,13 @@ class Canvas extends Component<CanvasProps, IState> {
 				ref={this.container}
 				id={id}
 				className="rde-canvas"
-				style={{ width: '100%', height: '450px', ...style }}
+				style={{ height: '450px', ...style }}
 			>
 				<canvas id={`canvas_${id}`} />
 				
-				<Box sx={{ mt: '16px', width: '95%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+				<Box sx={{ mt: '16px', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 					<Box sx={{ borderBottom: 1, borderColor: 'divider', width: '90%' }}>
-						<Tabs value={activeTab} onChange={(event, value) => this.handleChangeTab(value)} aria-label="basic tabs example">
+						<Tabs value={activeTab} onChange={(event, value) => this.handleChangeTab(value)} aria-label="basic tabs example" sx={TabStyle}>
 							<Tab label="Type your script" id="simple-tab-1" />
 							<Tab label="Upload your voice" id="simple-tab-2" />
 						</Tabs>
@@ -184,7 +185,7 @@ class Canvas extends Component<CanvasProps, IState> {
 						hidden={activeTab !== 0}
 						id={`vertical-tabpanel-${0}`}
 						aria-labelledby={`vertical-tab-${0}`}
-						style={{ width: '90%' }}
+						style={{ width: '90%', backgroundColor: '#e8dff4' }}
 					>
 						{activeTab === 0 && (
 							<Box sx={{ p: 3, width: '100%' }}>
@@ -196,7 +197,7 @@ class Canvas extends Component<CanvasProps, IState> {
 									// value={value}
 									// onChange={handleChange}
 									variant="filled"
-									sx={{ width: "100%" }}
+									sx={{ width: "100%", backgroundColor: '#fff' }}
 								/>
 							</Box>
 						)}
@@ -208,7 +209,7 @@ class Canvas extends Component<CanvasProps, IState> {
 						aria-labelledby={`vertical-tab-${1}`}
 					>
 						{activeTab === 1 && (
-							<Box sx={{ p: 3 }}>
+							<Box sx={{ p: 3, width: '100%' }}>
 							</Box>
 						)}
 					</div>

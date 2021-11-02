@@ -695,6 +695,9 @@ class Handler implements HandlerOptions {
 			option.selectable = false;
 			option.lockMovementX = true;
 			option.lockMovementY = true;
+			option.hoverCursor = 'pointer';
+			option.locked = true;
+			option.hasControls = false;
 		} else {
 			option.editable = editable;
 		}
@@ -721,7 +724,7 @@ class Handler implements HandlerOptions {
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
 		} else if (obj.type ==='background'){
-			this.canvas.getObjects().filter(obj => obj.type === 'background').map((background) => this.canvas.remove(background));
+			this.getObjects().filter(obj => obj.type === 'background').map((background) => this.canvas.remove(background));
 			createdObj = this.addBackground(newOption);
 		} else if (obj.type === 'group') {
 			// TODO...
@@ -1648,6 +1651,7 @@ class Handler implements HandlerOptions {
 	 */
 	public bringForward = () => {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
+		console.log(activeObject)
 		if (activeObject) {
 			this.canvas.bringForward(activeObject);
 			if (!this.transactionHandler.active) {
@@ -1702,17 +1706,21 @@ class Handler implements HandlerOptions {
 	/**
 	 * Send to back
 	 */
-	public sendToBack = () => {
+	public sendToBack = (isManual : boolean) => {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (activeObject) {
 			this.canvas.sendToBack(activeObject);
 			this.canvas.sendToBack(this.canvas.getObjects()[1]);
-			if (!this.transactionHandler.active) {
+			// send to back background
+			if (!this.transactionHandler.active && !isManual) {
 				this.transactionHandler.save('sendToBack');
 			}
 			const { onModified } = this;
 			if (onModified) {
 				onModified(activeObject);
+			}
+			if (isManual) {
+				this.canvas.discardActiveObject();
 			}
 		}
 	};
@@ -1951,6 +1959,14 @@ class Handler implements HandlerOptions {
 	public setPropertiesToInclude = (propertiesToInclude: string[]) => {
 		this.propertiesToInclude = union(propertiesToInclude, this.propertiesToInclude);
 	};
+
+	/**
+	 * Get active object
+	 */
+	public getActiveObject = () => {
+		const activeObject = this.canvas.getActiveObject() as any;
+		return activeObject;
+	}
 }
 
 export default Handler;

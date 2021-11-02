@@ -8,6 +8,10 @@ import enUS from 'antd/lib/locale-provider/en_US';
 import { i18nClient } from './i18n';
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
+
+import { store } from './redux/store';
+import { Provider } from 'react-redux';
+
 // import { makeServer } from './exam.server';
 
 // if (process.env.NODE_ENV === 'development') {
@@ -28,11 +32,13 @@ document.body.appendChild(root);
 const render = Component => {
 	const rootElement = document.getElementById('root');
 	ReactDom.render(
-		<AppContainer >
-			<LocaleProvider locale={antResources[i18nClient.language]}>
-				<Component />
-			</LocaleProvider>
-		</AppContainer>,
+		<Provider store={store}>
+			<AppContainer >
+				<LocaleProvider locale={antResources[i18nClient.language]}>
+					<Component />
+				</LocaleProvider>
+			</AppContainer>
+		</Provider>,
 		rootElement,
 	);
 };

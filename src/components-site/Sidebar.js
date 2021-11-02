@@ -12,6 +12,11 @@ import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Stack from '@mui/material/Stack';
+import { useSelector, useDispatch } from 'react-redux';
+import { setDrawerWidth, setIsMinimal } from '../redux/navigation/navigationSlice';
+
+const drawerMaxWidth = 264;
+const drawerMinWidth = 80;
 
 const iconContainerStyle = {
   minWidth: '0px',
@@ -167,11 +172,22 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
   );
 };
 
-const Sidebar = ({ isMinimal, drawerWidth, mobileOpen, handleDrawerToggle }) => {
+const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
+  const dispatch = useDispatch();
+  const isMinimal = useSelector(state => state.navigation.isMinimal);
+  const drawerWidth = useSelector(state => state.navigation.drawerWidth);
+
   const [activeKey, setActiveKey] = useState('home');
 
   const onClickMenu = (key) => {
     setActiveKey(key);
+    if (['home'].includes(key)) {
+      dispatch(setIsMinimal(false));
+      dispatch(setDrawerWidth(drawerMaxWidth));
+    } else {
+      dispatch(setIsMinimal(true));
+      dispatch(setDrawerWidth(drawerMinWidth));
+    }
   }
 
   return (

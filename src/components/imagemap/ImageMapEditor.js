@@ -2,35 +2,25 @@ import React, { Component } from 'react';
 import { Badge, Button, Popconfirm, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
-import axios from "axios";
-import ImageMapFooterToolbar from './ImageMapFooterToolbar';
 import ImageMapItems from './ImageMapItems';
-import Background from './Background';
-import Slide from './Slide';
-import Avatar from './Avatar';
-import Bg from './Bg';
-import ImageMapTitle from './ImageMapTitle';
-import ImageMapHeaderToolbar from './ImageMapHeaderToolbar';
-import ImageMapPreview from './ImageMapPreview';
-import ImageMapConfigurations from './ImageMapConfigurations';
 import SandBox from '../sandbox/SandBox';
 
 import '../../libs/fontawesome-5.2.0/css/all.css';
 import '../../styles/index.less';
-// import Container from '../common/Container';
 import CommonButton from '../common/CommonButton';
 import Canvas from '../canvas/Canvas';
 import { code } from '../canvas/constants';
-import { Config } from '../../../config';
-import { FemaleSharp } from '@mui/icons-material';
 
 import Appbar from '../../components-site/Appbar';
 import Sidebar from '../../components-site/Sidebar';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Slides from '../../components-site/editor/Slides';
-import ToolsView from '../../components-site/editor/ToolsView';
-import { Grid, Container, TextField } from '@mui/material';
+import { Grid } from '@mui/material';
+
+import { connect } from 'react-redux'
+import { setActiveObject } from '../../redux/canvas/canvasSlice';
+import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 
 const propertiesToInclude = [
 	'id',
@@ -102,6 +92,8 @@ const theme = createTheme({
   },
 });
 
+const indexFormatTab = 7;
+
 class ImageMapEditor extends Component {
 	state = {
 		updatedValue : false,
@@ -127,7 +119,6 @@ class ImageMapEditor extends Component {
 		}],
 		isMinimal: true,
 		mobileOpen: false
-
 	};
 
 
@@ -181,14 +172,29 @@ class ImageMapEditor extends Component {
 			if (!editing) {
 				this.changeEditing(true);
 			}
+			// console.log(target)
+			// if (target.type === 'background') {
+			// 	return;
+			// }
 			if (target.type === 'activeSelection') {
 				this.canvasHandlers.onSelect(null);
 				return;
 			}
 			this.canvasRef.handler.select(target);
+			this.props.setActiveObject({ id: target.id, type: target.subtype ? target.subtype : target.type });
+			this.props.setPreviousTab(this.props.activeTab);
+			this.props.setActiveTab(indexFormatTab);
 		},
 		onSelect: target => {
 			const { selectedItem } = this.state;
+			if (!target || (target && target.type === 'background')) {
+				this.setState({
+					selectedItem: target,
+				});
+				this.props.setActiveTab(this.props.previousTab);
+				this.props.setActiveObject(null);
+				return;
+			}
 			if (target && target.id && target.id !== 'workarea' && target.type !== 'activeSelection') {
 				if (selectedItem && target.id === selectedItem.id) {
 					return;
@@ -201,6 +207,11 @@ class ImageMapEditor extends Component {
 				this.setState({
 					selectedItem: target,
 				});
+				this.props.setActiveObject({ id: target.id, type: target.subtype ? target.subtype : target.type });
+				if (this.props.activeTab !== indexFormatTab) {
+					this.props.setPreviousTab(this.props.activeTab);
+				}
+				this.props.setActiveTab(indexFormatTab);
 				return;
 			}
 			this.canvasRef.handler.getObjects().forEach(obj => {
@@ -218,6 +229,8 @@ class ImageMapEditor extends Component {
 				this.changeEditing(true);
 			}
 			this.canvasHandlers.onSelect(null);
+			this.props.setActiveTab(this.props.previousTab);
+			this.props.setActiveObject(null);
 		},
 		onModified: debounce(() => {
 			const { editing } = this.state;
@@ -450,23 +463,8 @@ class ImageMapEditor extends Component {
 			window.open(link.url);
 		},
 		onContext: (ref, event, target) => {
-			if ((target && target.id === 'workarea') || !target) {
-				const { layerX: left, layerY: top } = event;
-				return (
-					<Menu>
-						<Menu.SubMenu key="add" style={{ width: 120 }} title={i18n.t('action.add')}>
-							{this.transformList().map(item => {
-								const option = Object.assign({}, item.option, { left, top });
-								const newItem = Object.assign({}, item, { option });
-								return (
-									<Menu.Item style={{ padding: 0 }} key={item.name}>
-										{this.itemsRef.renderItem(newItem, false)}
-									</Menu.Item>
-								);
-							})}
-						</Menu.SubMenu>
-					</Menu>
-				);
+			if ((target && (target.id === 'workarea' || target.type === 'background')) || !target) {
+				return;
 			}
 			if (target.type === 'activeSelection') {
 				return (
@@ -477,13 +475,6 @@ class ImageMapEditor extends Component {
 							}}
 						>
 							{i18n.t('action.object-group')}
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => {
-								this.canvasRef.handler.duplicate();
-							}}
-						>
-							{i18n.t('action.clone')}
 						</Menu.Item>
 						<Menu.Item
 							onClick={() => {
@@ -507,13 +498,6 @@ class ImageMapEditor extends Component {
 						</Menu.Item>
 						<Menu.Item
 							onClick={() => {
-								this.canvasRef.handler.duplicate();
-							}}
-						>
-							{i18n.t('action.clone')}
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => {
 								this.canvasRef.handler.remove();
 							}}
 						>
@@ -524,13 +508,6 @@ class ImageMapEditor extends Component {
 			}
 			return (
 				<Menu>
-					<Menu.Item
-						onClick={() => {
-							this.canvasRef.handler.duplicateById(target.id);
-						}}
-					>
-						{i18n.t('action.clone')}
-					</Menu.Item>
 					<Menu.Item
 						onClick={() => {
 							this.canvasRef.handler.removeById(target.id);
@@ -849,11 +826,10 @@ class ImageMapEditor extends Component {
 	}
 
 	handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    this.setState({ mobileOpen: !this.state.mobileOpen });
   }
 
 	render() {
-		
 		const {
 			preview,
 			selectedItem,
@@ -946,19 +922,26 @@ class ImageMapEditor extends Component {
 				/>
 			</React.Fragment>
 		);
-		// const titleContent = (
-		// 	<React.Fragment>
-		// 		<span>{i18n.t('imagemap.imagemap-editor')}</span>
-		// 	</React.Fragment>
-		// );
-		// const title = null //<ImageMapTitle title={titleContent} action={action} />;
-		// const content = (
+
 			return (
 			<div className="rde-editor">
 				<ThemeProvider theme={theme}>
         	<CssBaseline />
-					<Appbar drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} handleDrawerToggle={() => this.handleDrawerToggle()} onExport={() => this.canvasRef.handler.workarea} />
-					<Sidebar isMinimal={isMinimal} drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>
+
+					<Appbar 
+						drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} 
+						handleDrawerToggle={() => this.handleDrawerToggle()}
+						canvasRef={this.canvasRef}
+						onUndo={() => this.canvasRef.handler?.transactionHandler.undo()}
+						onRedo={() => this.canvasRef.handler?.transactionHandler.redo()}
+					/>
+					
+					<Sidebar 
+						isMinimal={isMinimal} 
+						drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} 
+						mobileOpen={mobileOpen} 
+						handleDrawerToggle={() => this.handleDrawerToggle()}
+					/>
 					
 					<Grid container sx={{ height: '100%' }} columns={13}>
 						<Grid item md={2} sx={{  backgroundColor: '#e8dff4', height: '100%' }}>
@@ -1010,95 +993,21 @@ class ImageMapEditor extends Component {
 							/>
 						</Grid>
 					</Grid>
-
-					{/* <Slide
-						slides = {this.state.slideList}
-						canvasRef={this.canvasRef}
-						onActivate={onLoadSlide}
-					/> */}
-					
-					{/* <div className="rde-editor-canvas-container"> */}
-						{/* <div className="rde-editor-header-toolbar">
-							<ImageMapHeaderToolbar
-								canvasRef={this.canvasRef}
-								selectedItem={selectedItem}
-								onSelect={onSelect}
-							/>
-						</div> */}
-						{/* <div
-							ref={c => {
-								this.container = c;
-							}}
-							className="rde-editor-canvas"
-							style={{ marginTop: '64px' }}
-						>
-							<Canvas
-								ref={c => {
-									this.canvasRef = c;
-								}}
-								className="rde-canvas"
-								minZoom={300}
-								maxZoom={300}
-								zoomEnabled={false}
-								objectOption={defaultOption}
-								propertiesToInclude={propertiesToInclude}
-								onModified={onModified}
-								onAdd={onAdd}
-								onRemove={onRemove}
-								onSelect={onSelect}
-								onZoom={onZoom}
-								onTooltip={onTooltip}
-								onClick={onClick}
-								onContext={onContext}
-								onTransaction={onTransaction}
-								keyEvent={{
-									transaction: true,
-								}}
-							/>
-						</div> */}
-
-						{/* <div className="rde-editor-footer-toolbar">
-							<ImageMapFooterToolbar
-								canvasRef={this.canvasRef}
-								preview={preview}
-								onChangePreview={onChangePreview}
-								zoomRatio={zoomRatio}
-							/>
-						</div> */}
-					{/* </div> */}
-					{/* <Avatar
-					
-						canvasRef={this.canvasRef}
-						
-					/> */}
-					{/* <Bg
-						slides = {this.state.slideList}
-						onBackgroundChange={onBackgroundChange}
-						canvasRef={this.canvasRef}
-					/> */}
-					{/* <ImageMapConfigurations
-						canvasRef={this.canvasRef}
-						onChange={onChange}
-						selectedItem={selectedItem}
-						onChangeAnimations={onChangeAnimations}
-						onChangeStyles={onChangeStyles}
-						onChangeDataSources={onChangeDataSources}
-						animations={animations}
-						styles={styles}
-						dataSources={dataSources}
-					/>
-					<ImageMapPreview
-						preview={preview}
-						onChangePreview={onChangePreview}
-						onTooltip={onTooltip}
-						onClick={onClick}
-						objects={objects}
-					/> */}
       	</ThemeProvider>
 			</div>
 		);
-		// return <Container title={title} content={content} loading={loading} className="" />;
 	}
 }
 
-export default ImageMapEditor;
+const mapStateToProps = state => ({
+	activeTab: state.toolbar.activeTab,
+	previousTab: state.toolbar.previousTab
+});
+
+const mapDispatchToProps  = {
+	setActiveObject, 
+	setActiveTab,
+	setPreviousTab
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ImageMapEditor);

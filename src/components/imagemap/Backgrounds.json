@@ -1,5 +1,5 @@
 {
-	"IMAGE": [
+	"BACKGROUND": [
 		{
 			"name": "Green screen",
 			"description": "",
@@ -10,14 +10,13 @@
 			},
 			"option": {
 				"type": "background",
+				"subtype": "color",
 				"backgroundColor": "#00b140",
 				"originX": "left",
 				"originY": "top",
 				"layout": "fixed",
-				"left": 830,
-				"top": 403.66,
-				"width": 600,
-				"height": 400
+				"width": 550,
+				"height": 310
 			}
 		},
 		{
@@ -30,14 +29,13 @@
 			},
 			"option": {
 				"type": "background",
+				"subtype": "color",
 				"backgroundColor": "#f5f5f5",
 				"originX": "left",
 				"originY": "top",
 				"layout": "fixed",
-				"left": 830,
-				"top": 403.66,
-				"width": 600,
-				"height": 400
+				"width": 550,
+				"height": 310
 			}
 		},
 		{
@@ -50,14 +48,13 @@
 			},
 			"option": {
 				"type": "background",
+				"subtype": "color",
 				"backgroundColor": "#fdf4dc",
 				"originX": "left",
 				"originY": "top",
 				"layout": "fixed",
-				"left": 830,
-				"top": 403.66,
-				"width": 600,
-				"height": 400
+				"width": 550,
+				"height": 310
 			}
 		},
 		{
@@ -70,14 +67,13 @@
 			},
 			"option": {
 				"type": "background",
+				"subtype": "color",
 				"backgroundColor": "#ffb6c1",
 				"originX": "left",
 				"originY": "top",
 				"layout": "fixed",
-				"left": 830,
-				"top": 403.66,
-				"width": 600,
-				"height": 400
+				"width": 550,
+				"height": 310
 			}
 		},
 		{
@@ -90,14 +86,13 @@
 			},
 			"option": {
 				"type": "background",
+				"subtype": "color",
 				"backgroundColor": "#fadadd",
 				"originX": "left",
 				"originY": "top",
 				"layout": "fixed",
-				"left": 830,
-				"top": 403.66,
-				"width": 600,
-				"height": 400
+				"width": 550,
+				"height": 310
 			}
 		},
 		{
@@ -110,14 +105,13 @@
 			},
 			"option": {
 				"type": "background",
+				"subtype": "color",
 				"backgroundColor": "#add8e6",
 				"originX": "left",
 				"originY": "top",
 				"layout": "fixed",
-				"left": 830,
-				"top": 403.66,
-				"width": 600,
-				"height": 400
+				"width": 550,
+				"height": 310
 			}
 		},
 		{
@@ -130,14 +124,13 @@
 			},
 			"option": {
 				"type": "background",
+				"subtype": "color",
 				"backgroundColor": "#00008b",
 				"originX": "left",
 				"originY": "top",
 				"layout": "fixed",
-				"left": 830,
-				"top": 403.66,
-				"width": 600,
-				"height": 400
+				"width": 550,
+				"height": 310
 			}
 		},
 		{
@@ -150,14 +143,129 @@
 			},
 			"option": {
 				"type": "background",
+				"subtype": "color",
 				"backgroundColor": "#b2f3f3",
 				"originX": "left",
 				"originY": "top",
 				"layout": "fixed",
-				"left": 830,
-				"top": 403.66,
-				"width": 600,
-				"height": 400
+				"width": 550,
+				"height": 310
+			}
+		},
+		{
+			"name": "Strong cyan",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"subtype": "color",
+				"backgroundColor": "#03BAD7",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"width": 550,
+				"height": 310
+			}
+		},
+		{
+			"name": "Light orange",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"subtype": "color",
+				"backgroundColor": "#FDD4B0",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"width": 550,
+				"height": 310
+			}
+		},
+		{
+			"name": "Soft orange",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"subtype": "color",
+				"backgroundColor": "#F3BC71",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"width": 550,
+				"height": 310
+			}
+		}
+	],
+	"IMAGE": [
+		{
+			"name": "White studio",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"subtype": "image",
+				"src": "http://localhost:4000/images/sample/white-studio.png",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"width": 550,
+				"height": 310
+			}
+		},
+		{
+			"name": "White café",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"subtype": "image",
+				"src": "http://localhost:4000/images/sample/white-cafe.png",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"width": 550,
+				"height": 310
+			}
+		},
+		{
+			"name": "Luxury lobby",
+			"description": "",
+			"type": "background",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "background",
+				"subtype": "image",
+				"src": "http://localhost:4000/images/sample/luxury-lobby.png",
+				"originX": "left",
+				"originY": "top",
+				"layout": "fixed",
+				"width": 550,
+				"height": 310
 			}
 		}
 	]

@@ -1,29 +1,47 @@
 {
-	"MARKER": [
-		{
-			"name": "Marker",
-			"description": "",
-			"type": "marker",
-			"icon": {
-				"prefix": "fas",
-				"name": "map-marker-alt"
-			},
-			"option": {
-				"type": "i-text",
-				"text": "\uf3c5",
-				"fontFamily": "Font Awesome 5 Free",
-				"fontWeight": 900,
-				"fontSize": 60,
-				"width": 30,
-				"height": 30,
-				"editable": false,
-				"name": "New marker"
-			}
-		}
-	],
 	"TEXT": [
 		{
-			"name": "Text",
+			"name": "Add title",
+			"description": "",
+			"type": "text",
+			"fontSize": 25,
+			"icon": {
+				"prefix": "fas",
+				"name": "font"
+			},
+			"option": {
+				"type": "textbox",
+				"text": "Add title",
+				"width": 150,
+				"height": 30,
+				"fontSize": 38,
+				"fontFamily": "Omnes",
+				"fontWeight": "bold",
+				"name": "New title"
+			}
+		},
+		{
+			"name": "Add subtitle",
+			"description": "",
+			"type": "text",
+			"fontSize": 20,
+			"icon": {
+				"prefix": "fas",
+				"name": "font"
+			},
+			"option": {
+				"type": "textbox",
+				"text": "Add subtitle",
+				"width": 150,
+				"height": 30,
+				"fontSize": 26,
+				"fontFamily": "Omnes",
+				"fontWeight": "bold",
+				"name": "New title"
+			}
+		},
+		{
+			"name": "Add body",
 			"description": "",
 			"type": "text",
 			"icon": {
@@ -32,17 +50,18 @@
 			},
 			"option": {
 				"type": "textbox",
-				"text": "",
-				"width": 60,
+				"text": "Add body",
+				"width": 150,
 				"height": 30,
-				"fontSize": 32,
-				"name": "New text"
+				"fontSize": 18,
+				"fontFamily": "Omnes",
+				"name": "New title"
 			}
 		}
 	],
 	"IMAGE": [
 		{
-			"name": "Image",
+			"name": "White studio",
 			"description": "",
 			"type": "image",
 			"icon": {
@@ -52,23 +71,41 @@
 			"option": {
 				"type": "image",
 				"name": "New image",
-				"src": "./images/sample/transparentBg.png"
+				"src": "http://localhost:4000/images/sample/white-studio.png",
+				"scaleX": 0.5,
+				"scaleY": 0.5
 			}
 		},
 		{
-			"name": "GIF",
+			"name": "White café",
 			"description": "",
-			"type": "gif",
+			"type": "image",
 			"icon": {
 				"prefix": "fas",
 				"name": "image"
 			},
 			"option": {
-				"type": "gif",
-				"width": 400,
-				"height": 400,
-				"name": "New gif",
-				"src": ""
+				"type": "image",
+				"name": "New image",
+				"src": "http://localhost:4000/images/sample/white-cafe.png",
+				"scaleX": 0.5,
+				"scaleY": 0.5
+			}
+		},
+		{
+			"name": "Luxury lobby",
+			"description": "",
+			"type": "image",
+			"icon": {
+				"prefix": "fas",
+				"name": "image"
+			},
+			"option": {
+				"type": "image",
+				"name": "New image",
+				"src": "http://localhost:4000/images/sample/luxury-lobby.png",
+				"scaleX": 0.5,
+				"scaleY": 0.5
 			}
 		}
 	],
@@ -86,13 +123,14 @@
 			},
 			"option": {
 				"type": "triangle",
+				"subtype": "shape",
 				"width": 30,
 				"height": 30,
 				"name": "New shape"
 			}
 		},
 		{
-			"name": "Rectangle",
+			"name": "Add square",
 			"description": "",
 			"type": "shape",
 			"icon": {
@@ -101,13 +139,14 @@
 			},
 			"option": {
 				"type": "rect",
+				"subtype": "shape",
 				"width": 40,
 				"height": 40,
 				"name": "New shape"
 			}
 		},
 		{
-			"name": "Circle",
+			"name": "Add rounded square",
 			"description": "",
 			"type": "shape",
 			"icon": {
@@ -116,6 +155,7 @@
 			},
 			"option": {
 				"type": "circle",
+				"subtype": "shape",
 				"radius": 30,
 				"name": "New shape"
 			}
@@ -130,6 +170,7 @@
 			},
 			"option": {
 				"type": "cube",
+				"subtype": "shape",
 				"width": 80,
 				"height": 80,
 				"name": "New shape"

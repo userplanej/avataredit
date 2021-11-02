@@ -6,7 +6,7 @@ export const canvasOption = {
 	height: 150,
 	selection: true,
 	defaultCursor: 'default',
-	backgroundColor: '#f3f3f3',
+	backgroundColor: '#fff',
 };
 
 export const keyEvent = {
@@ -31,15 +31,15 @@ export const gridOption = {
 };
 
 export const workareaOption: Partial<WorkareaObject> = {
-	width: 600,
-	height: 400,
-	workareaWidth: 600,
-	workareaHeight: 400,
+	width: 550,
+	height: 310,
+	workareaWidth: 550,
+	workareaHeight: 310,
 	lockScalingX: true,
 	lockScalingY: true,
 	scaleX: 1,
 	scaleY: 1,
-	backgroundColor: '#fff',
+	backgroundColor: '#f3f3f3',
 	hasBorders: false,
 	hasControls: false,
 	selectable: false,

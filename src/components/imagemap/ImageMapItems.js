@@ -1,19 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Collapse, notification, Input, message } from 'antd';
+import { notification, message } from 'antd';
 import { v4 } from 'uuid';
-import classnames from 'classnames';
-import i18n from 'i18next';
-import Button from '@mui/material/Button';
 import { Flex } from '../flex';
 import Icon from '../icon/Icon';
-import Scrollbar from '../common/Scrollbar';
-import CommonButton from '../common/CommonButton';
-import { SVGModal } from '../common';
-import { view } from 'react-dom-factories';
-import { Row, Col } from 'antd';
 import ToolsView from '../../components-site/editor/ToolsView';
-import Image from '@mui/icons-material/Image';
+import SearchInput from '../../components-site/inputs/SearchInput';
 
 notification.config({
 	top: 80,
@@ -34,8 +26,15 @@ class ImageMapItems extends Component {
 			filteredDescriptors: [],
 			svgModalVisible: false,
 			optionValue: null,
-			indexTab: 0
+			indexTab: 0,
+			avatarSearch: '',
+			imageSearch: ''
 		};
+
+		this.renderItems = this.renderItems.bind(this);
+		this.renderItem = this.renderItem.bind(this);
+		this.shouldRenderItem = this.shouldRenderItem.bind(this);
+		this.handleAvatarNameChange = this.handleAvatarNameChange.bind(this);
 	}
 
 	static propTypes = {
@@ -94,6 +93,10 @@ class ImageMapItems extends Component {
 			return true;
 		} else if (this.state.svgModalVisible !== nextState.svgModalVisible) {
 			return true;
+		} else if (this.state.avatarSearch !== nextState.avatarSearch) {
+			return true;
+		} else if (this.state.imageSearch !== nextState.imageSearch) {
+			return true;
 		}
 		return false;
 	}
@@ -141,6 +144,14 @@ class ImageMapItems extends Component {
 			if (item.option.superType === 'svg' && item.type === 'default') {
 				this.handlers.onSVGModalVisible(item.option);
 				return;
+			}
+			if (item.type === 'avatar') {
+				canvasRef.handler.getObjects().forEach((obj) => {
+					if (obj.subtype !== 'avatar') {
+						return;
+					}
+					canvasRef.handler.remove(obj);
+				});
 			}
 			canvasRef.handler.add(option, centered);
 		},
@@ -259,56 +270,120 @@ class ImageMapItems extends Component {
 		},
 	};
 
-	renderItems = (items, key) => (
-		<Flex flexWrap="wrap" flexDirection="row" style={{ width: '100%' }} key={key}>
-			{items.map(item => this.renderItem(item))}
-		</Flex>
-	);
+	renderItems = (items, key, type) => {
+		const isText = type === 'text';
+		return <div>
+				{this.renderSearchField(type)}
+				{!isText && <Flex flexWrap="wrap" flexDirection="row" style={{ width: '100%' }} key={key}>
+					{items.map(item => {
+						if (this.shouldRenderItem(item, type)) {
+							return this.renderItem(item);
+						}
+					})}
+				</Flex>}
+				{isText && <div style={{ width: '100%' }} key={key}>
+					{items.map(item => {
+						if (this.shouldRenderItem(item, type)) {
+							return this.renderItem(item);
+						}
+					})}
+				</div>
+					}
+			</div>
+	};
+
+	renderSearchField = (type) => {
+		let searchField = null;
+
+		if (type === 'avatar') {
+			searchField = <SearchInput
+				id="input-with-icon-textfield"
+				placeholder="Search avatar"
+				onChange={(event) => this.handleAvatarNameChange(event.target.value)}
+				style={{ margin: '24px 0px' }}
+			/>
+		}
+
+		if (type === 'background-image') {
+			searchField = <SearchInput
+				id="input-with-icon-textfield"
+				placeholder="Search images"
+				onChange={(event) => this.handleImageNameChange(event.target.value)}
+				style={{ marginBottom: '24px' }}
+			/>
+		}
+
+		return searchField;
+	}
+
+	shouldRenderItem = (item, type) => {
+		const { avatarSearch, imageSearch } = this.state;
+
+		if (type === 'avatar' && avatarSearch !== '') {
+			return item.name.toLowerCase().includes(avatarSearch) ? true : false;
+		}
+		if (type === 'background-image' && imageSearch !== '') {
+			return item.name.toLowerCase().includes(imageSearch) ? true : false;
+		}
+
+		return true;
+	}
 
 	renderItem = (item, centered) => {
 		const isBackground = item.type === 'background';
+		const isBackgroundColor = isBackground && item.option.subtype === 'color';
+		const isBackgroundImage = isBackground && item.option.subtype === 'image';
 		const isAvatar = item.type === 'avatar';
-		return item.type === 'drawing' ? (
+		const isImage = item.type === 'image';
+
+		return item.type === 'text' ? (
 			<div
 				key={item.name}
-				draggable
-				onClick={e => this.handlers.onDrawingItem(item)}
-				className="rde-editor-items-item"
-				style={{ justifyContent: this.state.collapse ? 'center' : null }}
+				// draggable
+				onClick={e => this.handlers.onAddItem(item, centered)}
+				style={{ 
+					textAlign: 'center',
+					width: '544px',
+					margin: '16px 19px 16px 0',
+					padding: '15px 0px 17px',
+					borderRadius: '2px',
+					backgroundColor: '#fff',
+					fontWeight: 'bold',
+					cursor: 'pointer',
+					fontSize: item.fontSize
+				}}
 			>
-				<span className="rde-editor-items-item-icon">
-					<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
-				</span>
-				{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
+				{item.name}
 			</div>
 		) : (
 			<div style={{ marginRight: '12px' }} key={item.name}>
 				<div
 					key={item.name}
-					draggable
+					// draggable
 					onClick={e => { 
-						this.handlers.onAddItem(item, centered); 
+						this.handlers.onAddItem(item, centered);
 						if (isBackground) {
-							this.props.canvasRef.handler?.sendToBack();
+							console.log('background')
+							this.props.canvasRef.handler?.sendToBack(true);
 						}
 					}}
-					onDragStart={e => this.events.onDragStart(e, item)}
-					onDragEnd={e => this.events.onDragEnd(e, item)}
-					style={{ justifyContent: this.state.collapse ? 'center' : null, display: 'flex', flexDirection: 'column' }}
+					// onDragStart={e => this.events.onDragStart(e, item)}
+					// onDragEnd={e => this.events.onDragEnd(e, item)}
+					style={{ justifyContent: this.state.collapse ? 'center' : null, display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
 				>
 					<span 
 						className="rde-editor-items-item-icon" 
 						style={{ 
-							width: '168px', 
-							height: '136px', 
-							backgroundColor: isBackground ? item.option.backgroundColor : 'white', 
+							width: '148px', 
+							height: '116px', 
+							backgroundColor: isBackgroundColor ? item.option.backgroundColor : 'white', 
 							display: 'flex', 
 							flexDirection: 'column', 
-							textAlign: 'center' 
+							textAlign: 'center'
 						}}
 					>
-						{!isBackground && !isAvatar && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
-						{isAvatar && <img src={item.option.src} />}
+						{!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
+						{(isAvatar || isImage || isBackgroundImage) && <img src={item.option.src} style={{ objectFit: 'fill' }} />}
 					</span>
 				</div>
 			{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
@@ -322,58 +397,34 @@ class ImageMapItems extends Component {
 		});
 	}
 
+	handleAvatarNameChange = (value) => {
+		this.setState({ avatarSearch: value });
+	}
+
+	handleImageNameChange = (value) => {
+		this.setState({ imageSearch: value });
+	}
+
 	render() {
-		const { descriptors, backgrounds, avatars } = this.props;
-		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption, indexTab } = this.state;
-		const className = classnames('rde-editor-items', {
-			minimize: collapse,
-		});
-		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key));
+		const { canvasRef, descriptors, backgrounds, avatars } = this.props;
+
+		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
 		const shapes = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
 		const images = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key));
-		const backgroundsItems = Object.keys(backgrounds).map(key => this.renderItems(backgrounds[key], key));
-		const avatarsItems = Object.keys(avatars).map(key => this.renderItems(avatars[key], key));
-		console.log(avatarsItems)
+		const backgroundsColorsItems = Object.keys(backgrounds).filter(key => key === 'BACKGROUND').map(key => this.renderItems(backgrounds[key], key, 'background-color'));
+		const backgroundsImagesItems = Object.keys(backgrounds).filter(key => key === 'IMAGE').map(key => this.renderItems(backgrounds[key], key, 'background-image'));
+		const avatarsItems = Object.keys(avatars).map(key => this.renderItems(avatars[key], key, 'avatar'));
+
 		return (
 			<ToolsView 
+				canvasRef={canvasRef}
 				texts={texts}
 				shapes={shapes}
 				images={images}
-				backgrounds={backgroundsItems}
+				backgroundsColors={backgroundsColorsItems}
+				backgroundsImages={backgroundsImagesItems}
 				avatars={avatarsItems}
 			/>
-			
-			// <div className={className}>
-			// 	<Row>
-			// 	<Col span={16}>
-			// 		<Collapse
-			// 			style={{ width: '100%' }}
-			// 			bordered={false}
-			// 			activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
-			// 			onChange={this.handlers.onChangeActiveKey}
-			// 		>
-			// 			{Object.keys(descriptors).map(key => (
-			// 				<Collapse.Panel key={key} header={key} showArrow={!collapse}>
-			// 					{this.renderItems(descriptors[key])}
-			// 				</Collapse.Panel>
-			// 			))}
-			// 		</Collapse>
-			// 	</Col>
-			// 	{/* <Col span={8}>
-			// 		<Button
-			// 				value={"bezier-curve"}
-			// 				onClick={this.viewActivated}>
-			// 			Here is the button
-			// 		</Button>
-			// 	</Col> */}
-			// 	</Row>
-			// 	<SVGModal
-			// 		visible={svgModalVisible}
-			// 		onOk={this.handlers.onAddSVG}
-			// 		onCancel={this.handlers.onSVGModalVisible}
-			// 		option={svgOption}
-			// 	/>
-			// </div>
 		);
 	}
 }
