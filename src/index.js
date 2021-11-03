@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { AppContainer } from 'react-hot-loader';
 import { LocaleProvider } from 'antd';
 import koKR from 'antd/lib/locale-provider/ko_KR';
@@ -33,11 +34,13 @@ const render = Component => {
 	const rootElement = document.getElementById('root');
 	ReactDom.render(
 		<Provider store={store}>
-			<AppContainer >
-				<LocaleProvider locale={antResources[i18nClient.language]}>
-					<Component />
-				</LocaleProvider>
-			</AppContainer>
+			<BrowserRouter>
+				<AppContainer >
+					<LocaleProvider locale={antResources[i18nClient.language]}>
+						<Component />
+					</LocaleProvider>
+				</AppContainer>
+			</BrowserRouter>
 		</Provider>,
 		rootElement,
 	);

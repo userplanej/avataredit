@@ -13,8 +13,6 @@ import { code } from '../canvas/constants';
 
 import Appbar from '../../components-site/Appbar';
 import Sidebar from '../../components-site/Sidebar';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import Slides from '../../components-site/editor/Slides';
 import { Grid } from '@mui/material';
 
@@ -84,13 +82,6 @@ const defaultOption = {
 
 const drawerMaxWidth = 264;
 const drawerMinWidth = 80;
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Omnes',
-    fontWeight: '500'
-  },
-});
 
 const indexFormatTab = 7;
 
@@ -172,10 +163,9 @@ class ImageMapEditor extends Component {
 			if (!editing) {
 				this.changeEditing(true);
 			}
-			// console.log(target)
-			// if (target.type === 'background') {
-			// 	return;
-			// }
+			if (target.type === 'background') {
+				return;
+			}
 			if (target.type === 'activeSelection') {
 				this.canvasHandlers.onSelect(null);
 				return;
@@ -925,75 +915,71 @@ class ImageMapEditor extends Component {
 
 			return (
 			<div className="rde-editor">
-				<ThemeProvider theme={theme}>
-        	<CssBaseline />
-
-					<Appbar 
-						drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} 
-						handleDrawerToggle={() => this.handleDrawerToggle()}
-						canvasRef={this.canvasRef}
-						onUndo={() => this.canvasRef.handler?.transactionHandler.undo()}
-						onRedo={() => this.canvasRef.handler?.transactionHandler.redo()}
-					/>
-					
-					<Sidebar 
-						isMinimal={isMinimal} 
-						drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} 
-						mobileOpen={mobileOpen} 
-						handleDrawerToggle={() => this.handleDrawerToggle()}
-					/>
-					
-					<Grid container sx={{ height: '100%' }} columns={13}>
-						<Grid item md={2} sx={{  backgroundColor: '#e8dff4', height: '100%' }}>
-							<Slides canvasRef={this.canvasRef} />
-						</Grid>
-						<Grid item md={6}>
-							<div
-								ref={c => {
-									this.container = c;
-								}}
-								className="rde-editor-canvas"
-								style={{ marginTop: '64px' }}
-							>
-								<Canvas
-									ref={c => {
-										this.canvasRef = c;
-									}}
-									className="rde-canvas"
-									minZoom={30}
-									maxZoom={300}
-									zoomEnabled={false}
-									objectOption={defaultOption}
-									propertiesToInclude={propertiesToInclude}
-									onModified={onModified}
-									onAdd={onAdd}
-									onRemove={onRemove}
-									onSelect={onSelect}
-									onZoom={onZoom}
-									onTooltip={onTooltip}
-									onClick={onClick}
-									onContext={onContext}
-									onTransaction={onTransaction}
-									keyEvent={{
-										transaction: true,
-									}}
-								/>
-							</div>
-						</Grid>
-						<Grid item md={5}>
-							<ImageMapItems
-								ref={c => {
-									this.itemsRef = c;
-								}}
-								canvasRef={this.canvasRef}
-								descriptors={descriptors}
-								backgrounds={backgrounds}
-								avatars={avatars}
-								slides={this.state.slideList}
-							/>
-						</Grid>
+				{/* <Appbar 
+					drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} 
+					handleDrawerToggle={() => this.handleDrawerToggle()}
+					canvasRef={this.canvasRef}
+					onUndo={() => this.canvasRef.handler?.transactionHandler.undo()}
+					onRedo={() => this.canvasRef.handler?.transactionHandler.redo()}
+				/> */}
+				
+				{/* <Sidebar 
+					isMinimal={isMinimal} 
+					drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} 
+					mobileOpen={mobileOpen} 
+					handleDrawerToggle={() => this.handleDrawerToggle()}
+				/> */}
+				
+				<Grid container sx={{ height: '100%' }} columns={13}>
+					<Grid item md={2} sx={{  backgroundColor: '#e8dff4', height: '100%' }}>
+						<Slides canvasRef={this.canvasRef} />
 					</Grid>
-      	</ThemeProvider>
+					<Grid item md={6}>
+						<div
+							ref={c => {
+								this.container = c;
+							}}
+							className="rde-editor-canvas"
+							style={{ marginTop: '64px' }}
+						>
+							<Canvas
+								ref={c => {
+									this.canvasRef = c;
+								}}
+								className="rde-canvas"
+								minZoom={30}
+								maxZoom={300}
+								zoomEnabled={false}
+								objectOption={defaultOption}
+								propertiesToInclude={propertiesToInclude}
+								onModified={onModified}
+								onAdd={onAdd}
+								onRemove={onRemove}
+								onSelect={onSelect}
+								onZoom={onZoom}
+								onTooltip={onTooltip}
+								onClick={onClick}
+								onContext={onContext}
+								onTransaction={onTransaction}
+								keyEvent={{
+									transaction: true,
+								}}
+							/>
+						</div>
+					</Grid>
+					<Grid item md={5}>
+						<ImageMapItems
+							ref={c => {
+								this.itemsRef = c;
+							}}
+							canvasRef={this.canvasRef}
+							descriptors={descriptors}
+							backgrounds={backgrounds}
+							avatars={avatars}
+							slides={this.state.slideList}
+						/>
+					</Grid>
+				</Grid>
 			</div>
 		);
 	}

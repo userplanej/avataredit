@@ -168,7 +168,7 @@ const Slides = (props) => {
         sx={{ display: 'flex', justifyContent: 'center' }}
         onClick={() => addSlide()}
       >
-        <Box sx={{ ...addSlideContainerStyle }}>
+        <Box sx={addSlideContainerStyle}>
           <AddCircleIcon sx={{ color: '#0a1239', mb: '10px' }} />
           <div style={{ fontSize: '14px'}}>Add slide</div>
         </Box>

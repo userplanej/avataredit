@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 
 import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../redux/toolbar/toolbarSlice';
@@ -9,6 +10,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
@@ -147,6 +149,44 @@ const ToolsView = (props) => {
     );
   }
 
+  const sendTest = () => {
+    const { canvasRef } = props;
+    const canvasObjects = canvasRef.handler.getObjects();
+    let dataToSend = {
+      lifecycleName: 'Studio_Main_Lifecycle',
+      payload: {
+        apiId: 'ryu',
+        apiKey: 'd0cad9547b9c4a65a5cdfe50072b1588',
+        objects: canvasObjects[0].toObject()
+      },
+      catalogInstanceName: 'Studio_Main_Catalog',
+      target: 'SoftwareCatalogInstance',
+      async: false
+    };
+
+    let objects = [];
+    // canvasObjects.map(object => {
+    //   objects.push(object.toObject());
+    // });
+    // dataToSend.payload.objects = objects;
+
+    console.log(dataToSend.payload.objects)
+
+    const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
+    const headers = {
+      AccessKey: 'SerengetiAdministrationAccessKey',
+      SecretKey: 'SerengetiAdministrationSecretKey',
+      LoginId: 'maum-orchestra-com'
+    }
+
+    axios({
+      method: 'post',
+      url: url, 
+      data: dataToSend,
+      headers: headers
+    });
+  }
+
   return (
     <Grid
       container
@@ -155,6 +195,7 @@ const ToolsView = (props) => {
       <Grid item md={11}>
         <TabPanel value={activeTab} index={0}>
           <Typography variant="h5">Select template</Typography>
+          <Button onClick={sendTest}>Send to minds</Button>
         </TabPanel>
 
         <TabPanel value={activeTab} index={1}>

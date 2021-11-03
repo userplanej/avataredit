@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -12,11 +15,9 @@ import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Stack from '@mui/material/Stack';
-import { useSelector, useDispatch } from 'react-redux';
-import { setDrawerWidth, setIsMinimal } from '../redux/navigation/navigationSlice';
 
-const drawerMaxWidth = 264;
-const drawerMinWidth = 80;
+import { setDrawerWidth, setIsMinimal, setPathName } from '../redux/navigation/navigationSlice';
+import { drawerMinWidth, drawerMaxWidth } from './constants/Drawer';
 
 const iconContainerStyle = {
   minWidth: '0px',
@@ -69,7 +70,10 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         sx={{ 
           '& .Mui-selected': {
             backgroundColor: '#e8dff4'
-          } 
+          },
+          '& .MuiTypography-root': {
+            fontWeight: 'bold'
+          }
         }}
       >
         <ListItem 
@@ -104,7 +108,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         <ListItem 
           button 
           key={keys.home} 
-          sx={{ ...listItemStyle }} 
+          sx={listItemStyle} 
           selected={active === keys.home} 
           onClick={() => onClickMenu(keys.home)}
         >
@@ -117,7 +121,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         <ListItem 
           button 
           key={keys.videos} 
-          sx={{ ...listItemStyle }} 
+          sx={listItemStyle} 
           selected={active === keys.videos} 
           onClick={() => onClickMenu(keys.videos)}
         >
@@ -130,7 +134,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         <ListItem 
           button 
           key={keys.templates} 
-          sx={{ ...listItemStyle }} 
+          sx={listItemStyle} 
           selected={active === keys.templates}
           onClick={() => onClickMenu(keys.templates)}
         >
@@ -143,7 +147,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
         <ListItem 
           button 
           key={keys.avatars} 
-          sx={{ ...listItemStyle }} 
+          sx={listItemStyle} 
           selected={active === keys.avatars} 
           onClick={() => onClickMenu(keys.avatars)}
         >
@@ -153,17 +157,24 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
           {!isMinimal && <ListItemText primary={'Avatars'} />}
         </ListItem>
       </List>
-      <List>
+
+      <List
+        sx={{
+          '& .MuiTypography-root': {
+            fontWeight: 'bold'
+          }
+        }}
+      >
         <ListItem button key={'user'} sx={{ margin: '8px 0px', padding: isMinimal ? '16px 0px' : '' }}>
-          <ListItemIcon sx={{ ...iconContainerStyle }}>
-            <AccountBoxIcon sx={{ ...iconStyle }} />
+          <ListItemIcon sx={iconContainerStyle }>
+            <AccountBoxIcon sx={iconStyle} />
           </ListItemIcon>
           {!isMinimal && <ListItemText primary={'User'} />}
         </ListItem>
 
         <ListItem button key={'settings'} sx={{ margin: '0px 0px 32px 0px', padding: isMinimal ? '16px 0px' : '' }}>
-          <ListItemIcon sx={{ ...iconContainerStyle }}>
-            <SettingsIcon sx={{ ...iconStyle }} />
+          <ListItemIcon sx={iconContainerStyle }>
+            <SettingsIcon sx={iconStyle} />
           </ListItemIcon>
           {!isMinimal && <ListItemText primary={'Settings'} />}
         </ListItem>
@@ -174,20 +185,28 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
 
 const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const isMinimal = useSelector(state => state.navigation.isMinimal);
   const drawerWidth = useSelector(state => state.navigation.drawerWidth);
 
   const [activeKey, setActiveKey] = useState('home');
 
-  const onClickMenu = (key) => {
-    setActiveKey(key);
-    if (['home'].includes(key)) {
-      dispatch(setIsMinimal(false));
-      dispatch(setDrawerWidth(drawerMaxWidth));
-    } else {
+  useEffect(() => {
+    const pathname = history.location.pathname;
+    setActiveKey(pathname.replace('/', ''));
+    if (pathname === '/editor') {
       dispatch(setIsMinimal(true));
       dispatch(setDrawerWidth(drawerMinWidth));
     }
+    dispatch(setPathName(pathname));
+  }, []);
+
+  const onClickMenu = (key) => {
+    setActiveKey(key);
+    dispatch(setPathName(`/${key}`));
+    dispatch(setIsMinimal(false));
+    dispatch(setDrawerWidth(drawerMaxWidth));
+    history.push(`/${key}`);
   }
 
   return (

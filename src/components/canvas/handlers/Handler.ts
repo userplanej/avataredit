@@ -1710,8 +1710,11 @@ class Handler implements HandlerOptions {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (activeObject) {
 			this.canvas.sendToBack(activeObject);
-			this.canvas.sendToBack(this.canvas.getObjects()[1]);
 			// send to back background
+			const background = this.getObjects().find(obj => obj.type === 'background');
+			this.canvas.sendToBack(background);
+			// send to back workarea
+			this.canvas.sendToBack(this.canvas.getObjects()[1]);
 			if (!this.transactionHandler.active && !isManual) {
 				this.transactionHandler.save('sendToBack');
 			}

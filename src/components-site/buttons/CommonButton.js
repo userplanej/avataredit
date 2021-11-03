@@ -2,11 +2,11 @@ import React from 'react';
 import Box from '@mui/material/Box';
 
 const CommonButton = (props) => {
-  const { text, style, onClick } = props;
+  const { text, style, onClick, width, height, color } = props;
 
   const defaultStyle = {
-    width: '80px',
-    height: '40px',
+    width: width ? width : '80px',
+    height: height ? height : '40px',
     margin: '15px',
     borderRadius: '10px',
     boxShadow: '4px 6px 6px 0 rgba(0, 0, 0, 0.03)',
@@ -14,7 +14,8 @@ const CommonButton = (props) => {
     display: 'grid',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    color: color ? color : null
   }
 
   return (
