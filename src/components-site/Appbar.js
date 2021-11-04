@@ -120,7 +120,6 @@ const Appbar = ({ handleDrawerToggle, canvasRef, onUndo, onRedo }) => {
   }
 
   const saveTitle = () => {
-    console.log(title)
   }
 
   return (

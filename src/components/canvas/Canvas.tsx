@@ -157,7 +157,7 @@ class Canvas extends Component<CanvasProps, IState> {
 		);
 	};
 
-	handleChangeTab = (value: number) => {
+	handleChangeTab = (_event: any, value: number) => {
 		this.setState({ activeTab: value });
 	}
 
@@ -175,7 +175,7 @@ class Canvas extends Component<CanvasProps, IState> {
 				
 				<Box sx={{ mt: '16px', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 					<Box sx={{ borderBottom: 1, borderColor: 'divider', width: '90%' }}>
-						<Tabs value={activeTab} onChange={(event, value) => this.handleChangeTab(value)} aria-label="basic tabs example" sx={TabStyle}>
+						<Tabs value={activeTab} onChange={this.handleChangeTab} aria-label="basic tabs example" sx={TabStyle}>
 							<Tab label="Type your script" id="simple-tab-1" />
 							<Tab label="Upload your voice" id="simple-tab-2" />
 						</Tabs>
