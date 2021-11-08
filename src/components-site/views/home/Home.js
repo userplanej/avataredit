@@ -35,13 +35,13 @@ const data = [
 const Home = () => {
   return (
     <Box sx={{ mt: '64px', width: '100%' }}>
-      <Typography variant="h4" sx={boxStyle}>Templates</Typography>
+      <Typography variant="h5" sx={boxStyle}>Templates</Typography>
       
-      <Typography variant="h4" sx={boxStyle}>Recent videos</Typography>
+      <Typography variant="h5" sx={boxStyle}>Recent videos</Typography>
 
       <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' } }}>
         {data.map(video => {
-          return <VideoCard video={video} />
+          return <VideoCard key={video.id} video={video} />
         })}
       </Box>
     </Box>

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
 
-import SearchInput from '../inputs/SearchInput';
+import SearchInput from '../../inputs/SearchInput';
 import VideoCard from './VideoCard';
+
+import { getAllVideos } from '../../../api/video/video';
 
 const boxStyle = {
   mt: '24px', 
@@ -33,14 +36,22 @@ const data = [
 ]
 
 const Videos = () => {
-  const [videosList, setVideosList] = useState(data);
+  const [loading, setLoading] = useState(true);
+  const [videosList, setVideosList] = useState([]);
+
+  useEffect(() => {
+    getAllVideos().then(res => {
+      setVideosList(res.rows);
+      setLoading(false);
+    });
+  }, []);
 
   const handleSearch = (event) => {
     const nameSearch = event.target.value;
     if (nameSearch && nameSearch === '') {
       setVideosList(data);
     }
-    const newVideosList = data.filter(video => video.name.toLowerCase().includes(nameSearch));
+    const newVideosList = data.filter(video => video.name.toLowerCase().includes(nameSearch.toLowerCase()));
     setVideosList(newVideosList);
   }
   
@@ -51,7 +62,9 @@ const Videos = () => {
       </Box>
 
       <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' } }}>
-        {videosList.map(video => {
+        {loading && <Skeleton animation="wave" height={150} />}
+        
+        {!loading && data.map(video => {
           return <VideoCard video={video} />
         })}
       </Box>

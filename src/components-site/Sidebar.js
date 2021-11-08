@@ -17,7 +17,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Stack from '@mui/material/Stack';
 
 import { setDrawerWidth, setIsMinimal, setPathName } from '../redux/navigation/navigationSlice';
-import { drawerMinWidth, drawerMaxWidth } from './constants/Drawer';
+import { drawerMaxWidth } from './constants/Drawer';
+import { pathnameEnum } from './constants/Pathname';
 
 const iconContainerStyle = {
   minWidth: '0px',
@@ -193,20 +194,16 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
 
   useEffect(() => {
     const pathname = history.location.pathname;
-    setActiveKey(pathname.replace('/', ''));
-    if (pathname === '/editor') {
-      dispatch(setIsMinimal(true));
-      dispatch(setDrawerWidth(drawerMinWidth));
-    }
-    dispatch(setPathName(pathname));
+    const pathnameKey = pathname.split('/');
+    setActiveKey(pathnameKey[2]);
   }, []);
 
   const onClickMenu = (key) => {
     setActiveKey(key);
-    dispatch(setPathName(`/${key}`));
+    dispatch(setPathName(pathnameEnum[key]));
     dispatch(setIsMinimal(false));
     dispatch(setDrawerWidth(drawerMaxWidth));
-    history.push(`/${key}`);
+    history.push(pathnameEnum[key]);
   }
 
   return (

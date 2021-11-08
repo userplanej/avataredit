@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
 
 const devPort = 4000;
-const host = '0.0.0.0';
+const host = 'localhost';
 
 module.exports = merge(baseConfig, {
 	mode: 'development',
@@ -50,7 +50,7 @@ module.exports = merge(baseConfig, {
 		new webpack.HotModuleReplacementPlugin(), // HMR을 사용하기 위한 플러그인
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
-			title: 'React Design Editor',
+			title: 'M Studio',
 		}),
 	],
 });

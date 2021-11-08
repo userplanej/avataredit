@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { drawerMaxWidth } from '../../components-site/constants/Drawer';
+import { pathnameEnum } from '../../components-site/constants/Pathname';
 
 const initialState = {
   isMinimal: false,
   drawerWidth: drawerMaxWidth,
-  pathName: '/home'
+  pathName: pathnameEnum.home
 }
 
 export const navigationSlice = createSlice({

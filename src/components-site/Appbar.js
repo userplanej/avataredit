@@ -15,8 +15,11 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
+import InputAdornment from '@mui/material/InputAdornment';
 
-const ariaLabel = { 'aria-label': 'title' };
+import CustomInput from './inputs/CustomInput';
+import { postVideo } from '../api/video/video';
+import { pathnameEnum } from './constants/Pathname';
 
 const boxStyle = {
   display: 'flex', 
@@ -107,19 +110,32 @@ const secondaryButtonStyle = {
   color: '#5b5c62'
 }
 
-const Appbar = ({ handleDrawerToggle, canvasRef, onUndo, onRedo }) => {
+const Appbar = ({ handleDrawerToggle }) => {
   const pathName = useSelector(state => state.navigation.pathName);
   const drawerWidth = useSelector(state => state.navigation.drawerWidth);
+  const canvasRef = useSelector(state => state.canvas.canvasRef);
   const [title, setTitle] = useState('');
-
+  
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
   const cannotRedo = canvasRef && !canvasRef.handler?.transactionHandler.redos.length;
+
+  const createNewVideo = () => {
+
+  }
 
   const handleChangeTitle = (event) => {
     setTitle(event.target.value);
   }
 
   const saveTitle = () => {
+  }
+
+  const onUndo = () => {
+    canvasRef.handler?.transactionHandler.undo();
+  }
+  
+  const onRedo = () => {
+    canvasRef.handler?.transactionHandler.redo();
   }
 
   return (
@@ -144,49 +160,47 @@ const Appbar = ({ handleDrawerToggle, canvasRef, onUndo, onRedo }) => {
             <MenuIcon />
           </IconButton>
 
-          {pathName === '/home' &&
+          {pathName === pathnameEnum.home &&
           <Box sx={boxStyle}>
             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Create new video</Typography>
           </Box>}
 
-          {pathName === '/videos' &&
+          {pathName === pathnameEnum.videos &&
           <Box sx={boxStyle}>
             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>All videos</Typography>
           </Box>}
 
-          {pathName === '/editor' &&
+          {pathName === pathnameEnum.editor &&
           <Box sx={boxStyle}>
-            <ArrowBackIosNewIcon fontSize="small" sx={{ color: '#5b5c62' }} />
             <ClickAwayListener onClickAway={() => saveTitle(false)}>
-              <Box sx={{ display: 'flex', alignItems: 'center', color: '#5b5c62' }}>
-                <input 
-                  placeholder="Add title here"
-                  className="add-title-input"
-                  onChange={handleChangeTitle}
-                />
-                <EditIcon fontSize="small" sx={{ position: 'relative', right: '30px' }} />
-              </Box>
+              <CustomInput 
+                placeholder="Add title here"
+                onChange={handleChangeTitle}
+                startAdornment={<InputAdornment position="start"><ArrowBackIosNewIcon fontSize="small" /></InputAdornment>}
+                endAdornment={<InputAdornment position="end"><EditIcon fontSize="small" /></InputAdornment>}
+                sx={{ width: '400px' }}
+              />
             </ClickAwayListener>
           </Box>}
 
-          {pathName === '/avatars' &&
+          {pathName === pathnameEnum.avatars &&
           <Box sx={boxStyle}>
             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Avatars</Typography>
           </Box>}
         </Box>
 
-        {pathName === '/home' &&
+        {pathName === pathnameEnum.home &&
         <Box sx={boxStyle}>
           <Box sx={secondaryButtonStyle}>Import powerpoint</Box>
+          <Box sx={mainButtonStyle} onclick={createNewVideo}>Create new video</Box>
+        </Box>}
+
+        {pathName === pathnameEnum.videos &&
+        <Box sx={boxStyle} onclick={createNewVideo}>
           <Box sx={mainButtonStyle}>Create new video</Box>
         </Box>}
 
-        {pathName === '/videos' &&
-        <Box sx={boxStyle}>
-          <Box sx={mainButtonStyle}>Create new video</Box>
-        </Box>}
-
-        {pathName === '/editor' && 
+        {pathName === pathnameEnum.editor && 
         <Box sx={boxStyle}>
           {/* <Button onClick={() => console.log(canvasRef.handler.getActiveObject())}>Test</Button> */}
           <Box sx={cannotUndo ? arrowDisabledStyle : arrowEnabledStyle} onClick={cannotUndo ? null : () => onUndo()}><KeyboardArrowLeftIcon /></Box>
@@ -199,7 +213,7 @@ const Appbar = ({ handleDrawerToggle, canvasRef, onUndo, onRedo }) => {
           <Box sx={mainButtonStyle}>Generate video</Box>
         </Box>}
 
-        {pathName === '/avatars' &&
+        {pathName === pathnameEnum.avatars &&
         <Box sx={boxStyle}>
           <Box sx={mainButtonStyle}>Request your own avatar</Box>
         </Box>}

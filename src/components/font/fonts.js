@@ -20,6 +20,7 @@ const fonts = {
 		{ name: 'Comic Sans MS', type: 'cursive', ref: 'default' },
 		{ name: 'Lucida Console', type: 'cursive', ref: 'default' },
 		{ name: 'Impact', type: 'fantasy', ref: 'default' },
+		{ name: 'Omnes', type: 'sans-serif', ref: 'default' }
 	],
 	google: [
 		{ name: 'Abril Fatface', type: 'display', ref: 'google' },
@@ -44,6 +45,7 @@ const fonts = {
 		{ name: 'Roboto Slab', type: 'serif', ref: 'google' },
 		{ name: 'Roboto', type: 'sans-serif', ref: 'google' },
 		{ name: 'Source Sans Pro', type: 'serif', ref: 'google' },
+		{ name: 'Omnes', type: 'sans-serif', ref: 'google' }
 	],
 };
 

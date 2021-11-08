@@ -4,8 +4,13 @@ import { notification, message } from 'antd';
 import { v4 } from 'uuid';
 import { Flex } from '../flex';
 import Icon from '../icon/Icon';
-import ToolsView from '../../components-site/editor/ToolsView';
+import ToolsView from '../../components-site/views/editor/ToolsView';
 import SearchInput from '../../components-site/inputs/SearchInput';
+import { Box } from '@mui/system';
+
+import { postImage, getAllImages } from '../../api/image/image';
+import { uploadFile, deleteFile } from '../../api/s3';
+import { Dialog, DialogTitle } from '@mui/material';
 
 notification.config({
 	top: 80,
@@ -26,9 +31,12 @@ class ImageMapItems extends Component {
 			filteredDescriptors: [],
 			svgModalVisible: false,
 			optionValue: null,
+			// openUploadImageDialog: false,
 			indexTab: 0,
 			avatarSearch: '',
-			imageSearch: ''
+			backgroundImageSearch: '',
+			imageSearch: '',
+			imageList: []
 		};
 
 		this.renderItems = this.renderItems.bind(this);
@@ -47,6 +55,8 @@ class ImageMapItems extends Component {
 	componentDidMount() {
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
+
+		Promise.all([getAllImages().then(res => this.setState({ imageList: res.data.body.rows }))]);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
@@ -94,6 +104,8 @@ class ImageMapItems extends Component {
 		} else if (this.state.svgModalVisible !== nextState.svgModalVisible) {
 			return true;
 		} else if (this.state.avatarSearch !== nextState.avatarSearch) {
+			return true;
+		} else if (this.state.backgroundImageSearch !== nextState.backgroundImageSearch) {
 			return true;
 		} else if (this.state.imageSearch !== nextState.imageSearch) {
 			return true;
@@ -203,6 +215,12 @@ class ImageMapItems extends Component {
 				};
 			});
 		},
+		onChangeWorkareaBackgroundColor: (color) => {
+			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor(color);
+		},
+		onChangeWorkareaBackgroundImage: (src) => {
+			this.props.canvasRef.handler.workareaHandler.setImage(src, true);
+		}
 	};
 
 	events = {
@@ -288,7 +306,7 @@ class ImageMapItems extends Component {
 						}
 					})}
 				</div>
-					}
+				}
 			</div>
 	};
 
@@ -300,7 +318,6 @@ class ImageMapItems extends Component {
 				id="input-with-icon-textfield"
 				placeholder="Search avatar"
 				onChange={(event) => this.handleAvatarNameChange(event.target.value)}
-				style={{ margin: '24px 0px' }}
 			/>
 		}
 
@@ -308,8 +325,15 @@ class ImageMapItems extends Component {
 			searchField = <SearchInput
 				id="input-with-icon-textfield"
 				placeholder="Search images"
+				onChange={(event) => this.handleBackgroundImageNameChange(event.target.value)}
+			/>
+		}
+
+		if (type === 'image') {
+			searchField = <SearchInput
+				id="input-with-icon-textfield"
+				placeholder="Search images"
 				onChange={(event) => this.handleImageNameChange(event.target.value)}
-				style={{ marginBottom: '24px' }}
 			/>
 		}
 
@@ -317,13 +341,16 @@ class ImageMapItems extends Component {
 	}
 
 	shouldRenderItem = (item, type) => {
-		const { avatarSearch, imageSearch } = this.state;
+		const { avatarSearch, backgroundImageSearch, imageSearch } = this.state;
 
 		if (type === 'avatar' && avatarSearch !== '') {
-			return item.name.toLowerCase().includes(avatarSearch) ? true : false;
+			return item.name.toLowerCase().includes(avatarSearch.toLowerCase()) ? true : false;
 		}
-		if (type === 'background-image' && imageSearch !== '') {
-			return item.name.toLowerCase().includes(imageSearch) ? true : false;
+		if (type === 'background-image' && backgroundImageSearch !== '') {
+			return item.name.toLowerCase().includes(backgroundImageSearch.toLowerCase()) ? true : false;
+		}
+		if (type === 'image' && imageSearch !== '') {
+			return item.name.toLowerCase().includes(imageSearch.toLowerCase()) ? true : false;
 		}
 
 		return true;
@@ -337,57 +364,73 @@ class ImageMapItems extends Component {
 		const isImage = item.type === 'image';
 
 		return item.type === 'text' ? (
-			<div
+			<Box
 				key={item.name}
 				// draggable
 				onClick={e => this.handlers.onAddItem(item, centered)}
-				style={{ 
+				sx={{ 
 					textAlign: 'center',
 					width: '544px',
 					margin: '16px 19px 16px 0',
 					padding: '15px 0px 17px',
-					borderRadius: '2px',
+					borderRadius: '10px',
 					backgroundColor: '#fff',
 					fontWeight: 'bold',
 					cursor: 'pointer',
-					fontSize: item.fontSize
+					fontSize: item.fontSize,
+					':hover': {
+						backgroundColor: 'rgba(255, 255, 255, 0.6)'
+					}
 				}}
 			>
 				{item.name}
-			</div>
+			</Box>
 		) : (
-			<div style={{ marginRight: '12px' }} key={item.name}>
-				<div
+			<Box sx={{ marginRight: '12px' }} key={item.name}>
+				<Box
 					key={item.name}
 					// draggable
 					onClick={e => { 
-						this.handlers.onAddItem(item, centered);
-						if (isBackground) {
-							console.log('background')
-							this.props.canvasRef.handler?.sendToBack(true);
+						if (isBackgroundColor) {
+							this.handlers.onChangeWorkareaBackgroundColor(item.option.backgroundColor);
+							return;
 						}
+						if (isBackgroundImage) {
+							this.handlers.onChangeWorkareaBackgroundImage(item.option.src);
+							return;
+						}
+						this.handlers.onAddItem(item, centered);
 					}}
 					// onDragStart={e => this.events.onDragStart(e, item)}
 					// onDragEnd={e => this.events.onDragEnd(e, item)}
-					style={{ justifyContent: this.state.collapse ? 'center' : null, display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
+					sx={{ 
+						justifyContent: this.state.collapse ? 'center' : null, 
+						display: 'flex', 
+						flexDirection: 'column', 
+						cursor: 'pointer'
+					}}
 				>
-					<span 
+					<Box 
 						className="rde-editor-items-item-icon" 
-						style={{ 
+						sx={{ 
 							width: '148px', 
 							height: '116px', 
 							backgroundColor: isBackgroundColor ? item.option.backgroundColor : 'white', 
 							display: 'flex', 
 							flexDirection: 'column', 
-							textAlign: 'center'
+							textAlign: 'center',
+							borderRadius: '10px',
+							':hover': {
+								backgroundColor: 'rgba(255, 255, 255, 0.6)'
+							}
 						}}
 					>
 						{!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
 						{(isAvatar || isImage || isBackgroundImage) && <img src={item.option.src} style={{ objectFit: 'fill' }} />}
-					</span>
-				</div>
-			{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
-			</div>
+					</Box>
+				</Box>
+				{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
+			</Box>
 		)
 	}
 
@@ -401,30 +444,66 @@ class ImageMapItems extends Component {
 		this.setState({ avatarSearch: value });
 	}
 
+	handleBackgroundImageNameChange = (value) => {
+		this.setState({ backgroundImageSearch: value });
+	}
+
 	handleImageNameChange = (value) => {
 		this.setState({ imageSearch: value });
 	}
 
+	uploadImage = async (file) => {
+		if (file && file !== '') {
+			const formData = new FormData();
+			formData.append('images', file);
+
+			uploadFile(formData).then(res => {
+				const location = res.data.location;
+
+				const imageData = {
+					image_name: "image",
+  				image_dir: location
+				}
+			});
+		}
+	}
+
+	// openUploadImage = () => {
+	// 	this.setState({ openUploadImageDialog: true });
+	// }
+
+	// closeUploadImage = () => {
+	// 	this.setState({ openUploadImageDialog: false });
+	// }
+
 	render() {
-		const { canvasRef, descriptors, backgrounds, avatars } = this.props;
+		const { canvasRef, descriptors, backgrounds, avatars, saveImage } = this.props;
 
 		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
 		const shapes = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
-		const images = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key));
+		const images = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key, 'image'));
 		const backgroundsColorsItems = Object.keys(backgrounds).filter(key => key === 'BACKGROUND').map(key => this.renderItems(backgrounds[key], key, 'background-color'));
 		const backgroundsImagesItems = Object.keys(backgrounds).filter(key => key === 'IMAGE').map(key => this.renderItems(backgrounds[key], key, 'background-image'));
 		const avatarsItems = Object.keys(avatars).map(key => this.renderItems(avatars[key], key, 'avatar'));
 
 		return (
-			<ToolsView 
-				canvasRef={canvasRef}
-				texts={texts}
-				shapes={shapes}
-				images={images}
-				backgroundsColors={backgroundsColorsItems}
-				backgroundsImages={backgroundsImagesItems}
-				avatars={avatarsItems}
-			/>
+			<Box height="100%">
+				<ToolsView 
+					canvasRef={canvasRef}
+					texts={texts}
+					shapes={shapes}
+					images={images}
+					backgroundsColors={backgroundsColorsItems}
+					backgroundsImages={backgroundsImagesItems}
+					avatars={avatarsItems}
+					saveImage={saveImage}
+					onOpenUploadImage={() => this.openUploadImage()}
+				/>
+
+				{/* <Dialog onClose={() => this.closeUploadImage()} open={this.state.openUploadImageDialog}>
+					<DialogTitle>Upload an image</DialogTitle>
+				</Dialog> */}
+			</Box>
 		);
 	}
 }

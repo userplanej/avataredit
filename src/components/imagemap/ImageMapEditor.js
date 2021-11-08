@@ -11,13 +11,11 @@ import CommonButton from '../common/CommonButton';
 import Canvas from '../canvas/Canvas';
 import { code } from '../canvas/constants';
 
-import Appbar from '../../components-site/Appbar';
-import Sidebar from '../../components-site/Sidebar';
-import Slides from '../../components-site/editor/Slides';
+import Slides from '../../components-site/views/editor/Slides';
 import { Grid } from '@mui/material';
 
-import { connect } from 'react-redux'
-import { setActiveObject } from '../../redux/canvas/canvasSlice';
+import { connect } from 'react-redux';
+import { setActiveObject, setCanvasRef } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 
 const propertiesToInclude = [
@@ -80,9 +78,6 @@ const defaultOption = {
 	},
 };
 
-const drawerMaxWidth = 264;
-const drawerMinWidth = 80;
-
 const indexFormatTab = 7;
 
 class ImageMapEditor extends Component {
@@ -122,8 +117,7 @@ class ImageMapEditor extends Component {
 	
 	// }
 
-	componentDidMount() {
-		
+	componentDidMount() {		
 		// fetch('http://localhost:3000/api/v1/avatar/list')
 		// .then(res => res.json())
 		// .then((result) => {
@@ -412,6 +406,10 @@ class ImageMapEditor extends Component {
 			}
 			if (changedKey === 'file' || changedKey === 'src') {
 				this.canvasRef.handler.workareaHandler.setImage(changedValue);
+				return;
+			}
+			if (changedKey === 'color') {
+				this.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor(changedValue);
 				return;
 			}
 			if (changedKey === 'width' || changedKey === 'height') {
@@ -913,38 +911,21 @@ class ImageMapEditor extends Component {
 			</React.Fragment>
 		);
 
-			return (
-			<div className="rde-editor">
-				{/* <Appbar 
-					drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} 
-					handleDrawerToggle={() => this.handleDrawerToggle()}
-					canvasRef={this.canvasRef}
-					onUndo={() => this.canvasRef.handler?.transactionHandler.undo()}
-					onRedo={() => this.canvasRef.handler?.transactionHandler.redo()}
-				/> */}
-				
-				{/* <Sidebar 
-					isMinimal={isMinimal} 
-					drawerWidth={isMinimal ? drawerMinWidth : drawerMaxWidth} 
-					mobileOpen={mobileOpen} 
-					handleDrawerToggle={() => this.handleDrawerToggle()}
-				/> */}
-				
+		return (
+			<div className="rde-editor">				
 				<Grid container sx={{ height: '100%' }} columns={13}>
 					<Grid item md={2} sx={{  backgroundColor: '#e8dff4', height: '100%' }}>
 						<Slides canvasRef={this.canvasRef} />
 					</Grid>
 					<Grid item md={6}>
 						<div
-							ref={c => {
-								this.container = c;
-							}}
 							className="rde-editor-canvas"
 							style={{ marginTop: '64px' }}
 						>
 							<Canvas
 								ref={c => {
 									this.canvasRef = c;
+									this.props.setCanvasRef(c);
 								}}
 								className="rde-canvas"
 								minZoom={30}
@@ -969,14 +950,12 @@ class ImageMapEditor extends Component {
 					</Grid>
 					<Grid item md={5}>
 						<ImageMapItems
-							ref={c => {
-								this.itemsRef = c;
-							}}
 							canvasRef={this.canvasRef}
 							descriptors={descriptors}
 							backgrounds={backgrounds}
 							avatars={avatars}
 							slides={this.state.slideList}
+							saveImage={onSaveImage}
 						/>
 					</Grid>
 				</Grid>
@@ -991,7 +970,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps  = {
-	setActiveObject, 
+	setActiveObject,
+	setCanvasRef, 
 	setActiveTab,
 	setPreviousTab
 }

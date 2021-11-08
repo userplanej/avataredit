@@ -35,7 +35,7 @@ module.exports = {
 				test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
 				loader: 'url-loader',
 				options: {
-					publicPath: './',
+					publicPath: '/',
 					name: 'fonts/[hash].[ext]',
 					limit: 10000,
 				},

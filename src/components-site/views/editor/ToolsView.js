@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 
-import { setActiveObject } from '../../redux/canvas/canvasSlice';
-import { setActiveTab } from '../../redux/toolbar/toolbarSlice';
+import { setActiveObject } from '../../../redux/canvas/canvasSlice';
+import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
 
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -20,8 +20,8 @@ import CategoryIcon from '@mui/icons-material/Category';
 import TextureIcon from '@mui/icons-material/Texture';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 
-import { TabStyle } from '../Styles';
-import CommonButton from '../buttons/CommonButton';
+import { TabStyle } from '../../Styles';
+import CommonButton from '../../buttons/CommonButton';
 
 const iconContainerStyle = {
   minWidth: '0px',
@@ -90,6 +90,7 @@ const ToolsView = (props) => {
   const activeTab = useSelector((state) => state.toolbar.activeTab);
 
   const [backgroundTab, setBackgroundTab] = useState(0);
+  const [imageTab, setImageTab] = useState(0);
 
   const makeIcon = (index, icon) => {
     return (
@@ -106,6 +107,10 @@ const ToolsView = (props) => {
 
   const handleChangeBackgroundTab = (event, newValue) => {
     setBackgroundTab(newValue);
+  }
+
+  const handleChangeImageTab = (event, newValue) => {
+    setImageTab(newValue);
   }
 
   const renderMoveButtons = () => {
@@ -149,28 +154,31 @@ const ToolsView = (props) => {
     );
   }
 
-  const sendTest = () => {
+  const sendTest = async () => {
     const { canvasRef } = props;
     const canvasObjects = canvasRef.handler.getObjects();
-    let dataToSend = {
-      lifecycleName: 'Studio_Main_Lifecycle',
-      payload: {
-        apiId: 'ryu',
-        apiKey: 'd0cad9547b9c4a65a5cdfe50072b1588',
-        objects: canvasObjects[0].toObject()
-      },
-      catalogInstanceName: 'Studio_Main_Catalog',
-      target: 'SoftwareCatalogInstance',
-      async: false
+
+    let file = await fetch('https://upload.wikimedia.org/wikipedia/commons/9/91/Checked_icon.png').then(r => r.blob()).then(blobFile => new File([blobFile], "test", { type: "image/png" }));
+
+    const formData = new FormData();
+    formData.append('lifecycleName', 'Studio_Main_Life');
+    formData.append('catalogInstanceName', 'Studio_Main_Catalog');
+    formData.append('target', 'SoftwareCatalogInstance');
+    formData.append('async', false);
+
+    let payload = {
+      apiId: 'ryu',
+      apiKey: 'd0cad9547b9c4a65a5cdfe50072b1588',
+      objects: []
     };
 
     let objects = [];
-    // canvasObjects.map(object => {
-    //   objects.push(object.toObject());
-    // });
-    // dataToSend.payload.objects = objects;
+    canvasObjects.map(object => {
+      objects.push(object.toObject());
+    });
+    payload.objects.push({ objects });
 
-    console.log(dataToSend.payload.objects)
+    formData.append('payload', { payload });
 
     const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
     const headers = {
@@ -182,7 +190,7 @@ const ToolsView = (props) => {
     axios({
       method: 'post',
       url: url, 
-      data: dataToSend,
+      data: formData,
       headers: headers
     });
   }
@@ -194,12 +202,14 @@ const ToolsView = (props) => {
     >
       <Grid item md={11}>
         <TabPanel value={activeTab} index={0}>
-          <Typography variant="h5">Select template</Typography>
+          <Typography variant="h5" sx={{ mb: '10px' }}>Select template</Typography>
           <Button onClick={sendTest}>Send to minds</Button>
+          <Button onClick={props.saveImage}>Save image</Button>
+          <Button onClick={props.onOpenUploadImage}>Upload image</Button>
         </TabPanel>
 
         <TabPanel value={activeTab} index={1}>
-          <Typography variant="h5">Select avatar, size and alignment</Typography>
+          <Typography variant="h5" sx={{ mb: '10px' }}>Select avatar, size and alignment</Typography>
           {props.avatars}
         </TabPanel>
 
@@ -233,7 +243,16 @@ const ToolsView = (props) => {
 
         <TabPanel value={activeTab} index={5}>
           <Typography variant="h5" sx={{ mb: '10px' }}>Select images</Typography>
-          {props.images}
+          <Box sx={{ width: '100%' }}>
+            <Box sx={{ width: '100%' }}>
+              <Tabs value={imageTab} onChange={handleChangeImageTab} aria-label="images-tabs" sx={TabStyle}>
+                <Tab label="Images" />
+                <Tab label="Uploads" />
+              </Tabs>
+            </Box>
+            <TabPanel value={imageTab} index={0}>{props.images}</TabPanel>
+            <TabPanel value={imageTab} index={1}>Uploads</TabPanel>
+          </Box>
         </TabPanel>
 
         <TabPanel value={activeTab} index={6}>

@@ -15,9 +15,9 @@ const plugins = [
 	// index.html 로 의존성 파일들 inject해주는 플러그인
 	new HtmlWebpackPlugin({
 		filename: 'index.html',
-		title: 'React Design Editor',
+		title: 'M Studio',
 		meta: {
-			description: `React Design Editor has started to developed direct manipulation of editable design tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js`,
+			description: `M Studio`,
 		},
 	}),
 	new WorkboxPlugin.GenerateSW({
@@ -37,7 +37,7 @@ module.exports = merge(baseConfig, {
 		path: path.resolve(__dirname, 'docs'),
 		filename: 'js/[name].[chunkhash:16].js',
 		chunkFilename: 'js/[id].[chunkhash:16].js',
-		publicPath: './',
+		publicPath: '/',
 	},
 	optimization: {
 		minimizer: [

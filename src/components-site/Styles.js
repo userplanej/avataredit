@@ -13,5 +13,5 @@ export const TabStyle = {
   '& .MuiTabs-indicator': {
     width: '100%',
     backgroundColor: '#d06e8c',
-  },
+  }
 }

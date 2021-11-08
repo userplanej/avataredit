@@ -1651,7 +1651,6 @@ class Handler implements HandlerOptions {
 	 */
 	public bringForward = () => {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
-		console.log(activeObject)
 		if (activeObject) {
 			this.canvas.bringForward(activeObject);
 			if (!this.transactionHandler.active) {
@@ -1706,24 +1705,17 @@ class Handler implements HandlerOptions {
 	/**
 	 * Send to back
 	 */
-	public sendToBack = (isManual : boolean) => {
+	public sendToBack = () => {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (activeObject) {
 			this.canvas.sendToBack(activeObject);
-			// send to back background
-			const background = this.getObjects().find(obj => obj.type === 'background');
-			this.canvas.sendToBack(background);
-			// send to back workarea
 			this.canvas.sendToBack(this.canvas.getObjects()[1]);
-			if (!this.transactionHandler.active && !isManual) {
+			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('sendToBack');
 			}
 			const { onModified } = this;
 			if (onModified) {
 				onModified(activeObject);
-			}
-			if (isManual) {
-				this.canvas.discardActiveObject();
 			}
 		}
 	};

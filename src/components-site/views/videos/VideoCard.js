@@ -13,8 +13,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-import { setDrawerWidth, setIsMinimal, setPathName } from '../../redux/navigation/navigationSlice';
-import { drawerMinWidth } from '../constants/Drawer';
+import { setDrawerWidth, setIsMinimal, setPathName } from '../../../redux/navigation/navigationSlice';
+import { drawerMinWidth } from '../../constants/Drawer';
+import { pathnameEnum } from '../../constants/Pathname';
 
 const playButtonStyle = {
   width: '100px',
@@ -66,10 +67,10 @@ const VideoCard = (props) => {
   }
 
   const handleClickVideo = () => {
-    dispatch(setPathName(`/editor`));
+    dispatch(setPathName(pathnameEnum.editor));
     dispatch(setIsMinimal(true));
     dispatch(setDrawerWidth(drawerMinWidth));
-    history.push('/editor');
+    history.push('/studio/editor');
   }
   
   return (

@@ -322,6 +322,14 @@ class WorkareaHandler {
 		}
 	};
 
+	public setWorkareaBackgroundColor = (color?: string) => {
+		const { canvas, workarea } = this.handler;
+		workarea.set({
+			backgroundColor: color
+		});
+		canvas.renderAll();
+	}
+
 	/**
 	 * Calculate scale to the image
 	 *
