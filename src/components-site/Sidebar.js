@@ -57,7 +57,9 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
     home: 'home',
     videos: 'videos',
     templates: 'templates',
-    avatars: 'avatars'
+    avatars: 'avatars',
+    account: 'account',
+    settings: 'settings'
   }
 
   const listItemStyle = {
@@ -88,7 +90,8 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
             borderRadius: '6px'
           }}
         >
-          {!isMinimal && <Typography 
+          {!isMinimal && <img style={{ width: '190px' }} src="/images/img_mstudio.png" />}
+          {/* {!isMinimal && <Typography 
             variant="h4"
             sx={{
               color: '#df678c'
@@ -103,7 +106,7 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
             }}
           >
             Lab
-          </Typography>}
+          </Typography>} */}
         </ListItem>
 
         <ListItem 
@@ -113,8 +116,8 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
           selected={active === keys.home} 
           onClick={() => onClickMenu(keys.home)}
         >
-          <ListItemIcon sx={active === keys.home ? { ...iconContainerActiveStyle } : { ...iconContainerStyle }}>
-            <HomeIcon sx={active === keys.home ? { ...iconActiveStyle } : { ...iconStyle }} />
+          <ListItemIcon sx={active === keys.home ? iconContainerActiveStyle : iconContainerStyle}>
+            <HomeIcon sx={active === keys.home ? iconActiveStyle : iconStyle} />
           </ListItemIcon>
           {!isMinimal && <ListItemText primary={'Home'} />}
         </ListItem>
@@ -126,8 +129,8 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
           selected={active === keys.videos} 
           onClick={() => onClickMenu(keys.videos)}
         >
-          <ListItemIcon sx={active === keys.videos ? { ...iconContainerActiveStyle } : { ...iconContainerStyle }}>
-            <VideocamIcon sx={active === keys.videos ? { ...iconActiveStyle } : { ...iconStyle }} />
+          <ListItemIcon sx={active === keys.videos ? iconContainerActiveStyle : iconContainerStyle}>
+            <VideocamIcon sx={active === keys.videos ? iconActiveStyle : iconStyle} />
           </ListItemIcon>
           {!isMinimal && <ListItemText primary={'Videos'} />}
         </ListItem>
@@ -139,8 +142,8 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
           selected={active === keys.templates}
           onClick={() => onClickMenu(keys.templates)}
         >
-          <ListItemIcon sx={active === keys.templates ? { ...iconContainerActiveStyle } : { ...iconContainerStyle }}>
-            <AutoAwesomeMosaicIcon sx={active === keys.templates ? { ...iconActiveStyle } : { ...iconStyle }} />
+          <ListItemIcon sx={active === keys.templates ? iconContainerActiveStyle : iconContainerStyle}>
+            <AutoAwesomeMosaicIcon sx={active === keys.templates ? iconActiveStyle : iconStyle} />
           </ListItemIcon>
           {!isMinimal && <ListItemText primary={'Templates'} />}
         </ListItem>
@@ -152,8 +155,8 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
           selected={active === keys.avatars} 
           onClick={() => onClickMenu(keys.avatars)}
         >
-          <ListItemIcon sx={active === keys.avatars ? { ...iconContainerActiveStyle } : { ...iconContainerStyle }}>
-            <AccountBoxIcon sx={active === keys.avatars ? { ...iconActiveStyle } : { ...iconStyle }} />
+          <ListItemIcon sx={active === keys.avatars ? iconContainerActiveStyle : iconContainerStyle}>
+            <AccountBoxIcon sx={active === keys.avatars ? iconActiveStyle : iconStyle} />
           </ListItemIcon>
           {!isMinimal && <ListItemText primary={'Avatars'} />}
         </ListItem>
@@ -166,16 +169,27 @@ const DrawerItems = ({ active, onClickMenu, isMinimal }) => {
           }
         }}
       >
-        <ListItem button key={'user'} sx={{ margin: '8px 0px', padding: isMinimal ? '16px 0px' : '' }}>
-          <ListItemIcon sx={iconContainerStyle }>
-            <AccountBoxIcon sx={iconStyle} />
+        <ListItem 
+          button 
+          key={keys.account} 
+          sx={{ margin: '8px 0px', padding: isMinimal ? '16px 0px' : '' }}
+          selected={active === keys.account} 
+          onClick={() => onClickMenu(keys.account)}
+        >
+          <ListItemIcon sx={active === keys.account ? iconContainerActiveStyle : iconContainerStyle}>
+            <AccountBoxIcon sx={active === keys.account ? iconActiveStyle : iconStyle} />
           </ListItemIcon>
           {!isMinimal && <ListItemText primary={'User'} />}
         </ListItem>
 
-        <ListItem button key={'settings'} sx={{ margin: '0px 0px 32px 0px', padding: isMinimal ? '16px 0px' : '' }}>
-          <ListItemIcon sx={iconContainerStyle }>
-            <SettingsIcon sx={iconStyle} />
+        <ListItem 
+          button 
+          key={keys.settings} 
+          sx={{ margin: '0px 0px 32px 0px', padding: isMinimal ? '16px 0px' : '' }}
+          selected={active === keys.settings}
+        >
+          <ListItemIcon sx={active === keys.settings ? iconContainerActiveStyle : iconContainerStyle}>
+            <SettingsIcon sx={active === keys.settings ? iconActiveStyle : iconStyle} />
           </ListItemIcon>
           {!isMinimal && <ListItemText primary={'Settings'} />}
         </ListItem>
@@ -209,7 +223,7 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   return (
     <Box
       component="nav"
-      sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+      sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
     >
       <Drawer
         sx={{
@@ -233,7 +247,7 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: 'none', sm: 'block' },
+          display: { xs: 'none', sm: 'none', md: 'block' },
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',

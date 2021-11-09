@@ -3,5 +3,6 @@ export const pathnameEnum = {
   videos: '/studio/videos',
   home: '/studio/home',
   avatars: '/studio/avatars',
-  templates: '/studio/templates'
+  templates: '/studio/templates',
+  account: '/studio/account'
 }

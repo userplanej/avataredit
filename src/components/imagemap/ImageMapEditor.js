@@ -1,21 +1,25 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Badge, Button, Popconfirm, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
-import ImageMapItems from './ImageMapItems';
 import SandBox from '../sandbox/SandBox';
+import { Grid } from '@mui/material';
+import { Box } from '@mui/system';
 
 import '../../libs/fontawesome-5.2.0/css/all.css';
 import '../../styles/index.less';
+
 import CommonButton from '../common/CommonButton';
 import Canvas from '../canvas/Canvas';
 import { code } from '../canvas/constants';
-
+import ImageMapItems from './ImageMapItems';
 import Slides from '../../components-site/views/editor/Slides';
-import { Grid } from '@mui/material';
+import Appbar from '../../components-site/Appbar';
+import Sidebar from '../../components-site/Sidebar';
+import Script from '../../components-site/views/editor/Script';
 
-import { connect } from 'react-redux';
-import { setActiveObject, setCanvasRef } from '../../redux/canvas/canvasSlice';
+import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 
 const propertiesToInclude = [
@@ -103,7 +107,6 @@ class ImageMapEditor extends Component {
 			file_dir: null,
 			url: 'sample1.json'
 		}],
-		isMinimal: true,
 		mobileOpen: false
 	};
 
@@ -807,6 +810,7 @@ class ImageMapEditor extends Component {
 			editing,
 		});
 	};
+	
 	componentDidUpdate(prevProps) {
 		if(prevProps.value !== this.props.value) {
 		  this.setState({value: this.props.value});
@@ -862,104 +866,67 @@ class ImageMapEditor extends Component {
 			onAvatarChange
 		} = this.handlers;
 
-		const action = (
-			
-			<React.Fragment>
-				<CommonButton
-					className="rde-action-btn"
-					shape="circle"
-					icon="file-download"
-					disabled={!editing}
-					tooltipTitle={i18n.t('action.download')}
-					onClick={onDownload}
-					tooltipPlacement="bottomRight"
-				/>
-				{editing ? (
-					<Popconfirm
-						title={i18n.t('imagemap.imagemap-editing-confirm')}
-						okText={i18n.t('action.ok')}
-						cancelText={i18n.t('action.cancel')}
-						onConfirm={onUpload}
-						placement="bottomRight"
-					>
-						<CommonButton
-							className="rde-action-btn"
-							shape="circle"
-							icon="file-upload"
-							tooltipTitle={i18n.t('action.upload')}
-							tooltipPlacement="bottomRight"
-						/>
-					</Popconfirm>
-				) : (
-					<CommonButton
-						className="rde-action-btn"
-						shape="circle"
-						icon="file-upload"
-						tooltipTitle={i18n.t('action.upload')}
-						tooltipPlacement="bottomRight"
-						onClick={onUpload}
-					/>
-				)}
-				<CommonButton
-					className="rde-action-btn"
-					shape="circle"
-					icon="image"
-					tooltipTitle={i18n.t('action.image-save')}
-					onClick={onSaveImage}
-					tooltipPlacement="bottomRight"
-				/>
-			</React.Fragment>
-		);
-
 		return (
-			<div className="rde-editor">				
-				<Grid container sx={{ height: '100%' }} columns={13}>
-					<Grid item md={2} sx={{  backgroundColor: '#e8dff4', height: '100%' }}>
-						<Slides canvasRef={this.canvasRef} />
-					</Grid>
-					<Grid item md={6}>
-						<div
-							className="rde-editor-canvas"
-							style={{ marginTop: '64px' }}
-						>
-							<Canvas
-								ref={c => {
-									this.canvasRef = c;
-									this.props.setCanvasRef(c);
-								}}
-								className="rde-canvas"
-								minZoom={30}
-								maxZoom={300}
-								zoomEnabled={false}
-								objectOption={defaultOption}
-								propertiesToInclude={propertiesToInclude}
-								onModified={onModified}
-								onAdd={onAdd}
-								onRemove={onRemove}
-								onSelect={onSelect}
-								onZoom={onZoom}
-								onTooltip={onTooltip}
-								onClick={onClick}
-								onContext={onContext}
-								onTransaction={onTransaction}
-								keyEvent={{
-									transaction: true,
-								}}
+			<Box sx={{ display: 'flex', backgroundColor: '#f7f7f7', overflow: 'hidden', height: '100%', width: '100%' }}>
+				<Appbar 
+					handleDrawerToggle={() => this.handleDrawerToggle()}
+					canvasRef={this.canvasRef}
+				/>
+
+				<Sidebar 
+					mobileOpen={mobileOpen} 
+					handleDrawerToggle={() => this.handleDrawerToggle()}
+				/>
+
+				<Box sx={{ mt: 8, width: '100%' }}>
+					<Grid container sx={{ height: '100%', width: '100%', pl: 1, pt: 1 }}>
+						<Grid item xs={12} md={3} lg={2} xl={2}>
+							<Box sx={{ backgroundColor: '#fff', borderRadius: '6px', height: '100%', width: '90%' }}>
+								<Slides canvasRef={this.canvasRef} />
+							</Box>
+						</Grid>
+						
+						<Grid item xs={12} md={6} lg={5} xl={5}>
+							<Box sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
+								<Canvas
+									ref={c => {
+										this.canvasRef = c;
+									}}
+									minZoom={30}
+									maxZoom={300}
+									zoomEnabled={false}
+									objectOption={defaultOption}
+									propertiesToInclude={propertiesToInclude}
+									onModified={onModified}
+									onAdd={onAdd}
+									onRemove={onRemove}
+									onSelect={onSelect}
+									onZoom={onZoom}
+									onTooltip={onTooltip}
+									onClick={onClick}
+									onContext={onContext}
+									onTransaction={onTransaction}
+									keyEvent={{
+										transaction: true,
+									}}
+								/>
+							</Box>
+							<Script />
+						</Grid>
+
+						<Grid item xs={12} md={5} lg={5} xl={5}>
+							<ImageMapItems
+								canvasRef={this.canvasRef}
+								descriptors={descriptors}
+								backgrounds={backgrounds}
+								avatars={avatars}
+								slides={this.state.slideList}
+								saveImage={onSaveImage}
 							/>
-						</div>
+						</Grid>
 					</Grid>
-					<Grid item md={5}>
-						<ImageMapItems
-							canvasRef={this.canvasRef}
-							descriptors={descriptors}
-							backgrounds={backgrounds}
-							avatars={avatars}
-							slides={this.state.slideList}
-							saveImage={onSaveImage}
-						/>
-					</Grid>
-				</Grid>
-			</div>
+				</Box>
+			</Box>
 		);
 	}
 }
@@ -971,7 +938,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps  = {
 	setActiveObject,
-	setCanvasRef, 
 	setActiveTab,
 	setPreviousTab
 }

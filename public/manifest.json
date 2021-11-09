@@ -1,9 +1,9 @@
 {
-    "short_name": "MindsLab",
-    "name": "MindsLab",
+    "short_name": "M Studio",
+    "name": "M Studio",
     "icons": [
         {
-            "src": "favicon.ico",
+            "src": "./images/img_signature.png",
             "sizes": "64x64",
             "type": "image/png"
         }

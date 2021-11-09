@@ -159,7 +159,7 @@ const Payment = (props) => {
       />
         
       <Typography variant="body2" mt={1}>
-        By confirming your subscription, you allow Mindslab to charge your card forthis payment and future payments in accordance with their terms
+        By confirming your subscription, you allow M Studio to charge your card for this payment and future payments in accordance with their terms
       </Typography>
 
       <Box sx={{ display: 'flex', mt: 2 }}>

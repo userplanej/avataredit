@@ -11,7 +11,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+// import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 import { setDrawerWidth, setIsMinimal, setPathName } from '../../../redux/navigation/navigationSlice';
 import { drawerMinWidth } from '../../constants/Drawer';
@@ -37,7 +37,8 @@ const ITEM_HEIGHT = 48;
 const options = [
   'Download',
   'Duplicate',
-  'Create template'
+  'Create template',
+  'Delete'
 ];
 
 const VideoCard = (props) => {
@@ -62,22 +63,21 @@ const VideoCard = (props) => {
     event.stopPropagation();
   }
 
-  const handleDeleteVideo = (event) => {
-    event.stopPropagation();
-  }
+  // const handleDeleteVideo = (event) => {
+  //   event.stopPropagation();
+  // }
 
   const handleClickVideo = () => {
     dispatch(setPathName(pathnameEnum.editor));
     dispatch(setIsMinimal(true));
     dispatch(setDrawerWidth(drawerMinWidth));
-    history.push('/studio/editor');
+    history.push(pathnameEnum.editor);
   }
   
   return (
     <Grid 
       key={video.id}
       container 
-      spacing="12" 
       onClick={handleClickVideo}  
       sx={{ 
         width: '100%', 
@@ -143,16 +143,16 @@ const VideoCard = (props) => {
       </Grid>
 
       <Grid item>
-        {video.isDraft && 
+        {/* {video.isDraft && 
         <IconButton
           aria-label="delete"
           id="delete-button"
           onClick={handleDeleteVideo}
         >
           <DeleteForeverIcon />
-        </IconButton>}
+        </IconButton>} */}
 
-        {!video.isDraft && 
+        {/* {!video.isDraft &&  */}
         <Box>
           <IconButton
             aria-label="more"
@@ -190,7 +190,8 @@ const VideoCard = (props) => {
               </MenuItem>
             ))}
           </Menu>
-        </Box>}
+        </Box>
+        {/* } */}
       </Grid>
     </Grid>
   );

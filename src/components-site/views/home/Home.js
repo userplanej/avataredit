@@ -6,8 +6,8 @@ import Box from '@mui/material/Box';
 import VideoCard from '../videos/VideoCard';
 
 const boxStyle = {
-  mt: '24px', 
-  ml: '32px', 
+  mt: 3, 
+  ml: 4, 
   width: '95%'
 }
 
@@ -34,7 +34,7 @@ const data = [
 
 const Home = () => {
   return (
-    <Box sx={{ mt: '64px', width: '100%' }}>
+    <Box sx={{ mt: 7, width: '100%' }}>
       <Typography variant="h5" sx={boxStyle}>Templates</Typography>
       
       <Typography variant="h5" sx={boxStyle}>Recent videos</Typography>

@@ -1,66 +1,12 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Switch, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import '../styles/index.less';
 import Main from '../components-site/Main';
 import Authentication from '../components-site/views/authentication/Authentication';
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Omnes'
-  },
-	components: {
-		MuiFormLabel: {
-			styleOverrides: {
-				root: {
-					color: "#4f4081", fontWeight: 'bold'
-				}
-			}
-		},
-		MuiTypography: {
-			styleOverrides: {
-				h4: {
-					fontWeight: "bold",
-					color: '#4f4081'
-				},
-				h5: {
-					fontWeight: "bold",
-					color: '#09113c'
-				}
-			}
-		},
-		MuiButton: {
-			styleOverrides: {
-				containedPrimary: {
-					paddingBlock: 10,
-					backgroundColor: '#df678c', 
-					borderRadius: '10px',
-					'&:hover': { backgroundColor: 'rgba(223, 103, 140, 0.9)' },
-					'&:disabled': { backgroundColor: '#5b5c62', color: '#fff' }
-				},
-				containedSecondary: {
-					paddingBlock: 10,
-					maxWidth: '150px',
-					color: '#09113c',
-					backgroundColor: '#e8e9e9', 
-					borderRadius: '10px', 
-					'&:hover': { backgroundColor: 'rgba(232, 233, 233, 0.9)' } 
-				}
-			}
-		},
-		MuiCheckbox: {
-			styleOverrides: {
-				root: {
-					"&.Mui-checked": {
-						"color": "#0a1239"
-					}
-				}
-			}
-		}
-	}
-});
+import { theme } from '../styles/theme';
 
 class App extends Component<any> {
 	render() {
@@ -74,7 +20,7 @@ class App extends Component<any> {
 						content="M Studio"
 					/>
 					<link rel="manifest" href="/manifest.json" />
-					<link rel="shortcut icon" href="/favicon.ico" />
+					<link rel="shortcut icon" href="/images/img_signature.png" />
 					<link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" />
 					<title>M Studio</title>
 					<script async={true} src="https://www.googletagmanager.com/gtag/js?id=UA-97485289-3" />

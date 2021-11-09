@@ -62,9 +62,9 @@ const Videos = () => {
       </Box>
 
       <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' } }}>
-        {loading && <Skeleton animation="wave" height={150} />}
+        {/* {loading && <Skeleton animation="wave" height={150} />} */}
         
-        {!loading && data.map(video => {
+        {/*!loading &&*/ data.map(video => {
           return <VideoCard video={video} />
         })}
       </Box>

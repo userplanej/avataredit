@@ -12,9 +12,6 @@ import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
 import '../../styles/fabricjs/fabricjs.less';
 
-import { TextField, Box, Tabs, Tab } from '@mui/material';
-import { TabStyle } from '../../components-site/GlobalStyles.d';
-
 export type CanvasProps = HandlerOptions & {
 	responsive?: boolean;
 	style?: React.CSSProperties;
@@ -24,7 +21,6 @@ export type CanvasProps = HandlerOptions & {
 interface IState {
 	id: string;
 	loaded: boolean;
-	activeTab: number;
 }
 
 class Canvas extends Component<CanvasProps, IState> {
@@ -45,8 +41,7 @@ class Canvas extends Component<CanvasProps, IState> {
 
 	state: IState = {
 		id: v4(),
-		loaded: false,
-		activeTab: 0
+		loaded: false
 	};
 
 	componentDidMount() {
@@ -157,63 +152,15 @@ class Canvas extends Component<CanvasProps, IState> {
 		);
 	};
 
-	handleChangeTab = (_event: any, value: number) => {
-		this.setState({ activeTab: value });
-	}
-
 	render() {
-		const { style } = this.props;
-		const { id, activeTab } = this.state;
+		const { id } = this.state;
 		return (
 			<div
 				ref={this.container}
 				id={id}
-				className="rde-canvas"
-				style={{ height: '450px', ...style }}
+				style={{ width: '555px', height: '315px' }}
 			>
 				<canvas id={`canvas_${id}`} />
-				
-				<Box sx={{ mt: '16px', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-					<Box sx={{ borderBottom: 1, borderColor: 'divider', width: '90%' }}>
-						<Tabs value={activeTab} onChange={this.handleChangeTab} aria-label="basic tabs example" sx={TabStyle}>
-							<Tab label="Type your script" id="simple-tab-1" />
-							<Tab label="Upload your voice" id="simple-tab-2" />
-						</Tabs>
-					</Box>
-					<div
-						role="tabpanel"
-						hidden={activeTab !== 0}
-						id={`vertical-tabpanel-${0}`}
-						aria-labelledby={`vertical-tab-${0}`}
-						style={{ width: '90%', backgroundColor: '#e8dff4' }}
-					>
-						{activeTab === 0 && (
-							<Box sx={{ p: 3, width: '100%' }}>
-								<TextField
-									id="filled-multiline-flexible"
-									multiline
-									minRows={8}
-									maxRows={8}
-									// value={value}
-									// onChange={handleChange}
-									variant="filled"
-									sx={{ width: "100%", backgroundColor: '#fff' }}
-								/>
-							</Box>
-						)}
-					</div>
-					<div
-						role="tabpanel"
-						hidden={activeTab !== 1}
-						id={`vertical-tabpanel-${1}`}
-						aria-labelledby={`vertical-tab-${1}`}
-					>
-						{activeTab === 1 && (
-							<Box sx={{ p: 3, width: '100%' }}>
-							</Box>
-						)}
-					</div>
-				</Box>
 			</div>
 		);
 	}

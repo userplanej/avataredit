@@ -1,2 +1,0 @@
-export { TabStyle } from './Styles';
-

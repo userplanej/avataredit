@@ -4,8 +4,8 @@ import Box from '@mui/material/Box';
 
 const Templates = () => {
   return (
-    <Box sx={{ mt: '64px', ml: '32px'  }}>
-      <Typography variant="h4">Templates</Typography>
+    <Box sx={{ mt: 10 }}>
+      {/* <Typography variant="h5" sx={{ ml: 4 }}>Templates</Typography> */}
     </Box>
   );
 }

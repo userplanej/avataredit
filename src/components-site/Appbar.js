@@ -110,10 +110,9 @@ const secondaryButtonStyle = {
   color: '#5b5c62'
 }
 
-const Appbar = ({ handleDrawerToggle }) => {
+const Appbar = ({ handleDrawerToggle, canvasRef }) => {
   const pathName = useSelector(state => state.navigation.pathName);
   const drawerWidth = useSelector(state => state.navigation.drawerWidth);
-  const canvasRef = useSelector(state => state.canvas.canvasRef);
   const [title, setTitle] = useState('');
   
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
@@ -127,7 +126,8 @@ const Appbar = ({ handleDrawerToggle }) => {
     setTitle(event.target.value);
   }
 
-  const saveTitle = () => {
+  const saveTitle = (value) => {
+    console.log(value);
   }
 
   const onUndo = () => {
@@ -142,8 +142,8 @@ const Appbar = ({ handleDrawerToggle }) => {
     <AppBar
       position="fixed"
       sx={{
-        width: { sm: `calc(100% - ${drawerWidth}px)` },
-        ml: { sm: `${drawerWidth}px` },
+        width: { md: `calc(100% - ${drawerWidth}px)` },
+        ml: { md: `${drawerWidth}px` },
         backgroundColor: '#fff',
         boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.05)'
       }}
@@ -155,7 +155,7 @@ const Appbar = ({ handleDrawerToggle }) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -187,6 +187,11 @@ const Appbar = ({ handleDrawerToggle }) => {
           <Box sx={boxStyle}>
             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Avatars</Typography>
           </Box>}
+
+          {pathName === pathnameEnum.account &&
+          <Box sx={boxStyle}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Account Settings</Typography>
+          </Box>}
         </Box>
 
         {pathName === pathnameEnum.home &&
@@ -216,6 +221,12 @@ const Appbar = ({ handleDrawerToggle }) => {
         {pathName === pathnameEnum.avatars &&
         <Box sx={boxStyle}>
           <Box sx={mainButtonStyle}>Request your own avatar</Box>
+        </Box>}
+
+        {pathName === pathnameEnum.account &&
+        <Box sx={boxStyle}>
+          <Button variant="contained" color="secondary" sx={{ mr: 2, px: 7 }}>Cancel</Button>
+          <Button variant="contained" sx={{ px: 8 }}>Save</Button>
         </Box>}
       </Toolbar>
     </AppBar>

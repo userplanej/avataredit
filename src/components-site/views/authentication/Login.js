@@ -107,7 +107,6 @@ const Login = (props) => {
             variant="contained"
             disabled={!canSubmit}
             sx={{ mt: 5, mb: 2 }}
-            type="submit"
           >
             Login
           </Button>

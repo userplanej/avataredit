@@ -10,7 +10,6 @@ import { Box } from '@mui/system';
 
 import { postImage, getAllImages } from '../../api/image/image';
 import { uploadFile, deleteFile } from '../../api/s3';
-import { Dialog, DialogTitle } from '@mui/material';
 
 notification.config({
 	top: 80,
@@ -31,7 +30,6 @@ class ImageMapItems extends Component {
 			filteredDescriptors: [],
 			svgModalVisible: false,
 			optionValue: null,
-			// openUploadImageDialog: false,
 			indexTab: 0,
 			avatarSearch: '',
 			backgroundImageSearch: '',
@@ -216,9 +214,11 @@ class ImageMapItems extends Component {
 			});
 		},
 		onChangeWorkareaBackgroundColor: (color) => {
+			this.props.canvasRef.handler.workareaHandler.setImage(null, false);
 			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor(color);
 		},
 		onChangeWorkareaBackgroundImage: (src) => {
+			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor('#e8e9e9');
 			this.props.canvasRef.handler.workareaHandler.setImage(src, true);
 		}
 	};
@@ -316,7 +316,8 @@ class ImageMapItems extends Component {
 		if (type === 'avatar') {
 			searchField = <SearchInput
 				id="input-with-icon-textfield"
-				placeholder="Search avatar"
+				placeholder="Search avatars"
+				fullWidth
 				onChange={(event) => this.handleAvatarNameChange(event.target.value)}
 			/>
 		}
@@ -325,6 +326,7 @@ class ImageMapItems extends Component {
 			searchField = <SearchInput
 				id="input-with-icon-textfield"
 				placeholder="Search images"
+				fullWidth
 				onChange={(event) => this.handleBackgroundImageNameChange(event.target.value)}
 			/>
 		}
@@ -333,6 +335,7 @@ class ImageMapItems extends Component {
 			searchField = <SearchInput
 				id="input-with-icon-textfield"
 				placeholder="Search images"
+				fullWidth
 				onChange={(event) => this.handleImageNameChange(event.target.value)}
 			/>
 		}
@@ -366,20 +369,19 @@ class ImageMapItems extends Component {
 		return item.type === 'text' ? (
 			<Box
 				key={item.name}
-				// draggable
 				onClick={e => this.handlers.onAddItem(item, centered)}
 				sx={{ 
 					textAlign: 'center',
-					width: '544px',
+					width: '100%',
 					margin: '16px 19px 16px 0',
 					padding: '15px 0px 17px',
 					borderRadius: '10px',
-					backgroundColor: '#fff',
+					backgroundColor: '#e8e9e9',
 					fontWeight: 'bold',
 					cursor: 'pointer',
 					fontSize: item.fontSize,
 					':hover': {
-						backgroundColor: 'rgba(255, 255, 255, 0.6)'
+						backgroundColor: 'rgba(232, 233, 233, 0.6)'
 					}
 				}}
 			>
@@ -389,7 +391,6 @@ class ImageMapItems extends Component {
 			<Box sx={{ marginRight: '12px' }} key={item.name}>
 				<Box
 					key={item.name}
-					// draggable
 					onClick={e => { 
 						if (isBackgroundColor) {
 							this.handlers.onChangeWorkareaBackgroundColor(item.option.backgroundColor);
@@ -401,8 +402,6 @@ class ImageMapItems extends Component {
 						}
 						this.handlers.onAddItem(item, centered);
 					}}
-					// onDragStart={e => this.events.onDragStart(e, item)}
-					// onDragEnd={e => this.events.onDragEnd(e, item)}
 					sx={{ 
 						justifyContent: this.state.collapse ? 'center' : null, 
 						display: 'flex', 
@@ -413,23 +412,25 @@ class ImageMapItems extends Component {
 					<Box 
 						className="rde-editor-items-item-icon" 
 						sx={{ 
-							width: '148px', 
-							height: '116px', 
-							backgroundColor: isBackgroundColor ? item.option.backgroundColor : 'white', 
+							width: '125px', 
+							height: '100px', 
+							backgroundColor: isBackgroundColor ? item.option.backgroundColor : 'white',
+							backgroundImage: isImage || isBackgroundImage ? `url(${item.option.src})` : '',
+							backgroundPosition: 'center', /* Center the image */
+							backgroundRepeat: 'no-repeat', /* Do not repeat the image */
+							backgroundSize: 'cover', /* Resize the background image to cover the entire container */
 							display: 'flex', 
 							flexDirection: 'column', 
 							textAlign: 'center',
-							borderRadius: '10px',
-							':hover': {
-								backgroundColor: 'rgba(255, 255, 255, 0.6)'
-							}
+							border: '1px solid #e8e9e9',
+							borderRadius: '10px'
 						}}
 					>
 						{!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
-						{(isAvatar || isImage || isBackgroundImage) && <img src={item.option.src} style={{ objectFit: 'fill' }} />}
+						{isAvatar && <img src={item.option.src} style={{ objectFit: 'fill' }} />}
 					</Box>
 				</Box>
-				{this.state.collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
+				{this.state.collapse ? null : <div className="rde-editor-items-item-text" key={`name-${item.name}`}>{item.name}</div>}
 			</Box>
 		)
 	}
@@ -468,14 +469,6 @@ class ImageMapItems extends Component {
 		}
 	}
 
-	// openUploadImage = () => {
-	// 	this.setState({ openUploadImageDialog: true });
-	// }
-
-	// closeUploadImage = () => {
-	// 	this.setState({ openUploadImageDialog: false });
-	// }
-
 	render() {
 		const { canvasRef, descriptors, backgrounds, avatars, saveImage } = this.props;
 
@@ -497,12 +490,7 @@ class ImageMapItems extends Component {
 					backgroundsImages={backgroundsImagesItems}
 					avatars={avatarsItems}
 					saveImage={saveImage}
-					onOpenUploadImage={() => this.openUploadImage()}
 				/>
-
-				{/* <Dialog onClose={() => this.closeUploadImage()} open={this.state.openUploadImageDialog}>
-					<DialogTitle>Upload an image</DialogTitle>
-				</Dialog> */}
 			</Box>
 		);
 	}
