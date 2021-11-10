@@ -76,6 +76,8 @@ const Slides = (props) => {
     const newSlide = { id, objects: [] };
     setSlidesData([...slidesData, newSlide]);
 
+    props.canvasRef.handler.workareaHandler.setImage(null, false);
+    props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor('#e8e9e9');
     props.canvasRef.handler.clear();
     props.canvasRef.handler.importJSON(newSlide.objects);
     setActiveSlide(id);
