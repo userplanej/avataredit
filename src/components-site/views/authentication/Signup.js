@@ -10,6 +10,8 @@ import Questions from './signup/Questions';
 import Payment from './signup/Payment';
 
 import { setInitialState } from '../../../redux/form/signupSlice';
+import { postUser } from '../../../api/user/user';
+import { showAlert } from '../../../utils/AlertUtils';
 
 const componentName = {
   personal: 'personal',
@@ -22,28 +24,56 @@ const Signup = (props) => {
   const { setLogin } = props;
   const dispatch = useDispatch();
   const signupData = useSelector(state => state.signup);
+
   const [toDisplay, setToDisplay] = useState(componentName.personal);
 
   useLayoutEffect(() => {
+    // Reset values of every signup inputs
     dispatch(setInitialState());
   }, []);
 
-  const handleSubmit = (event) => {
-    console.log(signupData)
+  // Manage submit form to create an account
+  const handleSubmit = async (event) => {    
+    const dataToSend = {
+      email: signupData.email,
+      password: signupData.password,
+      password_confirm: signupData.confirmPassword
+    }
+     
+    await postUser(dataToSend)
+    .then(() => {
+      showAlert('Your account has been created.', 'success');
+      setLogin();
+    })
+    .catch((error) => {
+      let message = '';
+      if (error.response) {
+        message = error.response.data.message;
+      } else if (error.request) {
+        message = error.request;
+      } else {
+        message = 'An error occured while trying to create the account.'
+      }
+      showAlert(message, 'error');
+    });
   };
 
+  // Display "Personal informations" page
   const setPersonal = () => {
     setToDisplay(componentName.personal);
   }
 
+  // Display "Company informations" page
   const setCompany = () => {
     setToDisplay(componentName.company);
   }
   
+  // Display "Optional questions" page
   const setQuestions = () => {
     setToDisplay(componentName.questions);
   }
 
+  // Display "Payment informations" page
   const setPayment = () => {
     setToDisplay(componentName.payment);
   }

@@ -38,12 +38,13 @@ const Personal = (props) => {
    * Validate all inputs of this page, in particular password rules and password matching
    */
   const validateInputs = (name, email, password, confirmPassword) => {
-    let letter = /[a-zA-Z]/; 
-    let number = /[0-9]/;
+    const emailRegex = /.+@.+\..+/;
+    const letterRegex = /[a-zA-Z]/; 
+    const numberRegex = /[0-9]/;
 
     const nameValidation = name && name !== '';
-    const emailValidation = email && email !== '';
-    const passwordValidation = password && password !== '' && password.length > 7 && letter.test(password) && number.test(password);
+    const emailValidation = email && email !== '' && emailRegex.test(email);
+    const passwordValidation = password && password !== '' && password.length > 7 && letterRegex.test(password) && numberRegex.test(password);
     let passwordMatch  = false;
     if (confirmPassword && confirmPassword !== '') {
       passwordMatch = confirmPassword === password;

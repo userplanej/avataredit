@@ -49,7 +49,7 @@ export default function Main() {
         <Route exact path={pathnameEnum.templates} component={Templates} />
         <Route exact path={pathnameEnum.avatars} component={Avatars} />
         <Route exact path={pathnameEnum.account} component={Account} />
-        <Redirect from="*" to={pathnameEnum.home} />
+        <Redirect from="/studio" to={pathnameEnum.home} />
       </Switch>
     </Box>
   );

@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import { Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import '../styles/index.less';
+import { Alert, Snackbar } from '@mui/material';
+
 import Main from '../components-site/Main';
 import Authentication from '../components-site/views/authentication/Authentication';
+
 import { theme } from '../styles/theme';
+import '../styles/index.less';
+
+import { setAlertOpen } from '../redux/alert/alertSlice';
 
 class App extends Component<any> {
 	render() {
@@ -39,12 +45,34 @@ class App extends Component<any> {
 					<CssBaseline />
 					<Switch>
 						<Route path="/studio" component={Main} />
-						<Route path="/" component={Authentication} />
+						<Route path="/login" component={Authentication} />
+						<Redirect from="*" to={sessionStorage.getItem('logged') ? '/studio/home' : '/login'} />
 					</Switch>
       	</ThemeProvider>
+
+				<Snackbar
+					autoHideDuration={6000}
+					anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+					open={this.props.alertOpen}
+					onClose={() => this.props.setAlertOpen(false)}
+				>
+					<Alert variant="filled" onClose={() => this.props.setAlertOpen(false)} severity={this.props.alertSeverity} sx={{ width: '100%' }}>
+						{this.props.alertMessage}
+					</Alert>
+				</Snackbar>
 			</div>
 		);
 	}
 }
 
-export default App;
+const mapStateToProps = state => ({
+	alertMessage: state.alert.message,
+	alertSeverity: state.alert.severity,
+	alertOpen: state.alert.open
+});
+
+const mapDispatchToProps  = {
+	setAlertOpen
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
