@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -17,8 +18,11 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { setDrawerWidth, setIsMinimal, setPathName } from '../redux/navigation/navigationSlice';
+import { drawerMaxWidth, drawerMinWidth } from './constants/Drawer';
+
 import CustomInput from './inputs/CustomInput';
-import { postVideo } from '../api/video/video';
+import { postImagePackage } from '../api/image/package';
 import { pathnameEnum } from './constants/Pathname';
 
 const boxStyle = {
@@ -111,6 +115,8 @@ const secondaryButtonStyle = {
 }
 
 const Appbar = ({ handleDrawerToggle, canvasRef }) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
   const pathName = useSelector(state => state.navigation.pathName);
   const drawerWidth = useSelector(state => state.navigation.drawerWidth);
   const [title, setTitle] = useState('');
@@ -118,8 +124,20 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
   const cannotRedo = canvasRef && !canvasRef.handler?.transactionHandler.redos.length;
 
-  const createNewVideo = () => {
+  useEffect(() => {
+    const pathname = history.location.pathname;
+    if (pathname === pathnameEnum.editor) {
+      dispatch(setIsMinimal(true));
+      dispatch(setDrawerWidth(drawerMinWidth));
+    } else {
+      dispatch(setIsMinimal(false));
+      dispatch(setDrawerWidth(drawerMaxWidth));
+    }
+    dispatch(setPathName(pathname));
+  }, []);
 
+  const createNewVideo = () => {
+    
   }
 
   const handleChangeTitle = (event) => {
