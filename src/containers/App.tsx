@@ -46,7 +46,7 @@ class App extends Component<any> {
 					<Switch>
 						<Route path="/studio" component={Main} />
 						<Route path="/login" component={Authentication} />
-						<Redirect from="*" to={sessionStorage.getItem('logged') ? '/studio/home' : '/login'} />
+						<Redirect from="*" to={sessionStorage.getItem('logged') !== null ? '/studio/home' : '/login'} />
 					</Switch>
       	</ThemeProvider>
 

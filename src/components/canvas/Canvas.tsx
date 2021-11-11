@@ -158,7 +158,7 @@ class Canvas extends Component<CanvasProps, IState> {
 			<div
 				ref={this.container}
 				id={id}
-				style={{ width: '555px', height: '315px' }}
+				style={{ width: '550px', height: '310px' }}
 			>
 				<canvas id={`canvas_${id}`} />
 			</div>

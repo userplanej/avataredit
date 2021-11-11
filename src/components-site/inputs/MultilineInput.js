@@ -38,6 +38,10 @@ const MultilineInput = (props) => {
      */
     onChange,
     /**
+     * Max number of characters
+     */
+    maxLength,
+    /**
      * Additional CSS styles to apply
      */
     sx
@@ -53,15 +57,18 @@ const MultilineInput = (props) => {
       maxRows={maxRows}
       value={value}
       onChange={onChange}
+      inputProps={{ maxLength: maxLength }}
       variant="filled"
       disableUnderline
       sx={{ 
+        color: '#fff',
+        border: 'solid 2px #3c4045',
         width: "100%", 
         borderRadius: '6px', 
-        backgroundColor: '#fff', 
+        backgroundColor: '#202427', 
         p: 1,
         ':focus-within': {
-          backgroundColor: '#fff',
+          backgroundColor: '#202427',
           border: '2px solid #e8dff4'
         },
         ...sx

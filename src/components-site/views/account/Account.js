@@ -16,7 +16,7 @@ const Account = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   // Inputs helper text
-  const [passwordHelperText, setPasswordHelperText] = useState('Both password must match');
+  const [passwordHelperText, setPasswordHelperText] = useState('Both passwords must match');
   // Boolean to disable or enable submit button
   const [canSubmit, setCanSubmit] = useState(false);
   // Boolean to show change password dialog
@@ -29,12 +29,12 @@ const Account = () => {
     {
       label: 'Current password',
       name: 'currentPassword',
-      caption: 'Password must contain more than 8 characters and includes both alphabetical and numerical',
+      caption: 'Password must be at least 8 characters long. Must include at least one letter and one number.',
     },
     {
       label: 'New password',
       name: 'newPassword',
-      caption: 'Password must contain more than 8 characters and includes both alphabetical and numerical'
+      caption: 'Password must be at least 8 characters long. Must include at least one letter and one number.'
     },
     {
       label: 'Confirm new password',
@@ -65,7 +65,7 @@ const Account = () => {
     let passwordMatch  = false;
     if (confirmNewPassword && confirmNewPassword !== '') {
       passwordMatch = confirmNewPassword === newPassword;
-      setPasswordHelperText(passwordMatch ? 'Both password matches' : 'Both password must match');
+      setPasswordHelperText(passwordMatch ? 'Both password match' : 'Both passwords must match');
       setPasswordMatch(passwordMatch);
     }
     setCanSubmit(passwordValidation && newPasswordValidation && passwordMatch);
@@ -138,7 +138,7 @@ const Account = () => {
 
   return (
     <Box sx={{ mt: 10, ml: 4, width: '100%' }}>
-      <Typography variant="h5">Account information</Typography>
+      <Typography variant="h5" color="#fff">Account information</Typography>
 
       <Grid container sx={{ mt: 2, width: '100%' }}>
         <Grid item xs={9} md={6} xl={4}>
@@ -176,12 +176,12 @@ const Account = () => {
         </Box>
       </Grid>
 
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{ mt: 2, color: '#fff' }}>
         {"To cancel your account, "}
         <Link color="#df678c">please click here.</Link>
       </Box>
 
-      <Typography variant="h5" sx={{ mt: 3 }}>Personal information</Typography>
+      <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Personal information</Typography>
 
       <Grid container sx={{ mt: 2, width: '100%' }}>
         <Grid item xs={9} md={6} xl={4}>
@@ -207,7 +207,7 @@ const Account = () => {
             id="bio"
             name="bio"
             // onChange={onChangeBio}
-            sx={{ border: 'solid 2px #f9f8fa', boxShadow: '3px 3px 6px 0 rgb(0 0 0 / 2%)' }}
+            sx={{ boxShadow: '3px 3px 6px 0 rgb(0 0 0 / 2%)' }}
           />
         </Grid>
       </Grid>
@@ -216,11 +216,11 @@ const Account = () => {
 
       <Box sx={{ mt: 1.5, ml: 1 }}>
         <Grid container>
-          <Grid item><FormControlLabel control={<Switch defaultChecked sx={{ mr: 1 }} />} label="Video processing complete" /></Grid>
+          <Grid item><FormControlLabel control={<Switch defaultChecked sx={{ mr: 1 }} />} label="Video processing complete" sx={{ color: '#fff' }} /></Grid>
         </Grid>
 
         <Grid container sx={{ mt: 2 }}>
-          <Grid item><FormControlLabel control={<Switch sx={{ mr: 1 }} />} label="Product updates" /></Grid>
+          <Grid item><FormControlLabel control={<Switch sx={{ mr: 1 }} />} label="Product updates" sx={{ color: '#fff' }} /></Grid>
         </Grid>
       </Box>
 
@@ -232,11 +232,11 @@ const Account = () => {
         aria-describedby="password-dialog-description"
       >
         <DialogTitle id="password-dialog-title" sx={{ textAlign: 'right' }}>
-          <CloseIcon fontSize="large" onClick={closeChangePassword} sx={{ cursor: 'pointer' }} />
+          <CloseIcon fontSize="large" onClick={closeChangePassword} sx={{ cursor: 'pointer', color: '#fff' }} />
         </DialogTitle>
 
         <DialogContent>
-          <Typography variant="h5">
+          <Typography variant="h5" color="#fff">
             Change password
           </Typography>
 

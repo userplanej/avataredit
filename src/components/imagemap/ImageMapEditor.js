@@ -838,7 +838,6 @@ class ImageMapEditor extends Component {
 			objects,
 			slideList,
 			updatedValue,
-			isMinimal,
 			mobileOpen
 		} = this.state;
 		const {
@@ -878,10 +877,10 @@ class ImageMapEditor extends Component {
 					handleDrawerToggle={() => this.handleDrawerToggle()}
 				/>
 
-				<Box sx={{ mt: 8, width: '100%' }}>
-					<Grid container sx={{ height: '100%', width: '100%', pl: 1, pt: 1 }}>
+				<Box sx={{ mt: 8, width: '100%', backgroundColor: '#202427' }}>
+					<Grid container sx={{ height: '100%', width: '100%' }}>
 						<Grid item xs={12} md={3} lg={2} xl={2}>
-							<Box sx={{ backgroundColor: '#fff', borderRadius: '6px', height: '100%', width: '90%' }}>
+							<Box sx={{ backgroundColor: '#24282c', height: '100%', width: '90%' }}>
 								<Slides canvasRef={this.canvasRef} />
 							</Box>
 						</Grid>

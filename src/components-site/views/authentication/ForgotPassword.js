@@ -32,9 +32,16 @@ const ForgotPassword = (props) => {
     setIsVerify(true);
   };
 
+  const validateInputs = (email) => {
+    const emailRegex = /.+@.+\..+/;
+
+    const emailValidation = email && email !== '' && emailRegex.test(email);
+    setCanSubmitEmail(emailValidation);
+  }
+
   const onChangeEmail = (event) => {
     const email = event.target.value;
-    setCanSubmitEmail(email && email !== '');
+    validateInputs(email);
     setEmail(email);
   }
 
@@ -59,14 +66,11 @@ const ForgotPassword = (props) => {
           padding: 5,
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#fff',
+          backgroundColor: '#202427',
           boxShadow: '4px 6px 6px 0 rgba(0, 0, 0, 0.1)'
         }}
       >
-        <Box display="flex">
-          <Typography component="h1" variant="h4" color="#df678c">Minds</Typography>
-          <Typography component="h1" variant="h4" color="#09113c">lab</Typography>
-        </Box>
+        <Box><img src="/images/img_mstudio.png" /></Box>
 
         <Typography component="h1" variant="h4" sx={{ mt: 3, fontWeight: 'normal' }}>
           {isVerify ? 'Reset password' : 'Can\'t log in?'}
@@ -104,7 +108,7 @@ const ForgotPassword = (props) => {
           />
           }
 
-          {isVerify && <Link href="#" variant="body2" underline="hover">
+          {isVerify && <Link href="#" variant="body2" underline="hover" color="#9a9a9a">
             {"Resend code"}
           </Link>}
 
@@ -127,7 +131,7 @@ const ForgotPassword = (props) => {
             </Button>
           </Box>
           
-          {!isVerify && <Box sx={{ textAlign: 'center', mt: 2 }}>
+          {!isVerify && <Box sx={{ textAlign: 'center', mt: 2, color: '#fff' }}>
             Still having trouble? {" "}
             <Link color="#df678c">
               Contact us at

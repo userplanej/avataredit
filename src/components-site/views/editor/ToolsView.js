@@ -11,18 +11,10 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import ImageIcon from '@mui/icons-material/Image';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import CategoryIcon from '@mui/icons-material/Category';
-import TextureIcon from '@mui/icons-material/Texture';
-import FormatPaintIcon from '@mui/icons-material/FormatPaint';
+import FlipToBackIcon from '@mui/icons-material/FlipToBack';
+import FlipToFrontIcon from '@mui/icons-material/FlipToFront';
 import CloseIcon from '@mui/icons-material/Close';
-import { Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
-
-import CommonButton from '../../buttons/CommonButton';
+import { Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Input } from '@mui/material';
 
 const iconContainerStyle = {
   minWidth: '0px',
@@ -48,14 +40,6 @@ const iconContainerActiveStyle = {
   backgroundColor: '#4f4081'
 }
 
-const iconStyle = {
-  color: '#4f4081'
-}
-
-const iconActiveStyle = {
-  color: '#df678c'
-}
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -77,11 +61,11 @@ function TabPanel(props) {
   );
 }
 
-function a11yProps(index, value) {
+function a11yProps(index) {
   return {
     id: `vertical-tab-${index}`,
     'aria-controls': `vertical-tabpanel-${index}`,
-    sx: { minWidth: '80px', fontSize: '12px', backgroundColor: value === index ? '#e8dff4' : '' }
+    sx: { fontSize: '15px', mt: 1 }
   };
 }
 
@@ -118,13 +102,45 @@ const ToolsView = (props) => {
   const renderMoveButtons = () => {
     const { canvasRef } = props;
     return (
-      <Box sx={{ mt: '20px' }}>
+      <Box sx={{ mt: 1 }}>
         <Typography variant="h6">Move</Typography>
-        <Box sx={{ display: 'flex' }}>
-          <CommonButton text="Back" onClick={() => canvasRef.handler.sendToBack()} />
-          <CommonButton text="Backward" onClick={() => canvasRef.handler.sendBackwards()} />
-          <CommonButton text="Forward" onClick={() => canvasRef.handler.bringForward()} />
-          <CommonButton text="Front" onClick={() => canvasRef.handler.bringToFront()} />
+        <Box sx={{ display: 'flex', mt: 1 }}>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            startIcon={<FlipToBackIcon />} 
+            onClick={() => canvasRef.handler.sendToBack()}
+            sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
+          >
+            Back
+          </Button>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            startIcon={<FlipToBackIcon />} 
+            onClick={() => canvasRef.handler.sendBackwards()}
+            sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
+          >
+            Backward
+          </Button>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            startIcon={<FlipToFrontIcon />} 
+            onClick={() => canvasRef.handler.bringForward()}
+            sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
+          >
+            Forward
+          </Button>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            startIcon={<FlipToFrontIcon />} 
+            onClick={() => canvasRef.handler.bringToFront()}
+            sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427' }}
+          >
+            Front
+          </Button>
         </Box>
       </Box>
     );
@@ -146,8 +162,12 @@ const ToolsView = (props) => {
     }
     return (
       <Box>
-        <Typography variant="h5">{title}</Typography>
+        <Typography variant="h5" sx={{ mb: 2 }}>{title}</Typography>
+
+        <hr />
+        
         {renderMoveButtons()}
+        
         {/* <Typography variant="h6">Layout</Typography>
         <Box>
           
@@ -205,11 +225,16 @@ const ToolsView = (props) => {
     });
   }
 
+  const uploadImage = (event) => {
+    console.log(event.target.value)
+  }
+
   return (
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
-      <Grid item xs={8} md={8} lg={8} xl={8} sx={{ backgroundColor: '#fff', borderRadius: '6px', mr: 1 }}>
+      <Grid item xs={8} md={8} lg={8} xl={9} sx={{ backgroundColor: '#3c4045' }}>
         <TabPanel value={activeTab} index={0}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
+          {/* <Input type="file" onChange={uploadImage} /> */}
           {/* <Button onClick={sendTest}>Send to minds</Button>
           <Button onClick={props.saveImage}>Save image</Button>
           <Button onClick={openUploadImage}>Upload image</Button> */}
@@ -220,8 +245,14 @@ const ToolsView = (props) => {
           <Box sx={{ height: '600px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
 
           <Box sx={{ width: '100%' }}>
-            <Box sx={{ width: '100%' }}>
-              <Tabs value={backgroundTab} variant="fullWidth" scrollButtons="auto" onChange={handleChangeBackgroundTab} aria-label="backgrounds-tabs">
+            <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
+              <Tabs 
+                value={backgroundTab} 
+                variant="fullWidth" 
+                scrollButtons="auto" 
+                onChange={handleChangeBackgroundTab} 
+                aria-label="backgrounds-tabs"
+              >
                 <Tab label="Full body" />
                 <Tab label="Circle" />
                 <Tab label="Voice only" />
@@ -236,7 +267,7 @@ const ToolsView = (props) => {
         <TabPanel value={activeTab} index={2}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select background</Typography>
           <Box sx={{ width: '100%' }}>
-            <Box sx={{ width: '100%' }}>
+            <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs value={backgroundTab} variant="fullWidth" scrollButtons="auto" onChange={handleChangeBackgroundTab} aria-label="backgrounds-tabs">
                 <Tab label="Colors" />
                 <Tab label="Images" />
@@ -264,7 +295,7 @@ const ToolsView = (props) => {
         <TabPanel value={activeTab} index={5}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select images</Typography>
           <Box sx={{ width: '100%' }}>
-            <Box sx={{ width: '100%' }}>
+            <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs value={imageTab} onChange={handleChangeImageTab} aria-label="images-tabs">
                 <Tab label="Images" />
                 <Tab label="Uploads" />
@@ -284,7 +315,7 @@ const ToolsView = (props) => {
         </TabPanel>
       </Grid>
 
-      <Grid item xs={2} md={4} lg={3} xl={2} sx={{ backgroundColor: '#f5f0fa', height: '100%' }}>
+      <Grid item xs={2} md={4} lg={3} xl={2} sx={{ backgroundColor: '#30353a', height: '100%' }}>
         <Tabs
           orientation="vertical"
           indicatorColor="secondary"
@@ -292,30 +323,30 @@ const ToolsView = (props) => {
           onChange={handleChange}
           aria-label="tools tabs"
           sx={{ 
+            mt: 2,
             '& .MuiTab-root': {
-              backgroundColor: '#f5f0fa'
+              backgroundColor: '#30353a'
             },
             '& .Mui-selected': {
-              backgroundColor: '#fff'
+              backgroundColor: '#3c4045',
+              color: '#fff'
             },
             '& .MuiTabs-scroller': {
               width: '100%'
             },
             '& .MuiTabs-indicator': {      
-              width: '5px',
-              backgroundColor: '#df678c',
-              borderRadius: '5px'
+              width: '0px'
             }
           }}
         >
-          <Tab icon={makeIcon(0, <AutoAwesomeMosaicIcon sx={activeTab === 0 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Template" {...a11yProps(0, activeTab)} />
-          <Tab icon={makeIcon(1, <AccountBoxIcon sx={activeTab === 1 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Avatar" {...a11yProps(1, activeTab)} />
-          <Tab icon={makeIcon(2, <TextureIcon sx={activeTab === 2 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Background" {...a11yProps(2, activeTab)} />
-          <Tab icon={makeIcon(3, <TextFieldsIcon sx={activeTab === 3 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Text" {...a11yProps(3, activeTab)} />
-          <Tab icon={makeIcon(4, <CategoryIcon sx={activeTab === 4 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Shapes" {...a11yProps(4, activeTab)} />
-          <Tab icon={makeIcon(5, <ImageIcon sx={activeTab === 5 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Images" {...a11yProps(5, activeTab)} />
-          <Tab icon={makeIcon(6, <MusicNoteIcon sx={activeTab === 6 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Music" {...a11yProps(6, activeTab)} />
-          {activeObject && <Tab icon={makeIcon(7, <FormatPaintIcon sx={activeTab === 7 ? {...iconActiveStyle} : {...iconStyle}} />)} label="Format" {...a11yProps(7, activeTab)} />}
+          <Tab label="Template" {...a11yProps(0)} />
+          <Tab label="Avatar" {...a11yProps(1)} />
+          <Tab label="Background" {...a11yProps(2)} />
+          <Tab label="Text" {...a11yProps(3)} />
+          <Tab label="Shapes" {...a11yProps(4)} />
+          <Tab label="Images" {...a11yProps(5)} />
+          <Tab label="Music" {...a11yProps(6)} />
+          {activeObject && <Tab label="Format" {...a11yProps(7)} />}
         </Tabs>
       </Grid>
 

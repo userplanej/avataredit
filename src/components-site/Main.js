@@ -12,8 +12,7 @@ import Avatars from './views/avatars/Avatars';
 import Templates from './views/templates/Templates';
 import Account from './views/account/Account';
 
-import { setDrawerWidth, setIsMinimal, setPathName } from '../redux/navigation/navigationSlice';
-import { drawerMinWidth, drawerMaxWidth } from './constants/Drawer';
+import { setPathName } from '../redux/navigation/navigationSlice';
 import { pathnameEnum } from './constants/Pathname';
 
 export default function Main() {
@@ -24,19 +23,16 @@ export default function Main() {
   const pathname = history.location.pathname;
 
   useEffect(() => {
-    if (pathname === pathnameEnum.editor) {
-      dispatch(setIsMinimal(true));
-      dispatch(setDrawerWidth(drawerMinWidth));
-    } else {
-      dispatch(setIsMinimal(false));
-      dispatch(setDrawerWidth(drawerMaxWidth));
-    }
     dispatch(setPathName(pathname));
   }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  if (!sessionStorage.getItem('logged')) {
+    return <Redirect to="/login" />;
+  }
 
   return (
     <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
@@ -49,7 +45,7 @@ export default function Main() {
         <Route exact path={pathnameEnum.templates} component={Templates} />
         <Route exact path={pathnameEnum.avatars} component={Avatars} />
         <Route exact path={pathnameEnum.account} component={Account} />
-        <Redirect from="/studio" to={pathnameEnum.home} />
+        <Redirect from="/studio/" to={pathnameEnum.home} />
       </Switch>
     </Box>
   );

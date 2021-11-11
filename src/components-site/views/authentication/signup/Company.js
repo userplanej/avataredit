@@ -89,7 +89,11 @@ const Company = (props) => {
         Lorem IpsumLorem IpsumLorem IpsumIpsumLorem IpsumLorem Ipsum
       </Typography>
 
-      <FormControlLabel control={<Checkbox value={tc} onChange={(event) => setTc(!tc)} sx={{ '& .MuiSvgIcon-root': { fontSize: 30 }, mr: '5px' }} />} label="Agree to T&C" />
+      <FormControlLabel 
+        sx={{ color: "#9a9a9a" }}
+        control={<Checkbox value={tc} onChange={(event) => setTc(!tc)} sx={{ '& .MuiSvgIcon-root': { fontSize: 30 }, mr: '5px', color: '#fff' }} />} 
+        label="Agree to T&C" 
+      />
 
       <Box sx={{ display: 'flex', mt: 5 }}>
         <Button

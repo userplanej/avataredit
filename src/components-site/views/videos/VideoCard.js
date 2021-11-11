@@ -11,25 +11,17 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-// import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-import { setDrawerWidth, setIsMinimal, setPathName } from '../../../redux/navigation/navigationSlice';
-import { drawerMinWidth } from '../../constants/Drawer';
+import { setPathName } from '../../../redux/navigation/navigationSlice';
 import { pathnameEnum } from '../../constants/Pathname';
 
 const playButtonStyle = {
-  width: '100px',
-  height: '40px',
-  margin: '0 8px 0 12px',
-  borderRadius: '10px',
-  boxShadow: '4px 6px 6px 0 rgba(0, 0, 0, 0.03)',
-  border: 'solid 2px #babbbb',
-  backgroundColor: '#e8e9e9',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   cursor: 'pointer',
-  color: '#5b5c62'
+  color: '#fff'
 }
 
 const ITEM_HEIGHT = 48;
@@ -63,14 +55,12 @@ const VideoCard = (props) => {
     event.stopPropagation();
   }
 
-  // const handleDeleteVideo = (event) => {
-  //   event.stopPropagation();
-  // }
+  const handleDeleteVideo = (event) => {
+    event.stopPropagation();
+  }
 
   const handleClickVideo = () => {
     dispatch(setPathName(pathnameEnum.editor));
-    dispatch(setIsMinimal(true));
-    dispatch(setDrawerWidth(drawerMinWidth));
     history.push(pathnameEnum.editor);
   }
   
@@ -78,15 +68,16 @@ const VideoCard = (props) => {
     <Grid 
       key={video.id}
       container 
+      columns={13}
       onClick={handleClickVideo}  
       sx={{ 
         width: '100%', 
         alignItems: 'center', 
-        backgroundColor: '#f9f8fa', 
+        backgroundColor: '#202427', 
         padding: '16px 20px 16px 20px', 
         cursor: 'pointer',
         ':hover': {
-          backgroundColor: '#e8e9e9'
+          backgroundColor: '#3c4045'
         },
         '& .MuiGrid-item': {
           p: '0px'
@@ -94,65 +85,79 @@ const VideoCard = (props) => {
       }}
     >
       <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-        <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 35 }, mr: '15px' }} onClick={handleSelectVideo} />
+        <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 35 }, mr: '15px', color: '#fff' }} onClick={handleSelectVideo} />
       </Grid>
 
-      <Grid item md={1} sx={{ display: 'flex', alignItems: 'center' }}>
-        <Box sx={{ width: '80px', height: '80px', borderRadius: '5px', backgroundColor: 'red' }}></Box>
+      <Grid item lg={1} sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ width: '80px', height: '80px', borderRadius: '5px', backgroundColor: '#fff' }}></Box>
       </Grid>
 
-      <Grid item md={1}>
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{video.name}</Typography>
-        <Typography variant="subtitle1">{video.createdAt}</Typography>
+      <Grid item lg={2}>
+        <Box sx={{ display: 'flex', alignItems: 'center', pl: 2 }}>
+          <Typography variant="h6" sx={{ color: '#fff' }}>{video.name}</Typography>
+          {video.isDraft && 
+            <Box 
+              sx={{ 
+                textAlign: 'center', 
+                fontSize: '14px', 
+                fontWeight: 'bold', 
+                color: '#9a9a9a', 
+                width: '65px', 
+                height: '25px', 
+                borderRadius: '4px', 
+                border: 'solid 2px #babbbb',
+                ml: 2
+              }}
+            >
+              Draft
+            </Box>
+          }
+        </Box>
+        
+        <Typography variant="subtitle1" sx={{ color: '#fff', pl: 2 }}>{video.createdAt}</Typography>
       </Grid>
 
-      <Grid item md={1} sx={{ display: 'flex', justifyContent: 'right' }}>
-        {video.isDraft && 
-        <Box sx={{ textAlign: 'center', fontSize: '14px', fontWeight: 'bold', color: '#5b5c62', width: '65px', height: '25px', borderRadius: '10px', border: 'solid 2px #babbbb' }}>Draft</Box>
-        }
+      <Grid item lg={1} xl={2} sx={{ textAlign: 'center' }}>
+        <Typography variant="h6" sx={{ color: '#fff' }}>{video.time}</Typography>
       </Grid>
 
-      <Grid item md={2} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{video.slides} Slides</Typography>
+      <Grid item lg={1} xl={2} sx={{ textAlign: 'center' }}>
+        <Typography variant="h6" sx={{ color: '#fff' }}>{video.slides} Slides</Typography>
       </Grid>
 
-      <Grid item md={2} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{video.time}</Typography>
-      </Grid>
-
-      <Grid item md={2}>
+      <Grid item lg={1} xl={2}>
         {!video.isDraft && 
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Box sx={{ 
+          {/* <Box sx={{ 
             mr: '30px',
             width: '17px',
             height: '17px',
             borderRadius: '30px',
             boxShadow: '0 3px 6px 0 rgba(159, 190, 157, 0.08)',
-            backgroundColor: '#9ebe9d' }} />
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Ready</Typography>
+            backgroundColor: '#9ebe9d' }} /> */}
+          <Typography variant="h6" sx={{ color: '#fff' }}>Ready</Typography>
         </Box>}
       </Grid>
 
-      <Grid item md={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Grid item lg={1} xl={2} sx={{ display: 'flex', justifyContent: 'center' }}>
         {!video.isDraft && 
         <Box sx={playButtonStyle}>
           <PlayArrowIcon sx={{ mr: '5px' }} />
-          Play
+          <Typography variant="h6" sx={{ color: '#fff' }}>Play</Typography>
         </Box>}
       </Grid>
 
-      <Grid item>
-        {/* {video.isDraft && 
+      <Grid item lg={1} xl={1}>
+        {video.isDraft && 
         <IconButton
           aria-label="delete"
           id="delete-button"
           onClick={handleDeleteVideo}
         >
-          <DeleteForeverIcon />
-        </IconButton>} */}
+          <DeleteForeverIcon sx={{ color: '#fff' }} />
+        </IconButton>}
 
-        {/* {!video.isDraft &&  */}
+        {!video.isDraft && 
         <Box>
           <IconButton
             aria-label="more"
@@ -162,8 +167,9 @@ const VideoCard = (props) => {
             aria-haspopup="true"
             onClick={handleClickMenu}
           >
-            <MoreVertIcon />
+            <MoreVertIcon sx={{ color: '#fff' }} />
           </IconButton>
+
           <Menu
             id="video-menu"
             MenuListProps={{
@@ -181,8 +187,7 @@ const VideoCard = (props) => {
           >
             {options.map((option) => (
               <MenuItem 
-                key={option} 
-                selected={option === 'Pyxis'} 
+                key={option}  
                 onClick={handleCloseMenu} 
                 sx={{ ':hover': { backgroundColor: '#f5f0fa' } }}
               >
@@ -191,7 +196,7 @@ const VideoCard = (props) => {
             ))}
           </Menu>
         </Box>
-        {/* } */}
+        }
       </Grid>
     </Grid>
   );

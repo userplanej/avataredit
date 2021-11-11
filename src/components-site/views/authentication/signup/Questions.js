@@ -94,7 +94,7 @@ const Questions = (props) => {
         Optional questions
       </Typography>
 
-      <InputLabel sx={{ mt: '20px' }}>How did you know about M Studio?</InputLabel>
+      <InputLabel sx={{ mt: '20px' }}>How did you hear about M Studio?</InputLabel>
       <CustomInput 
         placeholder="Type your answer" 
         fullWidth  

@@ -107,6 +107,22 @@
 				"scaleX": 0.5,
 				"scaleY": 0.5
 			}
+		},
+		{
+			"name": "Upload image",
+			"description": "",
+			"type": "upload",
+			"icon": {
+				"prefix": "fas",
+				"name": "upload"
+			},
+			"option": {
+				"type": "upload",
+				"name": "",
+				"src": "",
+				"scaleX": 1,
+				"scaleY": 1
+			}
 		}
 	],
 	"SHAPE": [

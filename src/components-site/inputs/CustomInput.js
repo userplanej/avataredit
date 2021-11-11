@@ -59,12 +59,13 @@ const CustomInput = (props) => {
       startAdornment={startAdornment}
       endAdornment={endAdornment}
       sx={{
-        border: 'solid 2px #f9f8fa',
+        color: '#fff',
+        border: 'solid 2px #3c4045',
         borderRadius: '5px',
         boxShadow: '3px 3px 6px 0 rgba(0, 0, 0, 0.02)',
-        backgroundColor: '#fff',
+        backgroundColor: '#202427',
         ':focus-within': {
-          backgroundColor: '#fff',
+          backgroundColor: '#202427',
           border: '2px solid #e8dff4'
         },
         '.MuiFilledInput-input': {

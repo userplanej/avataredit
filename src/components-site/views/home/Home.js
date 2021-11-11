@@ -8,7 +8,8 @@ import VideoCard from '../videos/VideoCard';
 const boxStyle = {
   mt: 3, 
   ml: 4, 
-  width: '95%'
+  width: '95%',
+  color: '#fff'
 }
 
 const data = [

@@ -23,7 +23,7 @@ const Personal = (props) => {
   const password = useSelector(state => state.signup.password);
   const confirmPassword = useSelector(state => state.signup.confirmPassword);
   // Inputs helper text
-  const [passwordHelperText, setPasswordHelperText] = useState('Both password must match');
+  const [passwordHelperText, setPasswordHelperText] = useState('Both passwords must match');
   // Boolean to tell if passwords are matching or not
   const [passwordMatch, setPasswordMatch] = useState(false);
   // Boolean to disable or enable confirm button
@@ -48,7 +48,7 @@ const Personal = (props) => {
     let passwordMatch  = false;
     if (confirmPassword && confirmPassword !== '') {
       passwordMatch = confirmPassword === password;
-      setPasswordHelperText(passwordMatch ? 'Both password matches' : 'Both password must match');
+      setPasswordHelperText(passwordMatch ? 'Both password match' : 'Both passwords must match');
       setPasswordMatch(passwordMatch);
     }
     setCanSubmit(nameValidation && emailValidation && passwordValidation && passwordMatch);
@@ -134,7 +134,7 @@ const Personal = (props) => {
       />
 
       <Typography variant="caption">
-        Password must contain more than 8 characters and includes both alphabetical and numerical
+        Password must be at least 8 characters long. Must include at least one letter and one number.
       </Typography>
       
       <InputLabel required sx={{ mt: '20px' }}>Confirm password</InputLabel>
@@ -164,7 +164,7 @@ const Personal = (props) => {
         Continue
       </Button>
 
-      <Box sx={{ textAlign: 'center' }} color="#4f4081">
+      <Box sx={{ textAlign: 'center' }} color="#fff">
         Already a member? {" "}
         <Link onClick={setLogin} color="#df678c">
           Login here

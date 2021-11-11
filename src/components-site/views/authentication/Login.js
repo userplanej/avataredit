@@ -112,14 +112,11 @@ const Login = (props) => {
           padding: 5,
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#fff',
+          backgroundColor: '#202427',
           boxShadow: '4px 6px 6px 0 rgba(0, 0, 0, 0.1)'
         }}
       >
-        <Box display="flex">
-          <Typography component="h1" variant="h4" color="#df678c">Minds</Typography>
-          <Typography component="h1" variant="h4" color="#09113c">lab</Typography>
-        </Box>
+        <Box><img src="/images/img_mstudio.png" /></Box>
 
         <Typography component="h1" variant="h4" sx={{ mt: 2, fontWeight: 'normal' }}>
           Welcome back
@@ -151,11 +148,11 @@ const Login = (props) => {
           />
 
           <Typography variant="caption">
-            Password must contain more than 8 characters and includes both alphabetical and numerical
+            Password must be at least 8 characters long. Must include at least one letter and one number.
           </Typography>
 
           <Box sx={{ mt: 1 }}>
-            <Link onClick={setForgot} variant="body1" underline="hover" color="#4f4081">
+            <Link onClick={setForgot} variant="body1" underline="hover" color="#fff">
               Forgot your password?
             </Link>
           </Box>
@@ -170,7 +167,7 @@ const Login = (props) => {
             Login
           </Button>
           
-          <Box sx={{ textAlign: 'center' }} color="#4f4081">
+          <Box sx={{ textAlign: 'center' }} color="#fff">
             Not a member? {" "}
             <Link onClick={setSignup} color="#df678c">
               Join here

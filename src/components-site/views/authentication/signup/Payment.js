@@ -153,8 +153,8 @@ const Payment = (props) => {
       />
 
       <FormControlLabel 
-        sx={{ mt: 2 }}
-        control={<Checkbox value={saveCardInfo} onChange={() => setSaveCardInfo(!saveCardInfo)} sx={{ '& .MuiSvgIcon-root': { fontSize: 30 } }} />} 
+        sx={{ mt: 2, color: '#9a9a9a' }}
+        control={<Checkbox value={saveCardInfo} onChange={() => setSaveCardInfo(!saveCardInfo)} sx={{ '& .MuiSvgIcon-root': { fontSize: 30, color: '#fff' } }} />} 
         label="Save card info for next billing" 
       />
         

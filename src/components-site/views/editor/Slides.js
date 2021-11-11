@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Grid, Box } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import AddIcon from '@mui/icons-material/Add';
+// import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import PanoramaIcon from '@mui/icons-material/Panorama';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -11,41 +11,41 @@ import Button from '@mui/material/Button';
 const slideContainerStyle = {
   width: '100%',
   height: '192px',
-  margin: '16px 0px 18px',
+  margin: '5px 0px 5px',
   padding: '0',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  ':hover': {
-    backgroundColor: 'rgba(232, 233, 233, 0.7)',
-  }
+  // ':hover': {
+  //   backgroundColor: 'rgba(232, 233, 233, 0.7)',
+  // }
 }
 
-const slideActiveContainerStyle = {
-  width: '100%',
-  height: '192px',
-  margin: '16px 0px 18px',
-  padding: '0',
-  backgroundColor: '#e8e9e9',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center'
-}
+// const slideActiveContainerStyle = {
+//   width: '100%',
+//   height: '192px',
+//   margin: '16px 0px 18px',
+//   padding: '0',
+//   backgroundColor: '#e8e9e9',
+//   display: 'flex',
+//   flexDirection: 'column',
+//   alignItems: 'center',
+//   justifyContent: 'center'
+// }
 
 const addSlideContainerStyle = {
-  width: '80%',
+  width: '100%',
   height: '128px',
-  borderRadius: '6px',
   border: 'solid 2px #e8e9e9',
-  backgroundColor: '#f9f8fa',
+  color: '#fff',
+  backgroundColor: '#3c4045',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   ':hover': { 
-    backgroundColor: 'rgba(232, 233, 233, 0.8)', 
+    backgroundColor: 'rgba(232, 233, 233, 0.3)', 
     border: 'solid 2px #d1d1d1',
     cursor: 'pointer' 
   }
@@ -55,12 +55,12 @@ const btnAddTransitionStyle = {
   width: '100%',
   height: '32px',
   marginTop: '8px',
-  borderRadius: '10px',
-  backgroundColor: '#f9f8fa',
-  color: '#5b5c62',
+  borderRadius: '4px',
+  backgroundColor: '#3c4045',
+  color: '#fff',
   textTransform: 'none',
   ':hover': {
-    backgroundColor: '#fff'
+    backgroundColor: 'rgba(232, 233, 233, 0.3)', 
   }
 }
 
@@ -125,14 +125,16 @@ const Slides = (props) => {
         return (
           <ListItem
             key={slide.id}
-            sx={isActive ? slideActiveContainerStyle : slideContainerStyle}
+            sx={slideContainerStyle}
+            // sx={isActive ? slideActiveContainerStyle : slideContainerStyle}
             onClick={() => loadSlide(slide.id)}
           >
-            <Grid container sx={isActive ? { borderLeft: '4px solid #df678c' } : null}>
-              <Grid item xs={1} md={1} xl={1} sx={{ px: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Grid container /*sx={isActive ? { borderLeft: '4px solid #df678c' } : null}*/>
+              <Grid item xs={1} md={1} xl={1} sx={{ px: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
                 <Box>{slide.id}</Box>
-                <DragIndicatorIcon sx={{ mt: '28px', cursor: 'grab' }} />
+                {/* <DragIndicatorIcon sx={{ mt: '28px', cursor: 'grab' }} /> */}
               </Grid>
+              
               <Grid item xs={10} md={9} xl={9}>
                 <Box sx={{ 
                   width: '100%',
@@ -149,11 +151,11 @@ const Slides = (props) => {
               </Grid>
             </Grid>
 
-            <Grid container sx={isActive ? { borderLeft: '4px solid #e8e9e9'} : null}>
+            <Grid container /*sx={isActive ? { borderLeft: '4px solid #e8e9e9'} : null}*/>
               <Grid item xs={1} md={1} xl={1} sx={{ px: 2 }}></Grid>
               <Grid item xs={10} md={9} xl={9}>
-                <Button variant="contained" sx={btnAddTransitionStyle}>
-                  Add Transitions
+                <Button variant="contained" variant="secondary" sx={btnAddTransitionStyle}>
+                  Add transitions
                 </Button>
               </Grid>
             </Grid>
@@ -163,13 +165,17 @@ const Slides = (props) => {
       </Box>
 
       <ListItem 
-        sx={{ display: 'flex', justifyContent: 'center' }}
+        sx={{ ...slideContainerStyle, mt: 0}}
         onClick={() => addSlide()}
       >
-        <Box sx={addSlideContainerStyle}>
-          <AddCircleIcon sx={{ color: '#0a1239', mb: '10px' }} />
-          <Typography sx={{ fontSize: '14px'}}>Add slide</Typography>
-        </Box>
+        <Grid container>
+          <Grid item xs={1} md={1} xl={1} sx={{ px: 2 }}></Grid>
+
+          <Grid item xs={10} md={9} xl={9} sx={addSlideContainerStyle}>
+            <AddIcon sx={{ color: '#fff', mb: '10px', fontSize: '2rem' }} />
+            <Typography sx={{ fontSize: '14px'}}>Add slides</Typography>
+          </Grid>
+        </Grid>
       </ListItem>
     </List>
   );

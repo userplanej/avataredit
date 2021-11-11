@@ -20,8 +20,8 @@ const SearchInput = ({ placeholder, onChange, fullWidth, sx }) => {
       onChange={onChange}
       fullWidth={fullWidth}
       id="custom-input"
-      startAdornment={<InputAdornment position="start"><SearchIcon /></InputAdornment>}
-      sx={{ marginBottom: '24px', backgroundColor: '#f9f8fa', '.MuiFilledInput-input': { padding: '8px' }, ...sx }}
+      startAdornment={<InputAdornment position="start"><SearchIcon sx={{ color: "#9a9a9a" }} /></InputAdornment>}
+      sx={{ marginBottom: '24px', backgroundColor: '#202427', '.MuiFilledInput-input': { padding: '8px' }, ...sx }}
     />
   );
 }

@@ -346,6 +346,9 @@ class ImageMapItems extends Component {
 	shouldRenderItem = (item, type) => {
 		const { avatarSearch, backgroundImageSearch, imageSearch } = this.state;
 
+		if (type === 'image' && item.type === 'upload') {
+			return false;
+		}
 		if (type === 'avatar' && avatarSearch !== '') {
 			return item.name.toLowerCase().includes(avatarSearch.toLowerCase()) ? true : false;
 		}
@@ -377,6 +380,7 @@ class ImageMapItems extends Component {
 					padding: '15px 0px 17px',
 					borderRadius: '10px',
 					backgroundColor: '#e8e9e9',
+					color: '#9a9a9a',
 					fontWeight: 'bold',
 					cursor: 'pointer',
 					fontSize: item.fontSize,
@@ -415,19 +419,17 @@ class ImageMapItems extends Component {
 							width: '125px', 
 							height: '100px', 
 							backgroundColor: isBackgroundColor ? item.option.backgroundColor : 'white',
-							backgroundImage: isImage || isBackgroundImage ? `url(${item.option.src})` : '',
+							backgroundImage: isAvatar || isImage || isBackgroundImage ? `url(${item.option.src})` : '',
 							backgroundPosition: 'center', /* Center the image */
 							backgroundRepeat: 'no-repeat', /* Do not repeat the image */
 							backgroundSize: 'cover', /* Resize the background image to cover the entire container */
 							display: 'flex', 
 							flexDirection: 'column', 
 							textAlign: 'center',
-							border: '1px solid #e8e9e9',
 							borderRadius: '10px'
 						}}
 					>
 						{!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
-						{isAvatar && <img src={item.option.src} style={{ objectFit: 'fill' }} />}
 					</Box>
 				</Box>
 				{this.state.collapse ? null : <div className="rde-editor-items-item-text" key={`name-${item.name}`}>{item.name}</div>}
