@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import { Grid, InputLabel, Button, Link, FormControlLabel, Switch, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
+import DeleteAccount from './DeleteAccount';
 import CustomInput from '../../inputs/CustomInput';
 import MultilineInput from '../../inputs/MultilineInput';
 
@@ -47,6 +48,8 @@ const Account = () => {
   const [canSubmit, setCanSubmit] = useState(false);
   // Boolean to show change password dialog
   const [openChangePasswordDialog, setOpenChangePasswordDialog] = useState(false);
+  // Boolean to show delete account dialog
+  const [openDeleteAccountDialog, setOpenDeleteAccountDialog] = useState(false);
   // Boolean to tell if passwords are matching or not
   const [passwordMatch, setPasswordMatch] = useState(false);
 
@@ -102,19 +105,19 @@ const Account = () => {
 
   // Open change password modal
   const openChangePassword = () => {
+    resetPasswordInputs();
 		setOpenChangePasswordDialog(true);
 	}
 
   // Close change password modal
 	const closeChangePassword = () => {
 		setOpenChangePasswordDialog(false);
-    resetPasswordInputs();
 	}
 
   /**
-   * Validate all inputs of this page, in particular password rules and password matching
+   * Validate password inputs
    */
-   const validateInputs = (currentPassword, newPassword, confirmNewPassword) => {
+  const validatePasswordInputs = (currentPassword, newPassword, confirmNewPassword) => {
     let letter = /[a-zA-Z]/; 
     let number = /[0-9]/;
 
@@ -130,6 +133,12 @@ const Account = () => {
     setCanSubmit(passwordValidation && newPasswordValidation && passwordMatch);
   }
 
+  const validateEmail = (email) => {
+    const emailRegex = /.+@.+\..+/;
+    return email && email !== '' && emailRegex.test(email);
+  }
+
+  // Check if a value has changed, to enable save button
   const checkValuesChanged = (inputName, value) => {
     let canSave = false;
     const newUserUpdated = { ...userUpdated }
@@ -137,7 +146,7 @@ const Account = () => {
     switch (inputName) {
       case fieldNames.email:
         newUserUpdated.email = value;
-        canSave = user.email !== value;
+        canSave = user.email !== value && validateEmail(value);
         break;
       case fieldNames.name:
         newUserUpdated.name = value;
@@ -169,15 +178,15 @@ const Account = () => {
     switch (inputName) {
       case fieldNames.currentPassword:
         setCurrentPassword(value);
-        validateInputs(value, newPassword, confirmNewPassword);
+        validatePasswordInputs(value, newPassword, confirmNewPassword);
         break;
       case fieldNames.newPassword:
         setNewPassword(value);
-        validateInputs(currentPassword, value, confirmNewPassword);
+        validatePasswordInputs(currentPassword, value, confirmNewPassword);
         break;
       case fieldNames.confirmNewPassword:
         setConfirmNewPassword(value);
-        validateInputs(currentPassword, newPassword, value);
+        validatePasswordInputs(currentPassword, newPassword, value);
         break;
       case fieldNames.email:
         setEmail(value);
@@ -237,8 +246,7 @@ const Account = () => {
 
     const dataToSend = {
       currentPassword: currentPassword,
-      password: newPassword,
-      password_confirm: confirmNewPassword
+      newPassword: newPassword
     }
 
     await updateUser(user.userId, dataToSend)
@@ -313,7 +321,7 @@ const Account = () => {
 
       <Box sx={{ mt: 2, color: '#fff' }}>
         {"To cancel your account, "}
-        <Link color="#df678c">please click here.</Link>
+        <Link color="#df678c" onClick={() => setOpenDeleteAccountDialog(true)}>please click here.</Link>
       </Box>
 
       <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Personal information</Typography>
@@ -391,6 +399,11 @@ const Account = () => {
           </DialogActions>
         </Box>
       </Dialog>
+
+      <DeleteAccount 
+        open={openDeleteAccountDialog}
+        close={() => setOpenDeleteAccountDialog(false)}
+      />
     </Box>
   );
 }
