@@ -122,7 +122,7 @@ const Script = () => {
           </Box>
 
           <Grid container sx={{ px: 2, pb: 2, display: 'flex', alignItems: 'center' }}>
-            <Grid item md={8} lg={8} xl={9}>
+            <Grid item xs={8} sm={9} md={8} lg={8} xl={9}>
               <Box 
                 onClick={handleOpenVoice}
                 sx={{ 
@@ -140,7 +140,7 @@ const Script = () => {
                 </Box>
             </Grid>
 
-            <Grid item md={4} lg={4} xl={3}>
+            <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
               <Button variant="contained" sx={{ width: '100%'}}>Play script</Button>
             </Grid>
           </Grid>
@@ -183,7 +183,6 @@ const Script = () => {
         maxWidth="md"
         fullWidth
         open={openVoiceDialog}
-        onClose={handleCloseVoiceDialog}
         aria-labelledby="voices-dialog-title"
         aria-describedby="voices-dialog-description"
       >
