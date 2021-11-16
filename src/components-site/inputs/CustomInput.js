@@ -34,13 +34,32 @@ const CustomInput = (props) => {
      */
     type,
     /**
-     * 
+     * Boolean to disable input
+     */
+    disabled,
+    /**
+     * String to set a name to autocomplete similar inputs
      */
     autoComplete,
+    /**
+     * Boolean to set the width of input to max
+     */
     fullWidth, 
+    /**
+     * Boolean to make the input required or not
+     */
     required,
+    /**
+     * Add an icon at the start of input
+     */
     startAdornment, 
+    /**
+     * Add an icon at the end of input
+     */
     endAdornment, 
+    /**
+     * Add more style properties
+     */
     sx 
   } = props;
   
@@ -54,25 +73,12 @@ const CustomInput = (props) => {
       required={required}
       type={type}
       disableUnderline
+      disabled={disabled}
       placeholder={placeholder}
       onChange={onChange}
       startAdornment={startAdornment}
       endAdornment={endAdornment}
-      sx={{
-        color: '#fff',
-        border: 'solid 2px #3c4045',
-        borderRadius: '5px',
-        boxShadow: '3px 3px 6px 0 rgba(0, 0, 0, 0.02)',
-        backgroundColor: '#202427',
-        ':focus-within': {
-          backgroundColor: '#202427',
-          border: '2px solid #e8dff4'
-        },
-        '.MuiFilledInput-input': {
-          padding: '13px'
-        },
-        ...sx
-      }}
+      sx={sx}
     />
   );
 }

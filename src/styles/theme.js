@@ -2,9 +2,32 @@ import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
   typography: {
-    fontFamily: 'Omnes'
+    fontFamily: 'Arial'
   },
 	components: {
+		MuiFilledInput: {
+			styleOverrides: {
+				root: {
+					color: '#fff',
+					border: 'solid 2px #3c4045',
+					borderRadius: '5px',
+					boxShadow: '3px 3px 6px 0 rgba(0, 0, 0, 0.02)',
+					backgroundColor: '#202427',
+					':focus-within': {
+						backgroundColor: '#202427',
+						border: '2px solid #e8dff4'
+					},
+					'.MuiFilledInput-input': {
+						padding: '13px'
+					}
+				},
+				input: {
+					':disabled': {
+						WebkitTextFillColor: '#fff'
+					}
+				}
+			}
+		},
 		MuiFormLabel: {
 			styleOverrides: {
 				root: {
@@ -49,6 +72,7 @@ export const theme = createTheme({
 				containedPrimary: {
 					paddingBlock: 10,
 					backgroundImage: 'linear-gradient(to right, #fd9483 -2%, #fd72a6 23%, #b85bfa 69%, #676aff 103%)',
+					backgroundColor: 'transparent',
 					borderRadius: '10px',
 					'&:hover': { 
 						backgroundPosition: 'right center'
@@ -62,7 +86,8 @@ export const theme = createTheme({
 					border: 'solid 2px #babbbb',
 					backgroundColor: '#202427', 
 					borderRadius: '10px', 
-					'&:hover': { backgroundColor: 'rgba(232, 233, 233, 0.2)' } 
+					'&:hover': { backgroundColor: 'rgba(232, 233, 233, 0.2)' },
+					'&:disabled': { color: '#9a9a9a' }
 				}
 			}
 		},
@@ -166,6 +191,22 @@ export const theme = createTheme({
 				root: {
 					backgroundColor: '#3c4045',
 					color: '#9a9a9a'
+				}
+			}
+		},
+		MuiSelect: {
+			styleOverrides: {
+				root: {
+					color: '#fff',
+					border: 'solid 2px #3c4045',
+					borderRadius: '5px',
+					':focus-within': {
+						backgroundColor: '#202427',
+						border: '2px solid #3c4045'
+					},
+					'.MuiFilledInput-input': {
+						padding: '13px'
+					}
 				}
 			}
 		}

@@ -45,19 +45,7 @@ const SelectInput = (props) => {
       variant="filled"
       disableUnderline
       fullWidth
-      sx={{
-        color: '#fff',
-        border: 'solid 2px #3c4045',
-        borderRadius: '5px',
-        ':focus-within': {
-          backgroundColor: '#202427',
-          border: '2px solid #3c4045'
-        },
-        '.MuiFilledInput-input': {
-          padding: '13px'
-        },
-        ...sx
-      }}
+      sx={sx}
     >
       <MenuItem value="">
         -

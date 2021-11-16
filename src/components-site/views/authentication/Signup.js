@@ -35,9 +35,11 @@ const Signup = (props) => {
   // Manage submit form to create an account
   const handleSubmit = async (event) => {    
     const dataToSend = {
+      name: signupData.name,
       email: signupData.email,
       password: signupData.password,
-      password_confirm: signupData.confirmPassword
+      password_confirm: signupData.confirmPassword,
+      company: signupData.company
     }
      
     await postUser(dataToSend)

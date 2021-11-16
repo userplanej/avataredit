@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Appbar from './Appbar';
@@ -11,6 +11,7 @@ import Editor from '../components/imagemap/ImageMapEditor';
 import Avatars from './views/avatars/Avatars';
 import Templates from './views/templates/Templates';
 import Account from './views/account/Account';
+import Backdrop from './backdrop/Backdrop';
 
 import { setPathName } from '../redux/navigation/navigationSlice';
 import { pathnameEnum } from './constants/Pathname';
@@ -18,6 +19,8 @@ import { pathnameEnum } from './constants/Pathname';
 export default function Main() {
   const dispatch = useDispatch();
   const history = useHistory();
+  const showBackdrop = useSelector(state => state.backdrop.showBackdrop);
+
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const pathname = history.location.pathname;
@@ -30,7 +33,7 @@ export default function Main() {
     setMobileOpen(!mobileOpen);
   };
 
-  if (!sessionStorage.getItem('logged')) {
+  if (!sessionStorage.getItem('user')) {
     return <Redirect to="/login" />;
   }
 
@@ -47,6 +50,8 @@ export default function Main() {
         <Route exact path={pathnameEnum.account} component={Account} />
         <Redirect from="/studio/" to={pathnameEnum.home} />
       </Switch>
+
+      <Backdrop open={showBackdrop} />
     </Box>
   );
 }

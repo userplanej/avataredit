@@ -11,6 +11,7 @@ import { InputLabel } from '@mui/material';
 import CustomInput from '../../inputs/CustomInput';
 
 import { signInUser } from '../../../api/user/user';
+
 import { showAlert } from '../../../utils/AlertUtils';
 
 const Login = (props) => {
@@ -51,8 +52,9 @@ const Login = (props) => {
     }
 
     await signInUser(dataToSend)
-    .then(() => {
-      sessionStorage.setItem('logged', true);
+    .then((res) => {
+      const user = res.data.body;
+      sessionStorage.setItem('user', JSON.stringify(user));
       history.push('/studio/home');
     })
     .catch(error => {
@@ -62,7 +64,7 @@ const Login = (props) => {
       } else if (error.request) {
         message = error.request;
       } else {
-        message = 'An error occured while trying to create the account.'
+        message = error;
       }
       showAlert(message, 'error');
     });

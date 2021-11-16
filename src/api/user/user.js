@@ -14,8 +14,8 @@ export const getUser = async (id) => {
   return await API.get(`${userPath}detail/${id}`);
 }
 
-export const updateUser = async (id) => {
-  return await API.put(`${userPath}update/${id}`);
+export const updateUser = async (id, user) => {
+  return await API.put(`${userPath}update/${id}`, user);
 }
 
 export const deleteUser = async (id) => {

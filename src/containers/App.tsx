@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Alert, Snackbar } from '@mui/material';
+import { Alert, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, Typography, Button } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 import Main from '../components-site/Main';
 import Authentication from '../components-site/views/authentication/Authentication';
@@ -13,6 +14,7 @@ import { theme } from '../styles/theme';
 import '../styles/index.less';
 
 import { setAlertOpen } from '../redux/alert/alertSlice';
+import { setDialogAlertOpen } from '../redux/dialog-alert/dialogAlertSlice';
 
 class App extends Component<any> {
 	render() {
@@ -46,20 +48,45 @@ class App extends Component<any> {
 					<Switch>
 						<Route path="/studio" component={Main} />
 						<Route path="/login" component={Authentication} />
-						<Redirect from="*" to={sessionStorage.getItem('logged') !== null ? '/studio/home' : '/login'} />
+						<Redirect from="*" to={sessionStorage.getItem('user') !== null ? '/studio/home' : '/login'} />
 					</Switch>
-      	</ThemeProvider>
 
-				<Snackbar
-					autoHideDuration={6000}
-					anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-					open={this.props.alertOpen}
-					onClose={() => this.props.setAlertOpen(false)}
-				>
-					<Alert variant="filled" onClose={() => this.props.setAlertOpen(false)} severity={this.props.alertSeverity} sx={{ width: '100%' }}>
-						{this.props.alertMessage}
-					</Alert>
-				</Snackbar>
+					<Snackbar
+						autoHideDuration={6000}
+						anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+						open={this.props.alertOpen}
+						onClose={() => this.props.setAlertOpen(false)}
+					>
+						<Alert variant="filled" onClose={() => this.props.setAlertOpen(false)} severity={this.props.alertSeverity} sx={{ width: '100%' }}>
+							{this.props.alertMessage}
+						</Alert>
+					</Snackbar>
+
+					<Dialog
+						maxWidth="md"
+						open={this.props.dialogAlertOpen}
+						aria-labelledby="password-dialog-title"
+						aria-describedby="password-dialog-description"
+					>
+						<DialogTitle id="password-dialog-title" sx={{ textAlign: 'right' }}>
+							<CloseIcon fontSize="large" onClick={() => this.props.setDialogAlertOpen(false)} sx={{ cursor: 'pointer', color: '#fff' }} />
+						</DialogTitle>
+
+						<DialogContent sx={{ color: "#9a9a9a" }}>
+							<Typography variant="h5" color="#fff" sx={{ mb: 2 }}>
+								{this.props.dialogAlertTitle}
+							</Typography>
+
+							{this.props.dialogAlertMessage}
+						</DialogContent>
+
+						<DialogActions>
+							<Button variant="contained" fullWidth onClick={() => this.props.setDialogAlertOpen(false)}>
+								{this.props.dialogAlertButtonText}
+							</Button>
+						</DialogActions>
+					</Dialog>
+      	</ThemeProvider>
 			</div>
 		);
 	}
@@ -68,11 +95,16 @@ class App extends Component<any> {
 const mapStateToProps = state => ({
 	alertMessage: state.alert.message,
 	alertSeverity: state.alert.severity,
-	alertOpen: state.alert.open
+	alertOpen: state.alert.open,
+	dialogAlertTitle: state.dialogAlert.title,
+	dialogAlertMessage: state.dialogAlert.message,
+	dialogAlertButtonText: state.dialogAlert.buttonText,
+	dialogAlertOpen: state.dialogAlert.open
 });
 
 const mapDispatchToProps  = {
-	setAlertOpen
+	setAlertOpen,
+	setDialogAlertOpen
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

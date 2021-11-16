@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -11,27 +11,34 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import PersonIcon from '@mui/icons-material/Person';
 import Stack from '@mui/material/Stack';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import { setPathName } from '../redux/navigation/navigationSlice';
+
 import { pathnameEnum } from './constants/Pathname';
 import { drawerWidth } from './constants/Drawer';
 
-const DrawerItems = ({ active, onClickMenu }) => {
-  const keys = {
-    home: 'home',
-    videos: 'videos',
-    templates: 'templates',
-    avatars: 'avatars',
-    account: 'account',
-    settings: 'settings',
-    new: 'new',
-    howTo: 'howTo',
-    help: 'help'
-  }
+const keys = {
+  home: 'home',
+  videos: 'videos',
+  templates: 'templates',
+  avatars: 'avatars',
+  account: 'account',
+  settings: 'settings',
+  new: 'new',
+  howTo: 'howTo',
+  help: 'help'
+}
 
+const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
   const listItemStyle = {
     margin: '0px 0px 14px',
   }
+
+  const user = JSON.parse(sessionStorage.getItem('user'));
 
   return (
     <Stack justifyContent="space-between" height="100%">
@@ -127,7 +134,7 @@ const DrawerItems = ({ active, onClickMenu }) => {
           key={keys.account} 
           sx={{ margin: '25px 0px 15px' }}
           selected={active === keys.account} 
-          onClick={() => onClickMenu(keys.account)}
+          onClick={handleClickUserMenu}
         >
           <ListItemIcon 
             sx={{
@@ -142,7 +149,7 @@ const DrawerItems = ({ active, onClickMenu }) => {
           >
             <PersonIcon />
           </ListItemIcon>
-          <ListItemText primary={'User'} secondary={'Company'} />
+          <ListItemText primary={user.name} secondary={user.company} />
         </ListItem>
       </List>
     </Stack>
@@ -154,17 +161,33 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   const history = useHistory();
 
   const [activeKey, setActiveKey] = useState('home');
-
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  
   useEffect(() => {
     const pathname = history.location.pathname;
     const pathnameKey = pathname.split('/');
     setActiveKey(pathnameKey[2]);
   }, []);
 
+  const handleClickUserMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorEl(null);
+  };
+
   const onClickMenu = (key) => {
+    setAnchorEl(null);
     setActiveKey(key);
     dispatch(setPathName(pathnameEnum[key]));
     history.push(pathnameEnum[key]);
+  }
+
+  const onClickLogout = () => {
+    sessionStorage.removeItem('user');
+    history.push('/login');
   }
 
   return (
@@ -189,8 +212,9 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
           keepMounted: true, // Better open performance on mobile.
         }}
       >
-        <DrawerItems active={activeKey} onClickMenu={(key) => onClickMenu(key)} />
+        <DrawerItems active={activeKey} onClickMenu={(key) => onClickMenu(key)} handleClickUserMenu={handleClickUserMenu} />
       </Drawer>
+
       <Drawer
         variant="permanent"
         sx={{
@@ -203,8 +227,40 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
         }}
         open
       >
-        <DrawerItems active={activeKey} onClickMenu={(key) => onClickMenu(key)} />
+        <DrawerItems active={activeKey} onClickMenu={(key) => onClickMenu(key)} handleClickUserMenu={handleClickUserMenu} />
       </Drawer>
+
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleCloseUserMenu}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <MenuItem onClick={() => onClickMenu(keys.account)}>
+          <ListItemIcon>
+            <SettingsIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText disableTypography>Settings</ListItemText>
+        </MenuItem>
+
+        <MenuItem onClick={onClickLogout}>
+          <ListItemIcon>
+            <LogoutIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText disableTypography>Logout</ListItemText>
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }

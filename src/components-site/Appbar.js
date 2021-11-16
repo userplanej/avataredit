@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
@@ -17,9 +16,14 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { setPathName } from '../redux/navigation/navigationSlice';
+import { setShowBackdrop } from '../redux/backdrop/backdropSlice';
+import { setDialogAlertOpen, setDialogAlertTitle, setDialogAlertMessage, setDialogAlertButtonText } from '../redux/dialog-alert/dialogAlertSlice';
+import { setReloadUser, setCanSave } from '../redux/user/userSlice';
 
 import CustomInput from './inputs/CustomInput';
-import { postImagePackage } from '../api/image/package';
+import { postImageClip } from '../api/image/clip';
+import { getImagePackage, postImagePackage, updateImagePackage } from '../api/image/package';
+import { updateUser } from '../api/user/user';
 import { pathnameEnum } from './constants/Pathname';
 import { drawerWidth } from './constants/Drawer';
 
@@ -29,37 +33,13 @@ const boxStyle = {
   justifyContent: 'center'
 }
 
-const arrowDisabledStyle = {
-  color: '#a3a3a3',
-  width: '40px',
-  height: '40px',
-  margin: '0 5px 0px 10px',
-  borderRadius: '10px',
-  border: 'solid 2px #f1f9ff',
-  backgroundColor: '#fafafa',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
-}
-
-const arrowEnabledStyle = {
-  color: '#0a1239',
-  width: '40px',
-  height: '40px',
-  margin: '0 5px 0px 10px',
-  borderRadius: '10px',
-  border: 'solid 2px #f1f9ff',
-  backgroundColor: '#fafafa',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  cursor: 'pointer'
-}
-
 const Appbar = ({ handleDrawerToggle, canvasRef }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const pathName = useSelector(state => state.navigation.pathName);
+  const canSaveUser = useSelector(state => state.user.canSave);
+  const userUpdated = useSelector(state => state.user.userUpdated);
+
   const [title, setTitle] = useState('');
   
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
@@ -68,18 +48,40 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
   useEffect(() => {
     const pathname = history.location.pathname;
     dispatch(setPathName(pathname));
+
+    if (pathname === pathnameEnum.editor) {
+      const id = history.location.state?.id;
+      getImagePackage(id).then(res => setTitle(res.data.body.package_name));
+    }
   }, []);
 
-  const createNewVideo = () => {
-    
+  const createNewVideo = async () => {
+    dispatch(setShowBackdrop(true));
+
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const dataToSend = {
+      user_id: user.user_id,
+      package_name: 'New video'
+    }
+
+    await postImagePackage(dataToSend).then(() => {
+      // TODO: add a slide (image_clip)
+
+      dispatch(setShowBackdrop(false));
+      // history.push();
+    });
+
   }
 
   const handleChangeTitle = (event) => {
     setTitle(event.target.value);
   }
 
-  const saveTitle = (value) => {
-    console.log(value);
+  const saveTitle = () => {
+    if (title !== '') {
+      const id = history.location.state?.id;
+      updateImagePackage(id, { package_name: title });
+    }
   }
 
   const onUndo = () => {
@@ -88,6 +90,37 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
   
   const onRedo = () => {
     canvasRef.handler?.transactionHandler.redo();
+  }
+
+  const saveUser = async () => {
+    // Show backdrop
+    dispatch(setShowBackdrop(true));
+    // Update user info
+    await updateUser(userUpdated.userId, userUpdated).then((res) => {
+      updateSessionUser();
+      // Show dialog success
+      dispatch(setDialogAlertTitle('Change account information'));
+      dispatch(setDialogAlertMessage('Account information changed successfully'));
+      dispatch(setDialogAlertButtonText('Done'));
+      dispatch(setDialogAlertOpen(true));
+      // Tell components to update user info displayed
+      dispatch(setReloadUser(true));
+      dispatch(setCanSave(false));
+      // Hide backdrop
+      dispatch(setShowBackdrop(false));
+    });
+  }
+
+  const updateSessionUser = () => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    user.email = userUpdated.email;
+    user.name = userUpdated.name;
+    user.bio = userUpdated.bio;
+    sessionStorage.setItem('user', JSON.stringify(user));
+  }
+
+  const cancelUserChanges = () => {
+    dispatch(setReloadUser(true));
   }
 
   return (
@@ -125,13 +158,16 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
 
           {pathName === pathnameEnum.editor &&
           <Box sx={boxStyle}>
-            <ClickAwayListener onClickAway={() => saveTitle(false)}>
-              <CustomInput 
-                placeholder="Add title here"
-                onChange={handleChangeTitle}
-                startAdornment={<InputAdornment position="start"><ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff" }} /></InputAdornment>}
-                sx={{ backgroundColor: '#3c4045' }}
-              />
+            <ClickAwayListener onClickAway={() => saveTitle()}>
+              <Box>
+                <CustomInput 
+                  value={title}
+                  placeholder="Add title here"
+                  onChange={handleChangeTitle}
+                  startAdornment={<InputAdornment position="start"><ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff" }} /></InputAdornment>}
+                  sx={{ backgroundColor: '#3c4045' }}
+                />
+              </Box>
             </ClickAwayListener>
           </Box>}
 
@@ -164,15 +200,17 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
             variant="contained" 
             color="secondary" 
             startIcon={<KeyboardArrowLeftIcon />} 
-            sx={{ minWidth: '0px', p: 1.5, backgroundColor: '#3c4045', border: 'none', mr: 1, color: cannotUndo ? '' : '#fff', '& .MuiButton-startIcon': { m: 0 } }} 
-            onClick={cannotUndo ? null : () => onUndo()}
+            disabled={cannotUndo}
+            sx={{ minWidth: '0px', p: 1.5, backgroundColor: '#3c4045', border: 'none', mr: 1, '& .MuiButton-startIcon': { m: 0, color: cannotUndo ? '#3c4045' : '#fff' } }} 
+            onClick={() => onUndo()}
           />
           <Button 
             variant="contained" 
             color="secondary" 
+            disabled={cannotRedo}
             startIcon={<KeyboardArrowRightIcon />} 
-            sx={{ minWidth: '0px', p: 1.5, backgroundColor: '#3c4045', border: 'none', color: cannotRedo ? '' : '#fff', '& .MuiButton-startIcon': { m: 0 } }} 
-            onClick={cannotRedo ? null : () => onRedo()}
+            sx={{ minWidth: '0px', p: 1.5, backgroundColor: '#3c4045', border: 'none', '& .MuiButton-startIcon': { m: 0, color: cannotRedo ? '#3c4045' : '#fff' } }} 
+            onClick={() => onRedo()}
           />
           <Button 
             variant="contained" 
@@ -198,8 +236,8 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
 
         {pathName === pathnameEnum.account &&
         <Box sx={boxStyle}>
-          <Button variant="contained" color="secondary" sx={{ mr: 2, px: 7 }}>Cancel</Button>
-          <Button variant="contained" sx={{ px: 8 }}>Save</Button>
+          <Button variant="contained" onClick={cancelUserChanges} disabled={!canSaveUser} color="secondary" sx={{ mr: 2, px: 7 }}>Cancel</Button>
+          <Button variant="contained" onClick={saveUser} disabled={!canSaveUser} sx={{ px: 8 }}>Save</Button>
         </Box>}
       </Toolbar>
     </AppBar>
