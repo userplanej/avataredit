@@ -231,7 +231,7 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
 
         {pathName === pathnameEnum.avatars &&
         <Box sx={boxStyle}>
-          <Button variant="contained" onclick={createNewVideo}>Request your own avatar</Button>
+          <Button variant="contained">Request your own avatar</Button>
         </Box>}
 
         {pathName === pathnameEnum.account &&

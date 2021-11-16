@@ -149,7 +149,7 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
           >
             <PersonIcon />
           </ListItemIcon>
-          <ListItemText primary={user.name} secondary={user.company} />
+          <ListItemText primary={user.name} secondary={user.company && user.company !== '' ? user.company : null} />
         </ListItem>
       </List>
     </Stack>

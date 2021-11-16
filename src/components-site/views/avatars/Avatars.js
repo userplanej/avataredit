@@ -116,7 +116,6 @@ const Avatars = () => {
       <Dialog
         maxWidth="md"
         open={open}
-        onClose={handleClose}
         aria-labelledby="avatar-dialog-title"
         aria-describedby="avatar-dialog-description"
       >
