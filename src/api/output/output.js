@@ -14,8 +14,8 @@ export const getOutput = async (id) => {
   return await API.get(`${outputPath}detail/${id}`);
 }
 
-export const updateOutput = async (id) => {
-  return await API.put(`${outputPath}update/${id}`);
+export const updateOutput = async (id, output) => {
+  return await API.put(`${outputPath}update/${id}`, output);
 }
 
 export const deleteOutput = async (id) => {

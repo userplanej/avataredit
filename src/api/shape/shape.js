@@ -14,8 +14,8 @@ export const getShape = async (id) => {
   return await API.get(`${shapePath}detail/${id}`);
 }
 
-export const updateShape = async (id) => {
-  return await API.put(`${shapePath}update/${id}`);
+export const updateShape = async (id, shape) => {
+  return await API.put(`${shapePath}update/${id}`, shape);
 }
 
 export const deleteShape = async (id) => {

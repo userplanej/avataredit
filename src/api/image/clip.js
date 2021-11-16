@@ -14,8 +14,8 @@ export const getImageClip = async (id) => {
   return await API.get(`${imageClipPath}detail/${id}`);
 }
 
-export const updateImageClip = async (id) => {
-  return await API.put(`${imageClipPath}update/${id}`);
+export const updateImageClip = async (id, clip) => {
+  return await API.put(`${imageClipPath}update/${id}`, clip);
 }
 
 export const deleteImageClip = async (id) => {

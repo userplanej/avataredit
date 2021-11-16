@@ -14,8 +14,8 @@ export const getAvatar = async (id) => {
   return await API.get(`${avatarPath}detail/${id}`);
 }
 
-export const updateAvatar = async (id) => {
-  return await API.put(`${avatarPath}update/${id}`);
+export const updateAvatar = async (id, avatar) => {
+  return await API.put(`${avatarPath}update/${id}`, avatar);
 }
 
 export const deleteAvatar = async (id) => {

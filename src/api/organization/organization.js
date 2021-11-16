@@ -14,8 +14,8 @@ export const getOrganization = async (id) => {
   return await API.get(`${organizationPath}detail/${id}`);
 }
 
-export const updateOrganization = async (id) => {
-  return await API.put(`${organizationPath}update/${id}`);
+export const updateOrganization = async (id, organization) => {
+  return await API.put(`${organizationPath}update/${id}`, organization);
 }
 
 export const deleteOrganization = async (id) => {

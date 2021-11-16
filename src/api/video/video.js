@@ -14,8 +14,8 @@ export const getVideo = async (id) => {
   return await API.get(`${videoPath}detail/${id}`);
 }
 
-export const updateVideo = async (id) => {
-  return await API.put(`${videoPath}update/${id}`);
+export const updateVideo = async (id, video) => {
+  return await API.put(`${videoPath}update/${id}`, video);
 }
 
 export const deleteVideo = async (id) => {

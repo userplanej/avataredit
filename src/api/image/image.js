@@ -14,8 +14,8 @@ export const getImage = async (id) => {
   return await API.get(`${imagePath}detail/${id}`);
 }
 
-export const updateImage = async (id) => {
-  return await API.put(`${imagePath}update/${id}`);
+export const updateImage = async (id, image) => {
+  return await API.put(`${imagePath}update/${id}`, image);
 }
 
 export const deleteImage = async (id) => {
