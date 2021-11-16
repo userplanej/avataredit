@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Box from '@mui/material/Box';
-import Skeleton from '@mui/material/Skeleton';
+import { Grid } from '@mui/material';
 
 import SearchInput from '../../inputs/SearchInput';
 import VideoCard from './VideoCard';
 
-import { getAllVideos } from '../../../api/video/video';
-import { Grid } from '@mui/material';
+import { getAllImagePackage } from '../../../api/image/package';
+import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
 const boxStyle = {
   mt: '24px', 
@@ -15,46 +16,32 @@ const boxStyle = {
   width: '95%'
 }
 
-const data = [
-  {
-    id: 1,
-    img: null,
-    name: "My first video",
-    createdAt: "10 days ago",
-    isDraft: true,
-    time: '00:00:30',
-    slides: 2
-  },
-  {
-    id: 2,
-    img: null,
-    name: "New video",
-    createdAt: "15 days ago",
-    isDraft: false,
-    time: '00:01:30',
-    slides: 5
-  }
-]
-
 const Videos = () => {
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
   const [videosList, setVideosList] = useState([]);
+  const [videosListToDisplay, setVideosListToDisplay] = useState([]);
 
   useEffect(() => {
-    // getAllVideos().then(res => {
-    //   setVideosList(res.rows);
-    //   setLoading(false);
-    // });
-    setVideosList(data);
+    dispatch(setShowBackdrop(true));
+
+    getAllImagePackage().then(res => {
+      const videos = res.data.body.rows;
+      const videosSorted = videos.sort((a, b) => (a.create_date < b.create_date) ? 1 : -1);
+      setVideosList(videosSorted);
+      setVideosListToDisplay(videosSorted);
+      dispatch(setShowBackdrop(false));
+    });
   }, []);
 
   const handleSearch = (event) => {
     const nameSearch = event.target.value;
     if (nameSearch && nameSearch === '') {
-      setVideosList(data);
+      setVideosListToDisplay(videosList);
+    } else {
+      const newVideosList = videosList.filter(video => video.package_name.toLowerCase().includes(nameSearch.toLowerCase()));
+      setVideosListToDisplay(newVideosList);
     }
-    const newVideosList = data.filter(video => video.name.toLowerCase().includes(nameSearch.toLowerCase()));
-    setVideosList(newVideosList);
   }
   
   return (
@@ -65,11 +52,9 @@ const Videos = () => {
         </Grid>
       </Grid>
 
-      <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' } }}>
-        {/* {loading && <Skeleton animation="wave" height={150} />} */}
-        
-        {/*!loading &&*/ videosList && videosList.map(video => {
-          return <VideoCard key={video.id} video={video} />
+      <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' } }}>        
+        {videosListToDisplay && videosListToDisplay.map(video => {
+          return <VideoCard key={video.package_id} video={video} />
         })}
       </Box>
     </Box>

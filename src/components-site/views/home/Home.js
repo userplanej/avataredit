@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 import VideoCard from '../videos/VideoCard';
+
+import { getAllImagePackage } from '../../../api/image/package';
+import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
 const boxStyle = {
   mt: 3, 
@@ -34,6 +38,23 @@ const data = [
 ]
 
 const Home = () => {
+  const dispatch = useDispatch();
+
+  const [videosList, setVideosList] = useState([]);
+  const [videosListToDisplay, setVideosListToDisplay] = useState([]);
+
+  useEffect(() => {
+    dispatch(setShowBackdrop(true));
+
+    getAllImagePackage().then(res => {
+      const videos = res.data.body.rows;
+      const videosSorted = videos.sort((a, b) => (a.create_date < b.create_date) ? 1 : -1);
+      setVideosList(videosSorted);
+      setVideosListToDisplay(videosSorted);
+      dispatch(setShowBackdrop(false));
+    });
+  }, []);
+
   return (
     <Box sx={{ mt: 7, width: '100%' }}>
       <Typography variant="h5" sx={boxStyle}>Templates</Typography>
@@ -41,8 +62,8 @@ const Home = () => {
       <Typography variant="h5" sx={boxStyle}>Recent videos</Typography>
 
       <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' } }}>
-        {data.map(video => {
-          return <VideoCard key={video.id} video={video} />
+        {videosListToDisplay && videosListToDisplay.map(video => {
+          return <VideoCard key={video.package_id} video={video} />
         })}
       </Box>
     </Box>

@@ -13,6 +13,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
+import { getTimeElapsedSinceDate } from '../../../utils/DateUtils';
+
+import { setVideo } from '../../../redux/video/videoSlice';
 import { setPathName } from '../../../redux/navigation/navigationSlice';
 import { pathnameEnum } from '../../constants/Pathname';
 
@@ -60,13 +63,15 @@ const VideoCard = (props) => {
   }
 
   const handleClickVideo = () => {
+    const id = video.package_id;
+    dispatch(setVideo(video));
     dispatch(setPathName(pathnameEnum.editor));
-    history.push(pathnameEnum.editor);
+    history.push(pathnameEnum.editor, { id });
   }
   
   return (
     <Grid 
-      key={video.id}
+      key={video.package_id}
       container 
       columns={13}
       onClick={handleClickVideo}  
@@ -94,7 +99,7 @@ const VideoCard = (props) => {
 
       <Grid item lg={2}>
         <Box sx={{ display: 'flex', alignItems: 'center', pl: 2 }}>
-          <Typography variant="h6" sx={{ color: '#fff' }}>{video.name}</Typography>
+          <Typography variant="h6" sx={{ color: '#fff' }}>{video.package_name}</Typography>
           {video.isDraft && 
             <Box 
               sx={{ 
@@ -114,15 +119,15 @@ const VideoCard = (props) => {
           }
         </Box>
         
-        <Typography variant="subtitle1" sx={{ color: '#fff', pl: 2 }}>{video.createdAt}</Typography>
+        <Typography variant="subtitle1" sx={{ color: '#fff', pl: 2 }}>{getTimeElapsedSinceDate(video.create_date)}</Typography>
       </Grid>
 
       <Grid item lg={1} xl={2} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6" sx={{ color: '#fff' }}>{video.time}</Typography>
+        <Typography variant="h6" sx={{ color: '#fff' }}>{video.time ? video.time : '00:00:00'}</Typography>
       </Grid>
 
       <Grid item lg={1} xl={2} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6" sx={{ color: '#fff' }}>{video.slides} Slides</Typography>
+        <Typography variant="h6" sx={{ color: '#fff' }}>{video.slides ? video.slides : '1'} Slide{video.slides && video.slides > 1 ? 's' : ''}</Typography>
       </Grid>
 
       <Grid item lg={1} xl={2}>
@@ -181,7 +186,7 @@ const VideoCard = (props) => {
             PaperProps={{
               style: {
                 maxHeight: ITEM_HEIGHT * 4.5,
-                width: '15ch',
+                width: '16ch',
               },
             }}
           >
