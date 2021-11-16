@@ -59,18 +59,26 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
     dispatch(setShowBackdrop(true));
 
     const user = JSON.parse(sessionStorage.getItem('user'));
-    const dataToSend = {
+    const imagePackage = {
       user_id: user.user_id,
       package_name: 'New video'
     }
+    const imageClip = {
+      package_id: null,
+      background_type: null,
+    }
 
-    await postImagePackage(dataToSend).then(() => {
+    await postImagePackage(imagePackage).then((res) => {
+      const packageId = res.data.body.package_id;
+
       // TODO: add a slide (image_clip)
+      imageClip.package_id = packageId;
+    });
 
+    await postImageClip(imageClip).then(() => {
       dispatch(setShowBackdrop(false));
       // history.push();
     });
-
   }
 
   const handleChangeTitle = (event) => {
@@ -123,12 +131,16 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
     dispatch(setReloadUser(true));
   }
 
+  const isEditorPage = () => {
+    return pathName === pathnameEnum.editor;
+  }
+
   return (
     <AppBar
       position="fixed"
       sx={{
-        width: { md: `calc(100% - ${drawerWidth}px)` },
-        ml: { md: `${drawerWidth}px` },
+        width: { lg: `calc(100% - ${isEditorPage() ? '0' : drawerWidth}px)`, xl: `calc(100% - ${drawerWidth}px)` },
+        ml: { lg: `${isEditorPage() ? '0' : drawerWidth}px`, xl: `${drawerWidth}px` },
         backgroundColor: '#24282c',
         boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.05)'
       }}
@@ -141,7 +153,7 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
+            sx={{ mr: 2, color: '#fff', display: { lg: isEditorPage() ? 'block' : 'none', xl: 'none' } }}
           >
             <MenuIcon />
           </IconButton>

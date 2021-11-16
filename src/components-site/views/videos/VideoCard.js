@@ -27,6 +27,11 @@ const playButtonStyle = {
   color: '#fff'
 }
 
+const gridStyle = {
+  display: 'flex', 
+  alignItems: 'center'
+}
+
 const ITEM_HEIGHT = 48;
 
 const options = [
@@ -68,12 +73,20 @@ const VideoCard = (props) => {
     dispatch(setPathName(pathnameEnum.editor));
     history.push(pathnameEnum.editor, { id });
   }
+
+  const getVideoTitle = (title) => {
+    let titleCut = title.substring(0, 40);
+    if (title.length > 39) {
+      titleCut = titleCut.trimEnd().concat('', '...');
+    }
+    return titleCut;
+  }
   
   return (
     <Grid 
       key={video.package_id}
       container 
-      columns={13}
+      columns={20}
       onClick={handleClickVideo}  
       sx={{ 
         width: '100%', 
@@ -89,50 +102,50 @@ const VideoCard = (props) => {
         }
       }}
     >
-      <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-        <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 35 }, mr: '15px', color: '#fff' }} onClick={handleSelectVideo} />
+      <Grid item xs={3} sm={2} md={1} lg={1} xl={1} sx={gridStyle}>
+        <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 35 }, color: '#fff', width: '100%' }} onClick={handleSelectVideo} />
       </Grid>
 
-      <Grid item lg={1} sx={{ display: 'flex', alignItems: 'center' }}>
-        <Box sx={{ width: '80px', height: '80px', borderRadius: '5px', backgroundColor: '#fff' }}></Box>
-      </Grid>
+      <Grid item xs={16} sm={13} md={9} lg={10} xl={7} sx={gridStyle}>
+        <Box sx={{ minWidth: '80px', height: '80px', borderRadius: '5px', backgroundColor: '#fff', mr: 2 }}></Box>
 
-      <Grid item lg={2}>
-        <Box sx={{ display: 'flex', alignItems: 'center', pl: 2 }}>
-          <Typography variant="h6" sx={{ color: '#fff' }}>{video.package_name}</Typography>
-          {video.isDraft && 
-            <Box 
-              sx={{ 
-                textAlign: 'center', 
-                fontSize: '14px', 
-                fontWeight: 'bold', 
-                color: '#9a9a9a', 
-                width: '65px', 
-                height: '25px', 
-                borderRadius: '4px', 
-                border: 'solid 2px #babbbb',
-                ml: 2
-              }}
-            >
-              Draft
-            </Box>
-          }
+        <Box>
+          <Box sx={gridStyle}>
+            <Typography variant="h6" sx={{ color: '#fff' }}>{getVideoTitle(video.package_name)}</Typography>
+            {video.isDraft && 
+              <Box 
+                sx={{ 
+                  textAlign: 'center', 
+                  fontSize: '14px', 
+                  fontWeight: 'bold', 
+                  color: '#9a9a9a', 
+                  width: '65px', 
+                  height: '25px', 
+                  borderRadius: '4px', 
+                  border: 'solid 2px #babbbb',
+                  ml: 2
+                }}
+              >
+                Draft
+              </Box>
+            }
+          </Box>
+
+          <Typography variant="subtitle1" sx={{ color: '#fff' }}>{getTimeElapsedSinceDate(video.create_date)}</Typography>
         </Box>
-        
-        <Typography variant="subtitle1" sx={{ color: '#fff', pl: 2 }}>{getTimeElapsedSinceDate(video.create_date)}</Typography>
       </Grid>
 
-      <Grid item lg={1} xl={2} sx={{ textAlign: 'center' }}>
+      <Grid item xs={10} sm={5} md={2} lg={2} xl={2} sx={{ textAlign: 'center' }}>
         <Typography variant="h6" sx={{ color: '#fff' }}>{video.time ? video.time : '00:00:00'}</Typography>
       </Grid>
 
-      <Grid item lg={1} xl={2} sx={{ textAlign: 'center' }}>
+      <Grid item xs={10} sm={7} md={2} lg={2} xl={4} sx={{ textAlign: 'center' }}>
         <Typography variant="h6" sx={{ color: '#fff' }}>{video.slides ? video.slides : '1'} Slide{video.slides && video.slides > 1 ? 's' : ''}</Typography>
       </Grid>
 
-      <Grid item lg={1} xl={2}>
+      <Grid item xs={6} sm={5} md={2} lg={2} xl={2}>
         {!video.isDraft && 
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ ...gridStyle, justifyContent: 'center' }}>
           {/* <Box sx={{ 
             mr: '30px',
             width: '17px',
@@ -144,7 +157,7 @@ const VideoCard = (props) => {
         </Box>}
       </Grid>
 
-      <Grid item lg={1} xl={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Grid item xs={6} sm={4} md={2} lg={2} xl={2} sx={{ ...gridStyle, justifyContent: 'center' }}>
         {!video.isDraft && 
         <Box sx={playButtonStyle}>
           <PlayArrowIcon sx={{ mr: '5px' }} />
@@ -152,7 +165,7 @@ const VideoCard = (props) => {
         </Box>}
       </Grid>
 
-      <Grid item lg={1} xl={1}>
+      <Grid item xs={6} sm={4} md={1} lg={1} xl={2} sx={{ ...gridStyle, justifyContent: 'center' }}>
         {video.isDraft && 
         <IconButton
           aria-label="delete"

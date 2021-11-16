@@ -159,6 +159,7 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
 const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const pathName = useSelector(state => state.navigation.pathName);
 
   const [activeKey, setActiveKey] = useState('home');
   const [anchorEl, setAnchorEl] = useState(null);
@@ -190,10 +191,14 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
     history.push('/login');
   }
 
+  const isEditorPage = () => {
+    return pathName === pathnameEnum.editor;
+  }
+
   return (
     <Box
       component="nav"
-      sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+      sx={{ width: { lg: isEditorPage() ? 0 : drawerWidth, xl: drawerWidth }, flexShrink: { lg: 0 } }}
     >
       <Drawer
         sx={{
@@ -218,7 +223,7 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: 'none', sm: 'none', md: 'block' },
+          display: { xs: 'none', sm: 'none', md: 'none', lg: isEditorPage() ? 'none' : 'block', xl: 'block' },
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',

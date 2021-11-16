@@ -7,6 +7,8 @@ import Handler, { HandlerOptions } from './handlers/Handler';
 import { FabricCanvas } from './utils';
 import { defaults } from './constants';
 
+import Box from '@mui/material/Box';
+
 import '../../styles/core/canvas.less';
 import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
@@ -155,13 +157,13 @@ class Canvas extends Component<CanvasProps, IState> {
 	render() {
 		const { id } = this.state;
 		return (
-			<div
+			<Box
 				ref={this.container}
 				id={id}
-				style={{ width: '550px', height: '310px' }}
+				sx={{ width: { xs: '90%', sm: '550px', md: '550px', lg: '90%', xl: '550px' }, height: '310px' }}
 			>
 				<canvas id={`canvas_${id}`} />
-			</div>
+			</Box>
 		);
 	}
 }
