@@ -79,7 +79,7 @@ const VideoCard = (props) => {
         width: '100%', 
         alignItems: 'center', 
         backgroundColor: '#202427', 
-        padding: '16px 20px 16px 20px', 
+        padding: '12px 20px 12px 20px', 
         cursor: 'pointer',
         ':hover': {
           backgroundColor: '#3c4045'

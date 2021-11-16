@@ -31,6 +31,10 @@ const SelectInput = (props) => {
      */
     onChange,
     /**
+     * Boolean to remove empty value (first value)
+     */
+    noEmptyValue,
+    /**
      * Add CSS styles using MUI system
      */
     sx
@@ -47,9 +51,9 @@ const SelectInput = (props) => {
       fullWidth
       sx={sx}
     >
-      <MenuItem value="">
+      {!noEmptyValue && <MenuItem value="">
         -
-      </MenuItem>
+      </MenuItem>}
       {items && items.map((item, index) => <MenuItem key={index} value={item.value}>{item.label}</MenuItem>)}
     </Select>
   );

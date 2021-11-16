@@ -203,10 +203,13 @@ export const theme = createTheme({
 					':focus-within': {
 						backgroundColor: '#202427',
 						border: '2px solid #3c4045'
-					},
-					'.MuiFilledInput-input': {
-						padding: '13px'
 					}
+				},
+				icon: {
+					color: '#fff'
+				},
+				filled: {
+					padding: '10px'
 				}
 			}
 		}
