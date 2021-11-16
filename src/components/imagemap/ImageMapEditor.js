@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Badge, Button, Popconfirm, Menu } from 'antd';
+import { withRouter } from 'react-router-dom';
+import { Badge, Button, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
 import SandBox from '../sandbox/SandBox';
@@ -10,7 +11,6 @@ import { Box } from '@mui/system';
 import '../../libs/fontawesome-5.2.0/css/all.css';
 import '../../styles/index.less';
 
-import CommonButton from '../common/CommonButton';
 import Canvas from '../canvas/Canvas';
 import { code } from '../canvas/constants';
 import ImageMapItems from './ImageMapItems';
@@ -21,6 +21,9 @@ import Script from '../../components-site/views/editor/Script';
 
 import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
+import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
+
+import { getAllImages } from '../../api/image/image';
 
 const propertiesToInclude = [
 	'id',
@@ -90,7 +93,6 @@ class ImageMapEditor extends Component {
 		selectedItem: null,
 		zoomRatio: 1,
 		preview: false,
-		loading: false,
 		progress: 0,
 		avatars: {},
 		animations: [],
@@ -107,30 +109,13 @@ class ImageMapEditor extends Component {
 			file_dir: null,
 			url: 'sample1.json'
 		}],
-		mobileOpen: false
+		mobileOpen: false,
+		id: this.props.history.location.state?.id,
+		imageList: {}
 	};
 
-
-	// UserList() {
-	// 	console.log("---------------reached here---------------");
-	// 	$.getJSON(`http://localhost:3000/api/v1/avatar/list?page=${0}&limit=${20}`)
-	// 	.then(({res}) =>{
-	// 		console.log("here it is");
-	// 	});
-	
-	// }
-
-	componentDidMount() {		
-		// fetch('http://localhost:3000/api/v1/avatar/list')
-		// .then(res => res.json())
-		// .then((result) => {
-		// 	console.log("--printed--", result.body.rows);
-		// 	this.setState({
-		// 		avatars : result.body.rows
-		// 	  });
-		// 	  console.log("---------------reached here---------------", this.state.avatars);
-		// });
-		this.showLoading(true);
+	componentDidMount() {
+		this.props.setShowBackdrop(true);
 
 		Promise.all([
 			import('./Descriptors.json').then(descriptors => {
@@ -144,13 +129,43 @@ class ImageMapEditor extends Component {
 			import('./Avatars.json').then(avatars => {
 				// listAvatars = avatars;
 				this.setState({ avatars });
-			})
+			}),
+			this.loadImages()
 		]);
 
 		this.setState({
 			selectedItem: null
-		}, () => this.showLoading(false));
+		}, () => this.props.setShowBackdrop(false));
 		this.shortcutHandlers.esc();
+	}
+
+	loadImages = () => {
+		getAllImages().then(res => {
+			const images = res.data.body;
+
+			const imageArray = [];
+			images.forEach(image => {
+				const imageObject = {
+					"name": image.image_name,
+					"description": "",
+					"type": "image",
+					"option": {
+						"type": "image",
+						"name": image.image_name,
+						"src": image.image_dir,
+						"scaleX": 0.5,
+						"scaleY": 0.5
+					}
+				}
+				imageArray.push(imageObject);
+			});
+			
+			const imageList = {
+				"IMAGE": imageArray
+			}
+
+			this.setState({ imageList: imageList })
+		});
 	}
 
 	canvasHandlers = {
@@ -539,7 +554,7 @@ class ImageMapEditor extends Component {
 
 		onImport: files => {
 			if (files) {
-				this.showLoading(true);
+				this.props.setShowBackdrop(true);
 				setTimeout(() => {
 					const reader = new FileReader();
 					reader.onprogress = e => {
@@ -567,10 +582,10 @@ class ImageMapEditor extends Component {
 						}
 					};
 					reader.onloadend = () => {
-						this.showLoading(false);
+						this.props.setShowBackdrop(false);
 					};
 					reader.onerror = () => {
-						this.showLoading(false);
+						this.props.setShowBackdrop(false);
 					};
 					reader.readAsText(files[0]);
 				}, 500);
@@ -732,7 +747,7 @@ class ImageMapEditor extends Component {
 			
 		// },
 		onDownload: () => {
-			this.showLoading(true);
+			this.props.setShowBackdrop(true);
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
 					return false;
@@ -754,7 +769,7 @@ class ImageMapEditor extends Component {
 			document.body.appendChild(anchorEl); // required for firefox
 			anchorEl.click();
 			anchorEl.remove();
-			this.showLoading(false);
+			this.props.setShowBackdrop(false);
 		},
 		onChangeAnimations: animations => {
 			if (!this.state.editing) {
@@ -799,12 +814,6 @@ class ImageMapEditor extends Component {
 		return Object.values(this.state.descriptors).reduce((prev, curr) => prev.concat(curr), []);
 	};
 
-	showLoading = loading => {
-		this.setState({
-			loading,
-		});
-	};
-
 	changeEditing = editing => {
 		this.setState({
 			editing,
@@ -823,22 +832,12 @@ class ImageMapEditor extends Component {
 
 	render() {
 		const {
-			preview,
-			selectedItem,
-			zoomRatio,
-			loading,
-			progress,
-			animations,
-			styles,
-			dataSources,
 			avatars,
-			editing,
 			descriptors,
 			backgrounds,
-			objects,
+			imageList,
 			slideList,
-			updatedValue,
-			mobileOpen
+			mobileOpen,
 		} = this.state;
 		const {
 			onAdd,
@@ -866,7 +865,7 @@ class ImageMapEditor extends Component {
 		} = this.handlers;
 
 		return (
-			<Box sx={{ display: 'flex', backgroundColor: '#f7f7f7', overflow: 'hidden', height: '100%', width: '100%' }}>
+			<Box sx={{ display: 'flex', backgroundColor: '#f7f7f7', overflow: { md: 'hidden' }, height: '100%', width: '100%' }}>
 				<Appbar 
 					handleDrawerToggle={() => this.handleDrawerToggle()}
 					canvasRef={this.canvasRef}
@@ -919,7 +918,8 @@ class ImageMapEditor extends Component {
 								descriptors={descriptors}
 								backgrounds={backgrounds}
 								avatars={avatars}
-								slides={this.state.slideList}
+								images={imageList}
+								slides={slideList}
 								saveImage={onSaveImage}
 							/>
 						</Grid>
@@ -938,7 +938,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps  = {
 	setActiveObject,
 	setActiveTab,
-	setPreviousTab
+	setPreviousTab,
+	setShowBackdrop
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImageMapEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ImageMapEditor));
