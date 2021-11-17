@@ -1,6 +1,6 @@
 import API from '../api';
 
-const shapePath = 'shape/';
+const shapePath = 'shapelist/';
 
 export const postShape = async (shape) => {
   return await API.post(`${shapePath}create`, shape);
