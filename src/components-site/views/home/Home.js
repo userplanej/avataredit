@@ -38,16 +38,22 @@ const Home = () => {
   const [isSortAsc, setIsSortAsc] = useState(false);
 
   useEffect(() => {
+    loadVideos();
+  }, []);
+
+  const loadVideos = async () => {
     dispatch(setShowBackdrop(true));
 
-    getAllImagePackage().then(res => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+
+    await getAllImagePackage(user.user_id).then(res => {
       const videos = res.data.body.rows;
       const videosSorted = videos.sort((a, b) => (a.create_date < b.create_date) ? 1 : -1);
       setVideosList(videosSorted);
       setVideosListToDisplay(videosSorted);
       dispatch(setShowBackdrop(false));
     });
-  }, []);
+  }
 
   const handleSearch = (event) => {
     const nameSearch = event.target.value;
@@ -112,7 +118,7 @@ const Home = () => {
 
       <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' }, maxHeight: '420px', overflowY: 'auto' }}>
         {videosListToDisplay && videosListToDisplay.map(video => {
-          return <VideoCard key={video.package_id} video={video} />
+          return <VideoCard key={video.package_id} video={video} reloadVideosList={() => loadVideos()} />
         })}
       </Box>
     </Box>

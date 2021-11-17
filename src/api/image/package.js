@@ -6,8 +6,8 @@ export const postImagePackage = async (imagePackage) => {
   return await API.post(`${imagePackagePath}create`, imagePackage);
 }
 
-export const getAllImagePackage = async () => {
-  return await API.get(`${imagePackagePath}list`);
+export const getAllImagePackage = async (id, isRecent) => {
+  return await API.get(`${imagePackagePath}list?user_id=${id}${isRecent ? '&recent=true' : ''}`);
 }
 
 export const getImagePackage = async (id) => {

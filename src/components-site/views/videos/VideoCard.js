@@ -14,9 +14,14 @@ import MenuItem from '@mui/material/MenuItem';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 import { getTimeElapsedSinceDate } from '../../../utils/DateUtils';
+import { getStringShortcut } from '../../../utils/StringUtils';
 
 import { setVideo } from '../../../redux/video/videoSlice';
 import { setPathName } from '../../../redux/navigation/navigationSlice';
+import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
+
+import { deleteImagePackage } from '../../../api/image/package';
+
 import { pathnameEnum } from '../../constants/Pathname';
 
 const playButtonStyle = {
@@ -34,15 +39,8 @@ const gridStyle = {
 
 const ITEM_HEIGHT = 48;
 
-const options = [
-  'Download',
-  'Duplicate',
-  'Create template',
-  'Delete'
-];
-
 const VideoCard = (props) => {
-  const { video } = props;
+  const { video, reloadVideosList } = props;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -63,8 +61,12 @@ const VideoCard = (props) => {
     event.stopPropagation();
   }
 
-  const handleDeleteVideo = (event) => {
+  const handleDeleteVideo = async (event, id) => {
     event.stopPropagation();
+
+    await deleteImagePackage(id).then(() => {
+      reloadVideosList()
+    });
   }
 
   const handleClickVideo = () => {
@@ -74,13 +76,24 @@ const VideoCard = (props) => {
     history.push(pathnameEnum.editor, { id });
   }
 
-  const getVideoTitle = (title) => {
-    let titleCut = title.substring(0, 40);
-    if (title.length > 39) {
-      titleCut = titleCut.trimEnd().concat('', '...');
+  const options = [
+    {
+      name: 'Download',
+      action: (event) => handleCloseMenu(event)
+    },
+    {
+      name: 'Duplicate',
+      action: (event) => handleCloseMenu(event)
+    },
+    {
+      name: 'Create template',
+      action: (event) => handleCloseMenu(event)
+    },
+    {
+      name: 'Delete',
+      action: (event, id) => handleDeleteVideo(event, id)
     }
-    return titleCut;
-  }
+  ];
   
   return (
     <Grid 
@@ -111,8 +124,8 @@ const VideoCard = (props) => {
 
         <Box>
           <Box sx={gridStyle}>
-            <Typography variant="h6" sx={{ color: '#fff' }}>{getVideoTitle(video.package_name)}</Typography>
-            {video.isDraft && 
+            <Typography variant="h6" sx={{ color: '#fff' }}>{getStringShortcut(video.package_name, 40)}</Typography>
+            {video.is_draft && 
               <Box 
                 sx={{ 
                   textAlign: 'center', 
@@ -140,11 +153,13 @@ const VideoCard = (props) => {
       </Grid>
 
       <Grid item xs={10} sm={7} md={2} lg={2} xl={4} sx={{ textAlign: 'center' }}>
+        {!video.is_draft && 
         <Typography variant="h6" sx={{ color: '#fff' }}>{video.slides ? video.slides : '1'} Slide{video.slides && video.slides > 1 ? 's' : ''}</Typography>
+        }
       </Grid>
 
       <Grid item xs={6} sm={5} md={2} lg={2} xl={2}>
-        {!video.isDraft && 
+        {!video.is_draft && 
         <Box sx={{ ...gridStyle, justifyContent: 'center' }}>
           {/* <Box sx={{ 
             mr: '30px',
@@ -158,7 +173,7 @@ const VideoCard = (props) => {
       </Grid>
 
       <Grid item xs={6} sm={4} md={2} lg={2} xl={2} sx={{ ...gridStyle, justifyContent: 'center' }}>
-        {!video.isDraft && 
+        {!video.is_draft && 
         <Box sx={playButtonStyle}>
           <PlayArrowIcon sx={{ mr: '5px' }} />
           <Typography variant="h6" sx={{ color: '#fff' }}>Play</Typography>
@@ -166,16 +181,16 @@ const VideoCard = (props) => {
       </Grid>
 
       <Grid item xs={6} sm={4} md={1} lg={1} xl={2} sx={{ ...gridStyle, justifyContent: 'center' }}>
-        {video.isDraft && 
+        {video.is_draft && 
         <IconButton
           aria-label="delete"
           id="delete-button"
-          onClick={handleDeleteVideo}
+          onClick={(event) => handleDeleteVideo(event, video.package_id)}
         >
           <DeleteForeverIcon sx={{ color: '#fff' }} />
         </IconButton>}
 
-        {!video.isDraft && 
+        {!video.is_draft && 
         <Box>
           <IconButton
             aria-label="more"
@@ -205,11 +220,11 @@ const VideoCard = (props) => {
           >
             {options.map((option) => (
               <MenuItem 
-                key={option}  
-                onClick={handleCloseMenu} 
+                key={option.name}  
+                onClick={(event) => option.action(event, video.package_id)} 
                 sx={{ ':hover': { backgroundColor: '#f5f0fa' } }}
               >
-                {option}
+                {option.name}
               </MenuItem>
             ))}
           </Menu>

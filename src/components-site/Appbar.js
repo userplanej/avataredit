@@ -61,7 +61,8 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
     const user = JSON.parse(sessionStorage.getItem('user'));
     const imagePackage = {
       user_id: user.user_id,
-      package_name: 'New video'
+      package_name: 'New video',
+      is_draft: true
     }
     const imageClip = {
       package_id: null,
@@ -70,14 +71,12 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
 
     await postImagePackage(imagePackage).then((res) => {
       const packageId = res.data.body.package_id;
-
-      // TODO: add a slide (image_clip)
       imageClip.package_id = packageId;
     });
 
     await postImageClip(imageClip).then(() => {
       dispatch(setShowBackdrop(false));
-      // history.push();
+      history.push(pathnameEnum.editor);
     });
   }
 
