@@ -10,8 +10,6 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import FlipToBackIcon from '@mui/icons-material/FlipToBack';
 import FlipToFrontIcon from '@mui/icons-material/FlipToFront';
-import CloseIcon from '@mui/icons-material/Close';
-import { Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
 
 import { setActiveObject } from '../../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
@@ -53,7 +51,7 @@ const ToolsView = (props) => {
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
   const [imageTab, setImageTab] = useState(0);
-  
+
   const handleChange = (event, newValue) => {
     dispatch(setActiveTab(newValue));
     dispatch(setActiveObject(null));

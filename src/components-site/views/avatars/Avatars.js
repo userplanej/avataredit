@@ -8,7 +8,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
@@ -124,27 +123,25 @@ const Avatars = () => {
         </DialogTitle>
 
         <DialogContent>
-          <DialogContentText id="avatar-dialog-description">
-            <Box sx={{ background: '#f9f8fa', width: '100%', height: '400px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {avatar && (avatar.src === null || avatar.src === '') && <PanoramaIcon fontSize="large" />}
-            </Box>
+          <Box sx={{ background: '#f9f8fa', width: '100%', height: '400px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {avatar && (avatar.src === null || avatar.src === '') && <PanoramaIcon fontSize="large" />}
+          </Box>
 
-            <Typography variant="h5" sx={{ my: 2, color: '#fff' }}>{avatar && avatar.name} Avatar</Typography>
+          <Typography variant="h5" sx={{ my: 2, color: '#fff' }}>{avatar && avatar.name} Avatar</Typography>
 
-            <Typography variant="subtitle1" sx={{ color: '#d3d9df' }}>
-              {avatar && avatar.name} is one of our most versatile presenters. She is confident and her presentation style is suited to all types of content.
-            </Typography>
+          <Typography variant="subtitle1" sx={{ color: '#d3d9df' }}>
+            {avatar && avatar.name} is one of our most versatile presenters. She is confident and her presentation style is suited to all types of content.
+          </Typography>
 
-            <Typography variant="subtitle1" sx={{ color: '#9a9a9a', my: 2 }}>Preferred languages</Typography>
-            
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
-              <Chip label="English" />
-              <Chip label="German" />
-              <Chip label="Spanish" />
-              <Chip label="Italian" />
-              <Chip label="French" />
-            </Stack>
-          </DialogContentText>
+          <Typography variant="subtitle1" sx={{ color: '#9a9a9a', my: 2 }}>Preferred languages</Typography>
+          
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
+            <Chip label="English" />
+            <Chip label="German" />
+            <Chip label="Spanish" />
+            <Chip label="Italian" />
+            <Chip label="French" />
+          </Stack>
         </DialogContent>
         
         <DialogActions>
