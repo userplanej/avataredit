@@ -198,8 +198,8 @@ const Script = () => {
             {voices.map(voice => {
               return (
                 <Grid
-                  container 
-                  columns={21}
+                  container
+                  columns={13}
                   key={voice.id} 
                   onClick={() => handleChangeVoice(voice)}
                   sx={{
@@ -210,11 +210,11 @@ const Script = () => {
                     color: selectedVoice && selectedVoice.id === voice.id ? '#fff' : null
                   }}
                 >
-                  <Grid item xs={1} sx={{ display: 'flex', alignItems: 'center'}}>
+                  <Grid item xs={2} sm={1} sx={{ display: 'flex', alignItems: 'center'}}>
                     {selectedVoice && selectedVoice.id === voice.id && <PlayArrowIcon />}
                   </Grid>
                   
-                  <Grid item xs={20}>
+                  <Grid item xs={11} sm={12}>
                     <Typography variant="h6" sx={{ color: selectedVoice && selectedVoice.id === voice.id ? '#fff' : null }}>
                       {voice.label}
                     </Typography>
@@ -223,6 +223,8 @@ const Script = () => {
               )
             })}
           </Box>
+
+          <Typography variant="subtitle1">Other voices</Typography>
         </DialogContent>
       </Dialog>
     </Box>

@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { notification, message } from 'antd';
 import { v4 } from 'uuid';
 import { Flex } from '../flex';
 import Icon from '../icon/Icon';
+import { Box } from '@mui/system';
+import UploadIcon from '@mui/icons-material/Upload';
+
 import ToolsView from '../../components-site/views/editor/ToolsView';
 import SearchInput from '../../components-site/inputs/SearchInput';
-import { Box } from '@mui/system';
 
-import { postImage, getAllImages } from '../../api/image/image';
-import { uploadFile, deleteFile } from '../../api/s3';
+import { getStringShortcut } from '../../utils/StringUtils';
+import { uploadFile } from '../../api/s3';
+import { postImage } from '../../api/image/image';
+import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 
 notification.config({
 	top: 80,
@@ -27,34 +32,28 @@ class ImageMapItems extends Component {
 			descriptors: {},
 			backgrounds: {},
 			avatars: {},
+			images: {},
 			filteredDescriptors: [],
 			svgModalVisible: false,
 			optionValue: null,
 			indexTab: 0,
 			avatarSearch: '',
 			backgroundImageSearch: '',
-			imageSearch: '',
-			imageList: []
+			imageSearch: ''
 		};
-
-		this.renderItems = this.renderItems.bind(this);
-		this.renderItem = this.renderItem.bind(this);
-		this.shouldRenderItem = this.shouldRenderItem.bind(this);
-		this.handleAvatarNameChange = this.handleAvatarNameChange.bind(this);
 	}
 
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,
 		backgrounds: PropTypes.object,
-		avatars: PropTypes.object
+		avatars: PropTypes.object,
+		images: PropTypes.object
 	};
 
 	componentDidMount() {
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
-
-		Promise.all([getAllImages().then(res => this.setState({ imageList: res.data.body.rows }))]);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
@@ -82,6 +81,14 @@ class ImageMapItems extends Component {
 				avatars,
 			});
 		}
+		if (JSON.stringify(this.props.images) !== JSON.stringify(nextProps.images)) {
+			const images = Object.keys(nextProps.images).reduce((prev, key) => {
+				return prev.concat(nextProps.images[key]);
+			}, []);
+			this.setState({
+				images,
+			});
+		}
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -106,6 +113,8 @@ class ImageMapItems extends Component {
 		} else if (this.state.backgroundImageSearch !== nextState.backgroundImageSearch) {
 			return true;
 		} else if (this.state.imageSearch !== nextState.imageSearch) {
+			return true;
+		} else if (JSON.stringify(this.state.images) !== JSON.stringify(nextState.images)) {
 			return true;
 		}
 		return false;
@@ -288,11 +297,12 @@ class ImageMapItems extends Component {
 		},
 	};
 
-	renderItems = (items, key, type) => {
+	renderItems = (items, key, type, isUpload) => {
 		const isText = type === 'text';
-		return <div>
+		return <div key={key}>
 				{this.renderSearchField(type)}
 				{!isText && <Flex flexWrap="wrap" flexDirection="row" style={{ width: '100%' }} key={key}>
+					{isUpload && this.renderUploadItem(type)}
 					{items.map(item => {
 						if (this.shouldRenderItem(item, type)) {
 							return this.renderItem(item);
@@ -309,6 +319,43 @@ class ImageMapItems extends Component {
 				}
 			</div>
 	};
+
+	renderUploadItem = () => {
+		return (
+			<Box sx={{ marginRight: '12px' }} key={'upload'}>
+				<Box
+					key={'upload'}
+					onClick={this.handleUploadImage}
+					sx={{ 
+						justifyContent: this.state.collapse ? 'center' : null, 
+						display: 'flex', 
+						flexDirection: 'column', 
+						cursor: 'pointer'
+					}}
+				>
+          <input id="input-upload" type="file" hidden onChange={this.uploadImage} accept="image/*" />
+					<Box 
+						className="rde-editor-items-item-icon" 
+						sx={{ 
+							width: '125px', 
+							height: '100px', 
+							backgroundColor: 'white',
+							backgroundPosition: 'center', /* Center the image */
+							backgroundRepeat: 'no-repeat', /* Do not repeat the image */
+							backgroundSize: 'cover', /* Resize the background image to cover the entire container */
+							display: 'flex', 
+							flexDirection: 'column', 
+							alignItems: 'center',
+							borderRadius: '10px'
+						}}
+					>
+						<UploadIcon fontSize='large' />
+					</Box>
+				</Box>
+				{this.state.collapse ? null : <div className="rde-editor-items-item-text" key={`name-upload`}>Upload</div>}
+			</Box>
+		);
+	}
 
 	renderSearchField = (type) => {
 		let searchField = null;
@@ -346,9 +393,9 @@ class ImageMapItems extends Component {
 	shouldRenderItem = (item, type) => {
 		const { avatarSearch, backgroundImageSearch, imageSearch } = this.state;
 
-		if (type === 'image' && item.type === 'upload') {
-			return false;
-		}
+		// if (type === 'image' && item.type === 'upload') {
+		// 	return false;
+		// }
 		if (type === 'avatar' && avatarSearch !== '') {
 			return item.name.toLowerCase().includes(avatarSearch.toLowerCase()) ? true : false;
 		}
@@ -395,7 +442,8 @@ class ImageMapItems extends Component {
 			<Box sx={{ marginRight: '12px' }} key={item.name}>
 				<Box
 					key={item.name}
-					onClick={e => { 
+					onClick={() => {
+						console.log(item)
 						if (isBackgroundColor) {
 							this.handlers.onChangeWorkareaBackgroundColor(item.option.backgroundColor);
 							return;
@@ -432,7 +480,7 @@ class ImageMapItems extends Component {
 						{!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
 					</Box>
 				</Box>
-				{this.state.collapse ? null : <div className="rde-editor-items-item-text" key={`name-${item.name}`}>{item.name}</div>}
+				{this.state.collapse ? null : <div className="rde-editor-items-item-text" key={`name-${item.name}`}>{getStringShortcut(item.name, 13)}</div>}
 			</Box>
 		)
 	}
@@ -455,31 +503,50 @@ class ImageMapItems extends Component {
 		this.setState({ imageSearch: value });
 	}
 
-	uploadImage = async (file) => {
-		if (file && file !== '') {
-			const formData = new FormData();
-			formData.append('images', file);
+	uploadImage = (event) => {
+		const user = JSON.parse(sessionStorage.getItem('user'));
+    const filePath = event.target.value;
+    const files = event.target.files;
 
-			uploadFile(formData).then(res => {
-				const location = res.data.location;
+    if (files && files.length > 0) {
+      this.props.setShowBackdrop(true);
 
-				const imageData = {
-					image_name: "image",
-  				image_dir: location
-				}
-			});
-		}
+      const fileName = filePath.replace(/^.*?([^\\\/]*)$/, '$1');
+      const formData = new FormData();
+      formData.append('adminId', 'admin1018');
+      formData.append('images', files[0]);
+
+      uploadFile(formData, 'image').then((res) => {
+        const location = res.data.body.location;
+        const dataToSend = {
+          image_name: fileName,
+          image_dir: location,
+					is_upload: true,
+					user_id: user.user_id
+        }
+        postImage(dataToSend).then(() => {
+					this.props.reloadImages();
+          this.props.setShowBackdrop(false);
+        });
+      });
+    }
+  }
+
+	handleUploadImage = () => {
+		document.getElementById('input-upload').click();
 	}
 
 	render() {
-		const { canvasRef, descriptors, backgrounds, avatars, saveImage } = this.props;
+		const { canvasRef, descriptors, backgrounds, backgroundImages, avatars, images, saveImage } = this.props;
 
 		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
 		const shapes = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
-		const images = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key, 'image'));
+		const imagesDefault = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key, 'image'));
 		const backgroundsColorsItems = Object.keys(backgrounds).filter(key => key === 'BACKGROUND').map(key => this.renderItems(backgrounds[key], key, 'background-color'));
 		const backgroundsImagesItems = Object.keys(backgrounds).filter(key => key === 'IMAGE').map(key => this.renderItems(backgrounds[key], key, 'background-image'));
+		const backgroundsImagesUploaded = Object.keys(backgroundImages).map(key => this.renderItems(backgroundImages[key], key, 'background-image', true));
 		const avatarsItems = Object.keys(avatars).map(key => this.renderItems(avatars[key], key, 'avatar'));
+		const imagesUploaded = Object.keys(images).map(key => this.renderItems(images[key], key, 'image', true));
 
 		return (
 			<Box height="100%">
@@ -487,10 +554,12 @@ class ImageMapItems extends Component {
 					canvasRef={canvasRef}
 					texts={texts}
 					shapes={shapes}
-					images={images}
+					images={imagesDefault}
 					backgroundsColors={backgroundsColorsItems}
 					backgroundsImages={backgroundsImagesItems}
+					backgroundsImagesUploaded={backgroundsImagesUploaded}
 					avatars={avatarsItems}
+					imagesUploaded={imagesUploaded}
 					saveImage={saveImage}
 				/>
 			</Box>
@@ -498,4 +567,8 @@ class ImageMapItems extends Component {
 	}
 }
 
-export default ImageMapItems;
+const mapDispatchToProps  = {
+	setShowBackdrop
+}
+
+export default connect(null, mapDispatchToProps)(ImageMapItems);

@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 
-import { setActiveObject } from '../../../redux/canvas/canvasSlice';
-import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
-
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
@@ -14,38 +11,17 @@ import Button from '@mui/material/Button';
 import FlipToBackIcon from '@mui/icons-material/FlipToBack';
 import FlipToFrontIcon from '@mui/icons-material/FlipToFront';
 import CloseIcon from '@mui/icons-material/Close';
-import { Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Input } from '@mui/material';
+import { Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
 
-const iconContainerStyle = {
-  minWidth: '0px',
-  width: '32px',
-  height: '32px',
-  padding: '8px',
-  borderRadius: '6px',
-  backgroundColor: '#e8dff4',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-}
-
-const iconContainerActiveStyle = {
-  minWidth: '0px',
-  width: '32px',
-  height: '32px',
-  padding: '8px',
-  borderRadius: '6px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '#4f4081'
-}
+import { setActiveObject } from '../../../redux/canvas/canvasSlice';
+import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, name, ...other } = props;
 
   return (
     <div
-      key={index}
+      key={name.concat('-', index)}
       role="tabpanel"
       hidden={value !== index}
       id={`vertical-tabpanel-${index}`}
@@ -74,21 +50,17 @@ const ToolsView = (props) => {
   const activeObject = useSelector((state) => state.canvas.activeObject);
   const activeTab = useSelector((state) => state.toolbar.activeTab);
 
+  const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
   const [imageTab, setImageTab] = useState(0);
-  const [openUploadImageDialog, setOpenUploadImageDialog] = useState(false);
-
-  const makeIcon = (index, icon) => {
-    return (
-      <Box key={index} sx={activeTab === index ? iconContainerActiveStyle : iconContainerStyle}>
-        {icon}
-      </Box>
-    )
-  }
-
+  
   const handleChange = (event, newValue) => {
     dispatch(setActiveTab(newValue));
     dispatch(setActiveObject(null));
+  }
+
+  const handleChangeAvatarTab = (event, newValue) => {
+    setAvatarTab(newValue);
   }
 
   const handleChangeBackgroundTab = (event, newValue) => {
@@ -175,14 +147,6 @@ const ToolsView = (props) => {
       </Box>
     );
   }
-  
-	const openUploadImage = () => {
-		setOpenUploadImageDialog(true);
-	}
-
-	const closeUploadImage = () => {
-		setOpenUploadImageDialog(false);
-	}
 
   const sendTest = async () => {
     const { canvasRef } = props;
@@ -225,46 +189,40 @@ const ToolsView = (props) => {
     });
   }
 
-  const uploadImage = (event) => {
-    console.log(event.target.value)
-  }
-
   return (
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
       <Grid item xs={8} md={8} lg={8} xl={9} sx={{ backgroundColor: '#3c4045' }}>
-        <TabPanel value={activeTab} index={0}>
+        <TabPanel name="main" value={activeTab} index={0}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
-          {/* <Input type="file" onChange={uploadImage} /> */}
           {/* <Button onClick={sendTest}>Send to minds</Button>
-          <Button onClick={props.saveImage}>Save image</Button>
-          <Button onClick={openUploadImage}>Upload image</Button> */}
+          <Button onClick={props.saveImage}>Save image</Button>*/}
         </TabPanel>
 
-        <TabPanel value={activeTab} index={1}>
+        <TabPanel name="main" value={activeTab} index={1}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar, size and alignment</Typography>
           <Box sx={{ height: '600px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
 
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs 
-                value={backgroundTab} 
+                value={avatarTab} 
                 variant="fullWidth" 
                 scrollButtons="auto" 
-                onChange={handleChangeBackgroundTab} 
-                aria-label="backgrounds-tabs"
+                onChange={handleChangeAvatarTab} 
+                aria-label="avatars-tabs"
               >
                 <Tab label="Full body" />
                 <Tab label="Circle" />
                 <Tab label="Voice only" />
               </Tabs>
             </Box>
-            <TabPanel value={backgroundTab} index={0}>Full body</TabPanel>
-            <TabPanel value={backgroundTab} index={1}>Circle</TabPanel>
-            <TabPanel value={backgroundTab} index={2}>Voice only</TabPanel>
+            <TabPanel name="avatar" value={avatarTab} index={0}>Full body</TabPanel>
+            <TabPanel name="avatar" value={avatarTab} index={1}>Circle</TabPanel>
+            <TabPanel name="avatar" value={avatarTab} index={2}>Voice only</TabPanel>
           </Box>
         </TabPanel>
 
-        <TabPanel value={activeTab} index={2}>
+        <TabPanel name="main" value={activeTab} index={2}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select background</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
@@ -275,24 +233,24 @@ const ToolsView = (props) => {
                 <Tab label="Uploads" />
               </Tabs>
             </Box>
-            <TabPanel value={backgroundTab} index={0}>{props.backgroundsColors}</TabPanel>
-            <TabPanel value={backgroundTab} index={1}>{props.backgroundsImages}</TabPanel>
-            <TabPanel value={backgroundTab} index={2}>Videos</TabPanel>
-            <TabPanel value={backgroundTab} index={3}>Uploads</TabPanel>
+            <TabPanel name="background" value={backgroundTab} index={0}>{props.backgroundsColors}</TabPanel>
+            <TabPanel name="background" value={backgroundTab} index={1}>{props.backgroundsImages}</TabPanel>
+            <TabPanel name="background" value={backgroundTab} index={2}>Videos</TabPanel>
+            <TabPanel name="background" value={backgroundTab} index={3}>{props.backgroundsImagesUploaded}</TabPanel>
           </Box>
         </TabPanel>
 
-        <TabPanel value={activeTab} index={3}>
+        <TabPanel name="main" value={activeTab} index={3}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Text</Typography>
           {props.texts}
         </TabPanel>
 
-        <TabPanel value={activeTab} index={4}>
+        <TabPanel name="main" value={activeTab} index={4}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select shape</Typography>
           {props.shapes}
         </TabPanel>
 
-        <TabPanel value={activeTab} index={5}>
+        <TabPanel name="main" value={activeTab} index={5}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select images</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
@@ -301,16 +259,16 @@ const ToolsView = (props) => {
                 <Tab label="Uploads" />
               </Tabs>
             </Box>
-            <TabPanel value={imageTab} index={0}>{props.images}</TabPanel>
-            <TabPanel value={imageTab} index={1}>Uploads</TabPanel>
+            <TabPanel name="image" value={imageTab} index={0}>{props.images}</TabPanel>
+            <TabPanel name="image" value={imageTab} index={1}>{props.imagesUploaded}</TabPanel>
           </Box>
         </TabPanel>
 
-        <TabPanel value={activeTab} index={6}>
+        <TabPanel name="main" value={activeTab} index={6}>
           <Typography variant="h6">Select music</Typography>
         </TabPanel>
 
-        <TabPanel value={activeTab} index={7}>
+        <TabPanel name="main" value={activeTab} index={7}>
           {renderFormat()}
         </TabPanel>
       </Grid>
@@ -349,30 +307,6 @@ const ToolsView = (props) => {
           {activeObject && <Tab label="Format" {...a11yProps(7)} />}
         </Tabs>
       </Grid>
-
-      <Dialog
-        maxWidth="md"
-        open={openUploadImageDialog}
-        onClose={closeUploadImage}
-        aria-labelledby="upload-dialog-title"
-        aria-describedby="upload-dialog-description"
-      >
-        <DialogTitle id="upload-dialog-title" sx={{ textAlign: 'right' }}>
-          <CloseIcon fontSize="large" onClick={closeUploadImage} sx={{ cursor: 'pointer' }} />
-        </DialogTitle>
-        
-        <DialogContent>
-          <DialogContentText id="upload-dialog-description">
-            Upload Image
-          </DialogContentText>
-        </DialogContent>
-
-        <DialogActions>
-          <Button variant="contained" fullWidth onClick={closeUploadImage}>
-            Create video with this avatar
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Grid>
   );
 }

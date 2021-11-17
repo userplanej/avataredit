@@ -24,6 +24,9 @@ import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 
 import { getAllImages } from '../../api/image/image';
+import { getAllAvatars } from '../../api/avatar/avatar';
+
+import { createAvatarObject, createImageObject, createBackgroundImageObject } from '../../utils/CanvasObjectUtils';
 
 const propertiesToInclude = [
 	'id',
@@ -94,13 +97,10 @@ class ImageMapEditor extends Component {
 		zoomRatio: 1,
 		preview: false,
 		progress: 0,
-		avatars: {},
 		animations: [],
 		styles: [],
 		dataSources: [],
 		editing: false,
-		descriptors: {},
-		backgrounds: {},
 		objects: undefined,
 		src: undefined,
 		slideList : [{
@@ -111,7 +111,11 @@ class ImageMapEditor extends Component {
 		}],
 		mobileOpen: false,
 		id: this.props.history.location.state?.id,
-		imageList: {}
+		descriptors: {},
+		backgrounds: {},
+		avatars: {},
+		images: {},
+		backgroundImages: {}
 	};
 
 	componentDidMount() {
@@ -126,10 +130,7 @@ class ImageMapEditor extends Component {
 				// listBackgrounds = backgrounds;
 				this.setState({ backgrounds });
 			}),
-			import('./Avatars.json').then(avatars => {
-				// listAvatars = avatars;
-				this.setState({ avatars });
-			}),
+			this.loadAvatars(),
 			this.loadImages()
 		]);
 
@@ -139,32 +140,47 @@ class ImageMapEditor extends Component {
 		this.shortcutHandlers.esc();
 	}
 
+	loadAvatars = () => {
+		getAllAvatars().then(res => {
+			const avatars = res.data.body.rows;
+
+			const avatarArray = [];
+			avatars.forEach(avatar => {
+				const avatarObject = createAvatarObject(avatar);
+				avatarArray.push(avatarObject);
+			});
+
+			const avatarList = {
+				"IMAGE": avatarArray
+			}
+
+			this.setState({ avatars: avatarList })
+		});
+	}
+
 	loadImages = () => {
-		getAllImages().then(res => {
+		const user = JSON.parse(sessionStorage.getItem('user'));
+
+		getAllImages(user.user_id).then(res => {
 			const images = res.data.body;
 
 			const imageArray = [];
+			const backgroundImageArray = [];
 			images.forEach(image => {
-				const imageObject = {
-					"name": image.image_name,
-					"description": "",
-					"type": "image",
-					"option": {
-						"type": "image",
-						"name": image.image_name,
-						"src": image.image_dir,
-						"scaleX": 0.5,
-						"scaleY": 0.5
-					}
-				}
+				const imageObject = createImageObject(image);
 				imageArray.push(imageObject);
+				const backgroundImageObject = createBackgroundImageObject(image);
+				backgroundImageArray.push(backgroundImageObject);
 			});
 			
 			const imageList = {
 				"IMAGE": imageArray
 			}
+			const backgroundImageList = {
+				"IMAGE": backgroundImageArray
+			}
 
-			this.setState({ imageList: imageList })
+			this.setState({ images: imageList, backgroundImages: backgroundImageList })
 		});
 	}
 
@@ -835,7 +851,8 @@ class ImageMapEditor extends Component {
 			avatars,
 			descriptors,
 			backgrounds,
-			imageList,
+			images,
+			backgroundImages,
 			slideList,
 			mobileOpen,
 		} = this.state;
@@ -917,9 +934,11 @@ class ImageMapEditor extends Component {
 								canvasRef={this.canvasRef}
 								descriptors={descriptors}
 								backgrounds={backgrounds}
+								backgroundImages={backgroundImages}
 								avatars={avatars}
-								images={imageList}
+								images={images}
 								slides={slideList}
+								reloadImages={() => this.loadImages()}
 								saveImage={onSaveImage}
 							/>
 						</Grid>
