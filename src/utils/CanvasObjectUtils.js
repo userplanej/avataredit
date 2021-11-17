@@ -84,3 +84,19 @@ export const createBackgroundImageObject = (image) => {
     }
   }
 }
+
+export const createShapeObject = (shape) => {
+  return {
+    "name": shape.shape_name,
+    "description": "",
+    "type": "shape",
+    "option": {
+      "type": "image",
+      "subtype": "shape",
+      "width": 30,
+      "height": 30,
+      "name": shape.shape_name,
+      "src": shape.shape_dir
+    }
+  }
+}

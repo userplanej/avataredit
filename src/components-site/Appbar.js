@@ -33,7 +33,7 @@ const boxStyle = {
   justifyContent: 'center'
 }
 
-const Appbar = ({ handleDrawerToggle, canvasRef }) => {
+const Appbar = ({ handleDrawerToggle, canvasRef, openGenerateVideo, openDiscardDraft }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const pathName = useSelector(state => state.navigation.pathName);
@@ -76,7 +76,7 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
 
     await postImageClip(imageClip).then(() => {
       dispatch(setShowBackdrop(false));
-      history.push(pathnameEnum.editor);
+      history.push(pathnameEnum.editor, { id: imageClip.package_id });
     });
   }
 
@@ -130,6 +130,15 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
     dispatch(setReloadUser(true));
   }
 
+  const handleBackToVideos = () => {
+    history.push(pathnameEnum.videos);
+  }
+
+  const playVideo = () => {
+    const objects = canvasRef.handler.exportJSON();
+    console.log(objects);
+  }
+
   const isEditorPage = () => {
     return pathName === pathnameEnum.editor;
   }
@@ -175,7 +184,7 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
                   value={title}
                   placeholder="Add title here"
                   onChange={handleChangeTitle}
-                  startAdornment={<InputAdornment position="start"><ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff" }} /></InputAdornment>}
+                  startAdornment={<InputAdornment position="start"><ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff" }} onClick={handleBackToVideos} /></InputAdornment>}
                   sx={{ backgroundColor: '#3c4045' }}
                 />
               </Box>
@@ -227,6 +236,7 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
             variant="contained" 
             color="secondary" 
             sx={{ maxWidth: '100%', px: 2, mx: 2, backgroundColor: '#3c4045', border: 'none' }}
+            onClick={openDiscardDraft}
           >
             Discard draft
           </Button>
@@ -234,10 +244,11 @@ const Appbar = ({ handleDrawerToggle, canvasRef }) => {
             variant="contained" 
             color="secondary" 
             sx={{ px: 7, mr: 2, backgroundColor: '#3c4045', border: 'none' }}
+            onClick={playVideo}
           >
             Play
           </Button>
-          <Button variant="contained" sx={{ px: 5 }}>Generate video</Button>
+          <Button variant="contained" sx={{ px: 5 }} onClick={openGenerateVideo}>Generate video</Button>
         </Box>}
 
         {pathName === pathnameEnum.avatars &&

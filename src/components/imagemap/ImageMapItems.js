@@ -443,7 +443,6 @@ class ImageMapItems extends Component {
 				<Box
 					key={item.name}
 					onClick={() => {
-						console.log(item)
 						if (isBackgroundColor) {
 							this.handlers.onChangeWorkareaBackgroundColor(item.option.backgroundColor);
 							return;
@@ -477,6 +476,7 @@ class ImageMapItems extends Component {
 							borderRadius: '10px'
 						}}
 					>
+						{/* {!isBackground || !isAvatar || !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />} */}
 						{!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
 					</Box>
 				</Box>
@@ -537,10 +537,11 @@ class ImageMapItems extends Component {
 	}
 
 	render() {
-		const { canvasRef, descriptors, backgrounds, backgroundImages, avatars, images, saveImage } = this.props;
+		const { canvasRef, descriptors, backgrounds, backgroundImages, avatars, images, shapes, saveImage } = this.props;
 
 		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
-		const shapes = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
+		// const shapesItems = Object.keys(shapes).map(key => this.renderItems(shapes[key], key, 'shape'));
+		const shapesItems = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
 		const imagesDefault = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key, 'image'));
 		const backgroundsColorsItems = Object.keys(backgrounds).filter(key => key === 'BACKGROUND').map(key => this.renderItems(backgrounds[key], key, 'background-color'));
 		const backgroundsImagesItems = Object.keys(backgrounds).filter(key => key === 'IMAGE').map(key => this.renderItems(backgrounds[key], key, 'background-image'));
@@ -553,7 +554,7 @@ class ImageMapItems extends Component {
 				<ToolsView 
 					canvasRef={canvasRef}
 					texts={texts}
-					shapes={shapes}
+					shapes={shapesItems}
 					images={imagesDefault}
 					backgroundsColors={backgroundsColorsItems}
 					backgroundsImages={backgroundsImagesItems}

@@ -18,6 +18,7 @@ import Slides from '../../components-site/views/editor/Slides';
 import Appbar from '../../components-site/Appbar';
 import Sidebar from '../../components-site/Sidebar';
 import Script from '../../components-site/views/editor/Script';
+import GenerateVideo from '../../components-site/views/editor/GenerateVideo';
 
 import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
@@ -25,8 +26,11 @@ import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 
 import { getAllImages } from '../../api/image/image';
 import { getAllAvatars } from '../../api/avatar/avatar';
+import { getAllShapes } from '../../api/shape/shape';
+import { getAllImageClip } from '../../api/image/clip';
 
-import { createAvatarObject, createImageObject, createBackgroundImageObject } from '../../utils/CanvasObjectUtils';
+import { createAvatarObject, createImageObject, createBackgroundImageObject, createShapeObject } from '../../utils/CanvasObjectUtils';
+import DiscardDraft from '../../components-site/views/editor/DiscardDraft';
 
 const propertiesToInclude = [
 	'id',
@@ -109,12 +113,15 @@ class ImageMapEditor extends Component {
 			file_dir: null,
 			url: 'sample1.json'
 		}],
+		openGenerateVideo: false,
+		openDiscardDraft: false,
 		mobileOpen: false,
-		id: this.props.history.location.state?.id,
+		videoId: this.props.history.location.state?.id,
 		descriptors: {},
 		backgrounds: {},
 		avatars: {},
 		images: {},
+		shapes: {},
 		backgroundImages: {}
 	};
 
@@ -130,14 +137,20 @@ class ImageMapEditor extends Component {
 				// listBackgrounds = backgrounds;
 				this.setState({ backgrounds });
 			}),
+			this.loadSlides(),
 			this.loadAvatars(),
-			this.loadImages()
+			this.loadImages(),
+			this.loadShapes()
 		]);
 
 		this.setState({
 			selectedItem: null
 		}, () => this.props.setShowBackdrop(false));
 		this.shortcutHandlers.esc();
+	}
+
+	loadSlides = () => {
+
 	}
 
 	loadAvatars = () => {
@@ -151,7 +164,7 @@ class ImageMapEditor extends Component {
 			});
 
 			const avatarList = {
-				"IMAGE": avatarArray
+				"AVATAR": avatarArray
 			}
 
 			this.setState({ avatars: avatarList })
@@ -181,6 +194,24 @@ class ImageMapEditor extends Component {
 			}
 
 			this.setState({ images: imageList, backgroundImages: backgroundImageList })
+		});
+	}
+
+	loadShapes = () => {
+		getAllShapes().then(res => {
+			const shapes = res.data.body;
+
+			const shapeArray = [];
+			shapes.forEach(shape => {
+				const shapeObject = createShapeObject(shape);
+				shapeArray.push(shapeObject);
+			});
+
+			const shapeList = {
+				"SHAPE": shapeArray
+			}
+
+			this.setState({ shapes: shapeList })
 		});
 	}
 
@@ -846,15 +877,34 @@ class ImageMapEditor extends Component {
     this.setState({ mobileOpen: !this.state.mobileOpen });
   }
 
+	handleOpenGenerateVideo = () => {
+		this.setState({ openGenerateVideo: true });
+	}
+
+	handleCloseGenerateVideo = () => {
+		this.setState({ openGenerateVideo: false });
+	}
+
+	handleOpenDiscardDraft = () => {
+		this.setState({ openDiscardDraft: true });
+	}
+
+	handleCloseDiscardDraft = () => {
+		this.setState({ openDiscardDraft: false });
+	}
+
 	render() {
 		const {
 			avatars,
 			descriptors,
 			backgrounds,
 			images,
+			shapes,
 			backgroundImages,
 			slideList,
 			mobileOpen,
+			openGenerateVideo,
+			openDiscardDraft
 		} = this.state;
 		const {
 			onAdd,
@@ -883,9 +933,14 @@ class ImageMapEditor extends Component {
 
 		return (
 			<Box sx={{ display: 'flex', backgroundColor: '#f7f7f7', overflow: { md: 'hidden' }, height: '100%', width: '100%' }}>
+				<GenerateVideo open={openGenerateVideo} close={() => this.handleCloseGenerateVideo()} />
+				<DiscardDraft open={openDiscardDraft} close={() => this.handleCloseDiscardDraft()} />
+
 				<Appbar 
 					handleDrawerToggle={() => this.handleDrawerToggle()}
 					canvasRef={this.canvasRef}
+					openGenerateVideo={() => this.handleOpenGenerateVideo()}
+					openDiscardDraft={() => this.handleOpenDiscardDraft()}
 				/>
 
 				<Sidebar 
@@ -937,6 +992,7 @@ class ImageMapEditor extends Component {
 								backgroundImages={backgroundImages}
 								avatars={avatars}
 								images={images}
+								shapes={shapes}
 								slides={slideList}
 								reloadImages={() => this.loadImages()}
 								saveImage={onSaveImage}
