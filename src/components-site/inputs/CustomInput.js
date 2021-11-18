@@ -30,6 +30,10 @@ const CustomInput = (props) => {
      */
     onChange, 
     /**
+     * On blur function triggered when input loses focus
+     */
+    onBlur,
+    /**
      * Input type (email, password...)
      */
     type,
@@ -76,6 +80,7 @@ const CustomInput = (props) => {
       disabled={disabled}
       placeholder={placeholder}
       onChange={onChange}
+      onBlur={onBlur}
       startAdornment={startAdornment}
       endAdornment={endAdornment}
       sx={sx}

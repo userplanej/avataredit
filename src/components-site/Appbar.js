@@ -12,7 +12,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { setPathName } from '../redux/navigation/navigationSlice';
@@ -41,6 +40,7 @@ const Appbar = ({ handleDrawerToggle, canvasRef, openGenerateVideo, openDiscardD
   const userUpdated = useSelector(state => state.user.userUpdated);
 
   const [title, setTitle] = useState('');
+  const [titleSaved, setTitleSaved] = useState('');
   
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
   const cannotRedo = canvasRef && !canvasRef.handler?.transactionHandler.redos.length;
@@ -50,10 +50,18 @@ const Appbar = ({ handleDrawerToggle, canvasRef, openGenerateVideo, openDiscardD
     dispatch(setPathName(pathname));
 
     if (pathname === pathnameEnum.editor) {
-      const id = history.location.state?.id;
-      getImagePackage(id).then(res => setTitle(res.data.body.package_name));
+      getVideoData();
     }
   }, []);
+
+  const getVideoData = async () => {
+    const id = history.location.state?.id;
+    await getImagePackage(id).then(res => {
+      const video = res.data.body;
+      setTitle(video.package_name);
+      setTitleSaved(video.package_name);
+    });
+  }
 
   const createNewVideo = async () => {
     dispatch(setShowBackdrop(true));
@@ -85,9 +93,9 @@ const Appbar = ({ handleDrawerToggle, canvasRef, openGenerateVideo, openDiscardD
   }
 
   const saveTitle = () => {
-    if (title !== '') {
+    if (title !== '' && title !== titleSaved) {
       const id = history.location.state?.id;
-      updateImagePackage(id, { package_name: title });
+      updateImagePackage(id, { package_name: title }).then(() => setTitleSaved(title));
     }
   }
 
@@ -177,19 +185,14 @@ const Appbar = ({ handleDrawerToggle, canvasRef, openGenerateVideo, openDiscardD
           </Box>}
 
           {pathName === pathnameEnum.editor &&
-          <Box sx={boxStyle}>
-            <ClickAwayListener onClickAway={() => saveTitle()}>
-              <Box>
-                <CustomInput 
-                  value={title}
-                  placeholder="Add title here"
-                  onChange={handleChangeTitle}
-                  startAdornment={<InputAdornment position="start"><ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff" }} onClick={handleBackToVideos} /></InputAdornment>}
-                  sx={{ backgroundColor: '#3c4045' }}
-                />
-              </Box>
-            </ClickAwayListener>
-          </Box>}
+          <CustomInput 
+            value={title}
+            onChange={handleChangeTitle}
+            onBlur={saveTitle}
+            startAdornment={<InputAdornment position="start"><ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff" }} onClick={handleBackToVideos} /></InputAdornment>}
+            sx={{ backgroundColor: '#3c4045' }}
+          />
+          }
 
           {pathName === pathnameEnum.avatars &&
           <Box sx={boxStyle}>
