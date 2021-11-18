@@ -393,9 +393,6 @@ class ImageMapItems extends Component {
 	shouldRenderItem = (item, type) => {
 		const { avatarSearch, backgroundImageSearch, imageSearch } = this.state;
 
-		// if (type === 'image' && item.type === 'upload') {
-		// 	return false;
-		// }
 		if (type === 'avatar' && avatarSearch !== '') {
 			return item.name.toLowerCase().includes(avatarSearch.toLowerCase()) ? true : false;
 		}
@@ -415,6 +412,7 @@ class ImageMapItems extends Component {
 		const isBackgroundImage = isBackground && item.option.subtype === 'image';
 		const isAvatar = item.type === 'avatar';
 		const isImage = item.type === 'image';
+		const isShape = item.type === 'shape';
 
 		return item.type === 'text' ? (
 			<Box
@@ -466,18 +464,19 @@ class ImageMapItems extends Component {
 							width: '125px', 
 							height: '100px', 
 							backgroundColor: isBackgroundColor ? item.option.backgroundColor : 'white',
-							backgroundImage: isAvatar || isImage || isBackgroundImage ? `url(${item.option.src})` : '',
+							backgroundImage: isShape || isAvatar || isImage || isBackgroundImage ? `url(${item.option.src})` : '',
 							backgroundPosition: 'center', /* Center the image */
 							backgroundRepeat: 'no-repeat', /* Do not repeat the image */
-							backgroundSize: 'cover', /* Resize the background image to cover the entire container */
+							backgroundSize: isShape ? 'none' : 'cover', /* Resize the background image to cover the entire container */
 							display: 'flex', 
 							flexDirection: 'column', 
 							textAlign: 'center',
 							borderRadius: '10px'
 						}}
 					>
+						{/* {isShape && <img src={item.option.src} />} */}
 						{/* {!isBackground || !isAvatar || !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />} */}
-						{!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />}
+						{/* {!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />} */}
 					</Box>
 				</Box>
 				{this.state.collapse ? null : <div className="rde-editor-items-item-text" key={`name-${item.name}`}>{getStringShortcut(item.name, 13)}</div>}
@@ -537,11 +536,11 @@ class ImageMapItems extends Component {
 	}
 
 	render() {
-		const { canvasRef, descriptors, backgrounds, backgroundImages, avatars, images, shapes, saveImage } = this.props;
+		const { canvasRef, descriptors, backgrounds, backgroundImages, avatars, images, shapes } = this.props;
 
 		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
-		// const shapesItems = Object.keys(shapes).map(key => this.renderItems(shapes[key], key, 'shape'));
-		const shapesItems = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
+		const shapesItems = Object.keys(shapes).map(key => this.renderItems(shapes[key], key, 'shape'));
+		// const shapesItems = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
 		const imagesDefault = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key, 'image'));
 		const backgroundsColorsItems = Object.keys(backgrounds).filter(key => key === 'BACKGROUND').map(key => this.renderItems(backgrounds[key], key, 'background-color'));
 		const backgroundsImagesItems = Object.keys(backgrounds).filter(key => key === 'IMAGE').map(key => this.renderItems(backgrounds[key], key, 'background-image'));
@@ -561,7 +560,6 @@ class ImageMapItems extends Component {
 					backgroundsImagesUploaded={backgroundsImagesUploaded}
 					avatars={avatarsItems}
 					imagesUploaded={imagesUploaded}
-					saveImage={saveImage}
 				/>
 			</Box>
 		);

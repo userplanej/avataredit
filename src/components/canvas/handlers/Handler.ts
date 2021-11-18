@@ -1962,6 +1962,23 @@ class Handler implements HandlerOptions {
 		const activeObject = this.canvas.getActiveObject() as any;
 		return activeObject;
 	}
+
+	/**
+	 * Get canvas as image and convert to blob
+	 */
+	public getCanvasImageAsBlob = (option = { name: 'New Image', format: 'png', quality: 1 }) => {
+		const dataUrl = this.canvas.toDataURL(option);
+
+		if (dataUrl) {
+			var arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+			while(n--){
+					u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new Blob([u8arr], {type:mime});
+		}
+		return null;
+	}
 }
 
 export default Handler;

@@ -19,6 +19,8 @@ import Appbar from '../../components-site/Appbar';
 import Sidebar from '../../components-site/Sidebar';
 import Script from '../../components-site/views/editor/Script';
 import GenerateVideo from '../../components-site/views/editor/GenerateVideo';
+import DiscardDraft from '../../components-site/views/editor/DiscardDraft';
+import VideoPreview from '../../components-site/views/editor/VideoPreview';
 
 import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
@@ -30,7 +32,6 @@ import { getAllShapes } from '../../api/shape/shape';
 import { getAllImageClip } from '../../api/image/clip';
 
 import { createAvatarObject, createImageObject, createBackgroundImageObject, createShapeObject } from '../../utils/CanvasObjectUtils';
-import DiscardDraft from '../../components-site/views/editor/DiscardDraft';
 
 const propertiesToInclude = [
 	'id',
@@ -115,6 +116,8 @@ class ImageMapEditor extends Component {
 		}],
 		openGenerateVideo: false,
 		openDiscardDraft: false,
+		openVideoPreview: false,
+		videoSource: '',
 		mobileOpen: false,
 		videoId: this.props.history.location.state?.id,
 		descriptors: {},
@@ -893,6 +896,18 @@ class ImageMapEditor extends Component {
 		this.setState({ openDiscardDraft: false });
 	}
 
+	handleOpenVideoPreview = () => {
+		this.setState({ openVideoPreview: true });
+	}
+
+	handleCloseVideoPreview = () => {
+		this.setState({ openVideoPreview: false });
+	}
+
+	handleChangeVideoSource = (source) => {
+		this.setState({ videoSource: source });
+	}
+
 	render() {
 		const {
 			avatars,
@@ -904,7 +919,9 @@ class ImageMapEditor extends Component {
 			slideList,
 			mobileOpen,
 			openGenerateVideo,
-			openDiscardDraft
+			openDiscardDraft,
+			openVideoPreview,
+			videoSource
 		} = this.state;
 		const {
 			onAdd,
@@ -935,12 +952,15 @@ class ImageMapEditor extends Component {
 			<Box sx={{ display: 'flex', backgroundColor: '#f7f7f7', overflow: { md: 'hidden' }, height: '100%', width: '100%' }}>
 				<GenerateVideo open={openGenerateVideo} close={() => this.handleCloseGenerateVideo()} />
 				<DiscardDraft open={openDiscardDraft} close={() => this.handleCloseDiscardDraft()} />
+				<VideoPreview open={openVideoPreview} close={() => this.handleCloseVideoPreview()} source={videoSource} />
 
 				<Appbar 
 					handleDrawerToggle={() => this.handleDrawerToggle()}
 					canvasRef={this.canvasRef}
 					openGenerateVideo={() => this.handleOpenGenerateVideo()}
 					openDiscardDraft={() => this.handleOpenDiscardDraft()}
+					openVideoPreview={() => this.handleOpenVideoPreview()}
+					changeVideoSource={(source) => this.handleChangeVideoSource(source)}
 				/>
 
 				<Sidebar 
@@ -995,7 +1015,6 @@ class ImageMapEditor extends Component {
 								shapes={shapes}
 								slides={slideList}
 								reloadImages={() => this.loadImages()}
-								saveImage={onSaveImage}
 							/>
 						</Grid>
 					</Grid>

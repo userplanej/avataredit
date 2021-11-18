@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
 
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -146,54 +145,11 @@ const ToolsView = (props) => {
     );
   }
 
-  const sendTest = async () => {
-    const { canvasRef } = props;
-    const canvasObjects = canvasRef.handler.getObjects();
-
-    let file = await fetch('https://upload.wikimedia.org/wikipedia/commons/9/91/Checked_icon.png').then(r => r.blob()).then(blobFile => new File([blobFile], "test", { type: "image/png" }));
-
-    const formData = new FormData();
-    formData.append('lifecycleName', 'Studio_Main_Life');
-    formData.append('catalogInstanceName', 'Studio_Main_Catalog');
-    formData.append('target', 'SoftwareCatalogInstance');
-    formData.append('async', false);
-
-    let payload = {
-      apiId: 'ryu',
-      apiKey: 'd0cad9547b9c4a65a5cdfe50072b1588',
-      objects: []
-    };
-
-    let objects = [];
-    canvasObjects.map(object => {
-      objects.push(object.toObject());
-    });
-    payload.objects.push({ objects });
-
-    formData.append('payload', { payload });
-
-    const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
-    const headers = {
-      AccessKey: 'SerengetiAdministrationAccessKey',
-      SecretKey: 'SerengetiAdministrationSecretKey',
-      LoginId: 'maum-orchestra-com'
-    }
-
-    axios({
-      method: 'post',
-      url: url, 
-      data: formData,
-      headers: headers
-    });
-  }
-
   return (
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
       <Grid item xs={8} md={8} lg={8} xl={9} sx={{ backgroundColor: '#3c4045' }}>
         <TabPanel name="main" value={activeTab} index={0}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
-          {/* <Button onClick={sendTest}>Send to minds</Button>
-          <Button onClick={props.saveImage}>Save image</Button>*/}
         </TabPanel>
 
         <TabPanel name="main" value={activeTab} index={1}>

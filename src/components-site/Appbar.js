@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -32,7 +33,34 @@ const boxStyle = {
   justifyContent: 'center'
 }
 
-const Appbar = ({ handleDrawerToggle, canvasRef, openGenerateVideo, openDiscardDraft }) => {
+const Appbar = (props) => {
+  const {
+    /**
+     * Toggle drawer when screen has a small size
+     */
+    handleDrawerToggle, 
+    /**
+     * Canvas reference
+     */
+    canvasRef, 
+    /**
+     * Open generate video dialog
+     */
+    openGenerateVideo, 
+    /**
+     * Open discard draft dialog
+     */
+    openDiscardDraft,
+    /**
+     * Open video preview dialog
+     */
+    openVideoPreview,
+    /**
+     * Change the preview video source
+     */
+    changeVideoSource
+  } = props;
+
   const dispatch = useDispatch();
   const history = useHistory();
   const pathName = useSelector(state => state.navigation.pathName);
@@ -143,8 +171,60 @@ const Appbar = ({ handleDrawerToggle, canvasRef, openGenerateVideo, openDiscardD
   }
 
   const playVideo = () => {
-    const objects = canvasRef.handler.exportJSON();
-    console.log(objects);
+    dispatch(setShowBackdrop(true));
+    // const canvasObjects = canvasRef.handler.getObjects();
+
+    // let file = await fetch('https://upload.wikimedia.org/wikipedia/commons/9/91/Checked_icon.png').then(r => r.blob()).then(blobFile => new File([blobFile], "test", { type: "image/png" }));
+
+    const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
+    const file = new File([canvasBlob], "test", { type: "image/png" });
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('lifecycleName', 'Studio_Main_Action_Lifecycle');
+    formData.append('catalogInstanceName', 'Studio_Main_Action_Catalog');
+    formData.append('target', 'SoftwareCatalogInstance');
+    formData.append('async', false);
+
+    let payload = {
+      text: 'Hello, this is a test',
+      width: '1280',
+      height: '720',
+      speaker: '0',
+      background: '',
+      action: '1'
+      // apiId: 'ryu',
+      // apiKey: 'd0cad9547b9c4a65a5cdfe50072b1588',
+      // objects: []
+    };
+
+    // let objects = [];
+    // canvasObjects.map(object => {
+    //   objects.push(object.toObject());
+    // });
+    // payload.objects.push({ objects });
+
+    formData.append('payload', payload);
+
+    const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
+    const headers = {
+      AccessKey: 'SerengetiAdministrationAccessKey',
+      SecretKey: 'SerengetiAdministrationSecretKey',
+      LoginId: 'maum-orchestra-com'
+    }
+
+    axios({
+      method: 'post',
+      url: url, 
+      data: formData,
+      headers: headers,
+      responseType: 'blob'
+    }).then((res) => {
+      dispatch(setShowBackdrop(false));
+      const url = URL.createObjectURL(new Blob([res.data]));
+      changeVideoSource(url);
+      openVideoPreview();
+    });
   }
 
   const isEditorPage = () => {
