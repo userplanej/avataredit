@@ -33,6 +33,8 @@ const DeleteAccount = (props) => {
     setEmail('');
     setCanSubmit(false);
     if (open) {
+      setReasonId(0);
+      setShowFinalPage(false);
       setShowEnterEmail(true);
     }
   }, [open]);
@@ -69,6 +71,7 @@ const DeleteAccount = (props) => {
 
   const handleCloseFinalPage = () => {
     // TODO: Remove account and logout (remove sessionStorage and redirect to login page)
+    close();
   }
 
   const getEnterEmail = () => {
@@ -125,7 +128,7 @@ const DeleteAccount = (props) => {
             Would you mind telling us why would you like to cancel?
           </Typography>
           
-          <Stack spacing={1}>
+          <Stack spacing={1} sx={{ mt: 2 }}>
             {listDeleteReasons.map((reason, key) =>
             <Box width="100%">
               <Button 
@@ -183,7 +186,8 @@ const DeleteAccount = (props) => {
 
   return (
     <Dialog
-      maxWidth="md"
+      fullWidth
+      maxWidth="sm"
       open={open}
       aria-labelledby="delete-account-dialog-title"
       aria-describedby="delete-account-dialog-description"

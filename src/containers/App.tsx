@@ -63,7 +63,7 @@ class App extends Component<any> {
 					</Snackbar>
 
 					<Dialog
-						maxWidth="md"
+						maxWidth="sm"
 						open={this.props.dialogAlertOpen}
 						aria-labelledby="password-dialog-title"
 						aria-describedby="password-dialog-description"
