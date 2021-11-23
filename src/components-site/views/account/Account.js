@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Grid, InputLabel, Button, Link, FormControlLabel, Switch, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
@@ -15,6 +17,7 @@ import { setDialogAlertTitle, setDialogAlertMessage, setDialogAlertButtonText, s
 
 import { getUser, updateUser } from '../../../api/user/user';
 import { showAlert } from '../../../utils/AlertUtils';
+import { pathnameEnum } from '../../constants/Pathname';
 
 const fieldNames = {
   email: 'email',
@@ -29,6 +32,7 @@ const fieldNames = {
  * Account settings page
  */
 const Account = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const userUpdated = useSelector(state => state.user.userUpdated);
   const reloadUser = useSelector(state => state.user.reloadUser);
@@ -278,6 +282,10 @@ const Account = () => {
     setCanSubmit(false);
   }
 
+  const handleShowBillingPage = () => {
+    history.push(pathnameEnum.billing);
+  }
+
   return (
     <Box sx={{ mt: 10, ml: 4, width: '100%' }}>
       <Typography variant="h5" color="#fff">Account information</Typography>
@@ -357,7 +365,7 @@ const Account = () => {
         </Grid>
       </Grid>
 
-      <Typography variant="h5" sx={{ mt: 3 }}>Notifications</Typography>
+      <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Notifications</Typography>
 
       <Box sx={{ mt: 1.5, ml: 1 }}>
         <Grid container>
@@ -367,6 +375,13 @@ const Account = () => {
         <Grid container sx={{ mt: 2 }}>
           <Grid item><FormControlLabel control={<Switch sx={{ mr: 1 }} />} label="Product updates" sx={{ color: '#fff' }} /></Grid>
         </Grid>
+      </Box>
+
+      <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Billing information</Typography>
+
+      <Box sx={{ mt: 2, color: '#fff' }}>
+        {"To see invoices change credit card, VAT or address, "}
+        <Link color="#df678c" onClick={() => handleShowBillingPage()}>please click here.</Link>
       </Box>
 
       <Dialog

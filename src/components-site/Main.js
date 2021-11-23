@@ -12,6 +12,7 @@ import Avatars from './views/avatars/Avatars';
 import Templates from './views/templates/Templates';
 import Account from './views/account/Account';
 import Backdrop from './backdrop/Backdrop';
+import Billing from './views/billing/Billing';
 
 import { setPathName } from '../redux/navigation/navigationSlice';
 import { pathnameEnum } from './constants/Pathname';
@@ -26,7 +27,9 @@ export default function Main() {
   const pathname = history.location.pathname;
 
   useEffect(() => {
-    dispatch(setPathName(pathname));
+    return history.listen((location) => { 
+      dispatch(setPathName(location.pathname));
+   }) 
   }, []);
 
   const handleDrawerToggle = () => {
@@ -48,6 +51,7 @@ export default function Main() {
         <Route exact path={pathnameEnum.templates} component={Templates} />
         <Route exact path={pathnameEnum.avatars} component={Avatars} />
         <Route exact path={pathnameEnum.account} component={Account} />
+        <Route exact path={pathnameEnum.billing} component={Billing} />
         <Redirect from="/studio/" to={pathnameEnum.home} />
       </Switch>
 
