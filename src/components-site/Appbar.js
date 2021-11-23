@@ -15,17 +15,21 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import CustomInput from './inputs/CustomInput';
+
 import { setPathName } from '../redux/navigation/navigationSlice';
 import { setShowBackdrop } from '../redux/backdrop/backdropSlice';
 import { setDialogAlertOpen, setDialogAlertTitle, setDialogAlertMessage, setDialogAlertButtonText } from '../redux/dialog-alert/dialogAlertSlice';
 import { setReloadUser, setCanSave } from '../redux/user/userSlice';
 
-import CustomInput from './inputs/CustomInput';
 import { postImageClip } from '../api/image/clip';
 import { postImagePackage, updateImagePackage } from '../api/image/package';
 import { updateUser } from '../api/user/user';
+
 import { pathnameEnum } from './constants/Pathname';
 import { drawerWidth } from './constants/Drawer';
+
+import { showAlert } from '../utils/AlertUtils';
 
 const boxStyle = {
   display: 'flex', 
@@ -180,55 +184,60 @@ const Appbar = (props) => {
 
     // let file = await fetch('https://upload.wikimedia.org/wikipedia/commons/9/91/Checked_icon.png').then(r => r.blob()).then(blobFile => new File([blobFile], "test", { type: "image/png" }));
 
-    const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
-    const file = new File([canvasBlob], "test", { type: "image/png" });
+    try {
+      const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
+      const file = new File([canvasBlob], "test", { type: "image/png" });
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('lifecycleName', 'Studio_Main_Action_Lifecycle');
-    formData.append('catalogInstanceName', 'Studio_Main_Action_Catalog');
-    formData.append('target', 'SoftwareCatalogInstance');
-    formData.append('async', false);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('lifecycleName', 'Studio_Main_Action_Lifecycle');
+      formData.append('catalogInstanceName', 'Studio_Main_Action_Catalog');
+      formData.append('target', 'SoftwareCatalogInstance');
+      formData.append('async', false);
 
-    let payload = {
-      text: 'Hello, this is a test',
-      width: '1280',
-      height: '720',
-      speaker: '0',
-      background: '',
-      action: '1'
-      // apiId: 'ryu',
-      // apiKey: 'd0cad9547b9c4a65a5cdfe50072b1588',
-      // objects: []
-    };
+      let payload = {
+        text: 'Hello, this is a test',
+        width: '1280',
+        height: '720',
+        speaker: '0',
+        background: '',
+        action: '1'
+        // apiId: 'ryu',
+        // apiKey: 'd0cad9547b9c4a65a5cdfe50072b1588',
+        // objects: []
+      };
 
-    // let objects = [];
-    // canvasObjects.map(object => {
-    //   objects.push(object.toObject());
-    // });
-    // payload.objects.push({ objects });
+      // let objects = [];
+      // canvasObjects.map(object => {
+      //   objects.push(object.toObject());
+      // });
+      // payload.objects.push({ objects });
 
-    formData.append('payload', payload);
+      formData.append('payload', payload);
 
-    const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
-    const headers = {
-      AccessKey: 'SerengetiAdministrationAccessKey',
-      SecretKey: 'SerengetiAdministrationSecretKey',
-      LoginId: 'maum-orchestra-com'
-    }
+      const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
+      const headers = {
+        AccessKey: 'SerengetiAdministrationAccessKey',
+        SecretKey: 'SerengetiAdministrationSecretKey',
+        LoginId: 'maum-orchestra-com'
+      }
 
-    axios({
-      method: 'post',
-      url: url, 
-      data: formData,
-      headers: headers,
-      responseType: 'blob'
-    }).then((res) => {
+      axios({
+        method: 'post',
+        url: url, 
+        data: formData,
+        headers: headers,
+        responseType: 'blob'
+      }).then((res) => {
+        dispatch(setShowBackdrop(false));
+        const url = URL.createObjectURL(new Blob([res.data]));
+        changeVideoSource(url);
+        openVideoPreview();
+      });
+    } catch (error) {
+      showAlert(error, 'error');
       dispatch(setShowBackdrop(false));
-      const url = URL.createObjectURL(new Blob([res.data]));
-      changeVideoSource(url);
-      openVideoPreview();
-    });
+    }
   }
 
   const isEditorPage = () => {
