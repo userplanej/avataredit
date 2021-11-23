@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -13,6 +15,10 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import CloseIcon from '@mui/icons-material/Close';
 
+import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
+
+import { getAllAvatars } from '../../../api/avatar/avatar';
+
 const avatarBoxStyle = {
   m: 1,
   p: 2,
@@ -23,65 +29,29 @@ const avatarBoxStyle = {
   }
 }
 
-const data = [
-  {
-    id: 1,
-    src: '',
-    name: 'Mia'
-  },
-  {
-    id: 2,
-    src: '',
-    name: 'Kim'
-  },
-  {
-    id: 3,
-    src: '',
-    name: 'Isabella'
-  },
-  {
-    id: 4,
-    src: '',
-    name: 'Sofia'
-  },
-  {
-    id: 5,
-    src: '',
-    name: 'Sofia'
-  },
-  {
-    id: 6,
-    src: '',
-    name: 'Sofia'
-  },
-  {
-    id: 7,
-    src: '',
-    name: 'Sofia'
-  },
-  {
-    id: 8,
-    src: '',
-    name: 'Sofia'
-  },
-  {
-    id: 9,
-    src: '',
-    name: 'Sofia'
-  },
-  {
-    id: 10,
-    src: '',
-    name: 'Sofia'
-  }
-]
-
 const Avatars = () => {
+  const dispatch = useDispatch();
+
   const [open, setOpen] = useState(false);
-  const [avatar, setAvatar] = useState(null);
+  const [avatars, setAvatars] = useState([]);
+  const [avatarSelected, setAvatarSelected] = useState(null);
+
+  useEffect(() => {
+    getAvatars();
+  }, []);
+
+  const getAvatars = async () => {
+    dispatch(setShowBackdrop(true));
+    
+    await getAllAvatars().then((res) => {
+      const avatars = res.data.body.rows;
+      setAvatars(avatars);
+      dispatch(setShowBackdrop(false));
+    });
+  }
 
   const handleClickOpen = (avatar) => {
-    setAvatar(avatar);
+    setAvatarSelected(avatar);
     setOpen(true);
   };
 
@@ -92,18 +62,31 @@ const Avatars = () => {
   return (
     <Box sx={{ width: '100%', height: '100%', mt: 14 }}>
       <Grid container sx={{ display: 'flex' }}>
-        {data.map(avatar => {
+        {avatars.map(avatar => {
           return (
-            <Grid item key={avatar.id} xs={12} md={5} lg={4} xl={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid item key={avatar.avatar_id} xs={12} md={5} lg={4} xl={3} sx={{ display: 'flex', justifyContent: 'center' }}>
               <Box sx={avatarBoxStyle}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', cursor: 'pointer' }} onClick={() => handleClickOpen(avatar)}>
-                  <Box sx={{ backgroundColor: '#fff', width: '100%', height: '230px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {(avatar.src === null || avatar.src === '') && <PanoramaIcon fontSize="large" />}
+                  <Box 
+                    sx={{ 
+                      backgroundColor: '#fff',
+                      width: '100%',
+                      height: '230px',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      backgroundImage: avatar.avatar_dir !== null ? `url(${avatar.avatar_dir})` : '',
+                      backgroundPosition: 'center', /* Center the image */
+                      backgroundSize: 'cover'
+                    }}
+                  >
+                    {(avatar.avatar_dir === null || avatar.avatar_dir === '') && <PanoramaIcon fontSize="large" />}
                   </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
-                  <Typography variant="h5" color="#fff">{avatar.name}</Typography>
+                  <Typography variant="h5" color="#fff">{avatar.avatar_name}</Typography>
                   {/* <Box sx={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', cursor: 'pointer' }}>Create video <AddCircleIcon sx={{ ml: 1 }} /></Box> */}
                 </Box>
               </Box>
@@ -123,14 +106,27 @@ const Avatars = () => {
         </DialogTitle>
 
         <DialogContent>
-          <Box sx={{ background: '#f9f8fa', width: '100%', height: '400px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {avatar && (avatar.src === null || avatar.src === '') && <PanoramaIcon fontSize="large" />}
+          <Box 
+            sx={{ 
+              background: '#f9f8fa',
+              width: '100%', 
+              height: '400px', 
+              borderRadius: '6px',
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              backgroundImage: avatarSelected && avatarSelected.avatar_dir !== null ? `url(${avatarSelected.avatar_dir})` : '',
+              backgroundPosition: 'center', /* Center the image */
+              backgroundSize: 'cover'
+            }}
+          >
+            {avatarSelected && (avatarSelected.avatar_dir === null || avatarSelected.avatar_dir === '') && <PanoramaIcon fontSize="large" />}
           </Box>
 
-          <Typography variant="h5" sx={{ my: 2, color: '#fff' }}>{avatar && avatar.name} Avatar</Typography>
+          <Typography variant="h5" sx={{ my: 2, color: '#fff' }}>{avatarSelected && avatarSelected.avatar_name}</Typography>
 
           <Typography variant="subtitle1" sx={{ color: '#d3d9df' }}>
-            {avatar && avatar.name} is one of our most versatile presenters. She is confident and her presentation style is suited to all types of content.
+            {avatarSelected && avatarSelected.avatar_name} is one of our most versatile presenters. She is confident and her presentation style is suited to all types of content.
           </Typography>
 
           <Typography variant="subtitle1" sx={{ color: '#9a9a9a', my: 2 }}>Preferred languages</Typography>
