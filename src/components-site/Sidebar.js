@@ -182,7 +182,6 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   const onClickMenu = (key) => {
     setAnchorEl(null);
     setActiveKey(key);
-    dispatch(setPathName(pathnameEnum[key]));
     history.push(pathnameEnum[key]);
   }
 

@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  video: {}
+  video: {},
+  slides: {},
+  activeSlideId: 0
 }
 
 export const videoSlice = createSlice({
@@ -11,10 +13,16 @@ export const videoSlice = createSlice({
     setVideo: (state, action) => {
       state.video = action.payload;
     },
+    setSlides: (state, action) => {
+      state.slides = action.payload;
+    },
+    setActiveSlideId: (state, action) => {
+      state.activeSlideId = action.payload;
+    }
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { setVideo } = videoSlice.actions;
+export const { setVideo, setSlides, setActiveSlideId } = videoSlice.actions;
 
 export default videoSlice.reducer;

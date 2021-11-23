@@ -116,6 +116,12 @@ class ImageMapItems extends Component {
 			return true;
 		} else if (JSON.stringify(this.state.images) !== JSON.stringify(nextState.images)) {
 			return true;
+		} else if (this.props.uploadedImages !== nextProps.uploadedImages) {
+			return true;
+		} else if (this.props.defaultImages !== nextProps.defaultImages) {
+			return true;
+		} else if (this.props.shapes !== nextProps.shapes) {
+			return true;
 		}
 		return false;
 	}
@@ -536,30 +542,29 @@ class ImageMapItems extends Component {
 	}
 
 	render() {
-		const { canvasRef, descriptors, backgrounds, backgroundImages, avatars, images, shapes } = this.props;
+		const { canvasRef, descriptors, backgrounds, uploadedBackgroundImages, defaultBackgroundImages, avatars, uploadedImages, defaultImages, shapes } = this.props;
 
-		const texts = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
+		const textsItems = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
 		const shapesItems = Object.keys(shapes).map(key => this.renderItems(shapes[key], key, 'shape'));
-		// const shapesItems = Object.keys(descriptors).filter(key => key === 'SHAPE').map(key => this.renderItems(descriptors[key], key));
-		const imagesDefault = Object.keys(descriptors).filter(key => key === 'IMAGE').map(key => this.renderItems(descriptors[key], key, 'image'));
-		const backgroundsColorsItems = Object.keys(backgrounds).filter(key => key === 'BACKGROUND').map(key => this.renderItems(backgrounds[key], key, 'background-color'));
-		const backgroundsImagesItems = Object.keys(backgrounds).filter(key => key === 'IMAGE').map(key => this.renderItems(backgrounds[key], key, 'background-image'));
-		const backgroundsImagesUploaded = Object.keys(backgroundImages).map(key => this.renderItems(backgroundImages[key], key, 'background-image', true));
+		const backgroundsColorsItems = Object.keys(backgrounds).map(key => this.renderItems(backgrounds[key], key, 'background-color'));
+		const backgroundsImagesDefaultItems = Object.keys(defaultBackgroundImages).map(key => this.renderItems(defaultBackgroundImages[key], key, 'background-image'));
+		const backgroundsImagesUploadedItems = Object.keys(uploadedBackgroundImages).map(key => this.renderItems(uploadedBackgroundImages[key], key, 'background-image', true));
 		const avatarsItems = Object.keys(avatars).map(key => this.renderItems(avatars[key], key, 'avatar'));
-		const imagesUploaded = Object.keys(images).map(key => this.renderItems(images[key], key, 'image', true));
+		const imagesUploadedItems = Object.keys(uploadedImages).map(key => this.renderItems(uploadedImages[key], key, 'image', true));
+		const imagesDefaultItems = Object.keys(defaultImages).map(key => this.renderItems(defaultImages[key], key, 'image'));
 
 		return (
 			<Box height="100%">
 				<ToolsView 
 					canvasRef={canvasRef}
-					texts={texts}
+					texts={textsItems}
 					shapes={shapesItems}
-					images={imagesDefault}
+					imagesDefault={imagesDefaultItems}
+					imagesUploaded={imagesUploadedItems}
 					backgroundsColors={backgroundsColorsItems}
-					backgroundsImages={backgroundsImagesItems}
-					backgroundsImagesUploaded={backgroundsImagesUploaded}
+					backgroundsImagesDefault={backgroundsImagesDefaultItems}
+					backgroundsImagesUploaded={backgroundsImagesUploadedItems}
 					avatars={avatarsItems}
-					imagesUploaded={imagesUploaded}
 				/>
 			</Box>
 		);

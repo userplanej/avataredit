@@ -25,11 +25,13 @@ import VideoPreview from '../../components-site/views/editor/VideoPreview';
 import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
+import { setVideo, setSlides } from '../../redux/video/videoSlice';
 
-import { getAllImages } from '../../api/image/image';
+import { getImagePackage } from '../../api/image/package';
+import { getAllUserImages, getAllDefaultImages } from '../../api/image/image';
 import { getAllAvatars } from '../../api/avatar/avatar';
 import { getAllShapes } from '../../api/shape/shape';
-import { getAllImageClip } from '../../api/image/clip';
+import { getAllImageClipByPackageId } from '../../api/image/clip';
 
 import { createAvatarObject, createImageObject, createBackgroundImageObject, createShapeObject } from '../../utils/CanvasObjectUtils';
 
@@ -108,24 +110,20 @@ class ImageMapEditor extends Component {
 		editing: false,
 		objects: undefined,
 		src: undefined,
-		slideList : [{
-			id: 0,
-			thumbnail : null,
-			file_dir: null,
-			url: 'sample1.json'
-		}],
 		openGenerateVideo: false,
 		openDiscardDraft: false,
 		openVideoPreview: false,
 		videoSource: '',
 		mobileOpen: false,
-		videoId: this.props.history.location.state?.id,
+		packageId: this.props.history.location.state?.id,
 		descriptors: {},
-		backgrounds: {},
 		avatars: {},
-		images: {},
 		shapes: {},
-		backgroundImages: {}
+		backgrounds: {},
+		uploadedBackgroundImages: {},
+		defaultBackgroundImages: {},
+		uploadedImages: {},
+		defaultImages: {}
 	};
 
 	componentDidMount() {
@@ -133,31 +131,44 @@ class ImageMapEditor extends Component {
 
 		Promise.all([
 			import('./Descriptors.json').then(descriptors => {
-				// listDescriptors = descriptors;
 				this.setState({ descriptors });
 			}),
+			// Import background colors
 			import('./Backgrounds.json').then(backgrounds => {
-				// listBackgrounds = backgrounds;
 				this.setState({ backgrounds });
 			}),
-			this.loadSlides(),
+			this.loadImagePackage(),
+			this.loadImageClips(),
 			this.loadAvatars(),
 			this.loadImages(),
 			this.loadShapes()
-		]);
-
-		this.setState({
-			selectedItem: null
-		}, () => this.props.setShowBackdrop(false));
-		this.shortcutHandlers.esc();
+		]).then(() => {
+			this.props.setShowBackdrop(false);
+			this.setState({ selectedItem: null });
+			this.shortcutHandlers.esc();
+		});
 	}
 
-	loadSlides = () => {
+	loadImagePackage = async () => {
+		const { packageId } = this.state;
 
+		await getImagePackage(packageId).then(res => {
+      const video = res.data.body;
+      this.props.setVideo(video);
+    });
 	}
 
-	loadAvatars = () => {
-		getAllAvatars().then(res => {
+	loadImageClips = async () => {
+		const { packageId } = this.state;
+		
+		await getAllImageClipByPackageId(packageId).then(res => {
+			const slides = res.data.body.rows;
+			this.props.setSlides(slides);
+		});
+	}
+
+	loadAvatars = async () => {
+		await getAllAvatars().then(res => {
 			const avatars = res.data.body.rows;
 
 			const avatarArray = [];
@@ -174,10 +185,10 @@ class ImageMapEditor extends Component {
 		});
 	}
 
-	loadImages = () => {
+	loadImages = async () => {
 		const user = JSON.parse(sessionStorage.getItem('user'));
 
-		getAllImages(user.user_id).then(res => {
+		await getAllUserImages(user.user_id).then(res => {
 			const images = res.data.body;
 
 			const imageArray = [];
@@ -196,12 +207,34 @@ class ImageMapEditor extends Component {
 				"IMAGE": backgroundImageArray
 			}
 
-			this.setState({ images: imageList, backgroundImages: backgroundImageList })
+			this.setState({ uploadedImages: imageList, uploadedBackgroundImages: backgroundImageList })
+		});
+
+		await getAllDefaultImages().then(res => {
+			const images = res.data.body;
+
+			const imageArray = [];
+			const backgroundImageArray = [];
+			images.forEach(image => {
+				const imageObject = createImageObject(image);
+				imageArray.push(imageObject);
+				const backgroundImageObject = createBackgroundImageObject(image);
+				backgroundImageArray.push(backgroundImageObject);
+			});
+			
+			const imageList = {
+				"IMAGE": imageArray
+			}
+			const backgroundImageList = {
+				"IMAGE": backgroundImageArray
+			}
+
+			this.setState({ defaultImages: imageList, defaultBackgroundImages: backgroundImageList })
 		});
 	}
 
-	loadShapes = () => {
-		getAllShapes().then(res => {
+	loadShapes = async () => {
+		await getAllShapes().then(res => {
 			const shapes = res.data.body;
 
 			const shapeArray = [];
@@ -912,16 +945,18 @@ class ImageMapEditor extends Component {
 		const {
 			avatars,
 			descriptors,
-			backgrounds,
-			images,
+			uploadedImages,
+			defaultImages,
 			shapes,
-			backgroundImages,
-			slideList,
+			backgrounds,
+			uploadedBackgroundImages,
+			defaultBackgroundImages,
 			mobileOpen,
 			openGenerateVideo,
 			openDiscardDraft,
 			openVideoPreview,
-			videoSource
+			videoSource,
+			packageId
 		} = this.state;
 		const {
 			onAdd,
@@ -954,6 +989,7 @@ class ImageMapEditor extends Component {
 				<DiscardDraft open={openDiscardDraft} close={() => this.handleCloseDiscardDraft()} />
 				<VideoPreview open={openVideoPreview} close={() => this.handleCloseVideoPreview()} source={videoSource} />
 
+				{this.canvasRef && this.props.video &&
 				<Appbar 
 					handleDrawerToggle={() => this.handleDrawerToggle()}
 					canvasRef={this.canvasRef}
@@ -961,7 +997,7 @@ class ImageMapEditor extends Component {
 					openDiscardDraft={() => this.handleOpenDiscardDraft()}
 					openVideoPreview={() => this.handleOpenVideoPreview()}
 					changeVideoSource={(source) => this.handleChangeVideoSource(source)}
-				/>
+				/>}
 
 				<Sidebar 
 					mobileOpen={mobileOpen} 
@@ -970,11 +1006,12 @@ class ImageMapEditor extends Component {
 
 				<Box sx={{ mt: 8, width: '100%', backgroundColor: '#202427' }}>
 					<Grid container sx={{ height: '100%', width: '100%' }}>
+						{this.canvasRef && this.props.slides.length > 0 &&
 						<Grid item xs={12} md={3} lg={2} xl={2}>
 							<Box sx={{ backgroundColor: '#24282c', height: '100%', width: '90%' }}>
-								<Slides canvasRef={this.canvasRef} />
+								<Slides canvasRef={this.canvasRef} packageId={packageId} />
 							</Box>
-						</Grid>
+						</Grid>}
 						
 						<Grid item xs={12} md={6} lg={5} xl={5}>
 							<Box sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
@@ -1004,19 +1041,21 @@ class ImageMapEditor extends Component {
 							<Script />
 						</Grid>
 
+						{this.canvasRef && 
 						<Grid item xs={12} md={5} lg={5} xl={5}>
 							<ImageMapItems
 								canvasRef={this.canvasRef}
 								descriptors={descriptors}
 								backgrounds={backgrounds}
-								backgroundImages={backgroundImages}
+								uploadedBackgroundImages={uploadedBackgroundImages}
+								defaultBackgroundImages={defaultBackgroundImages}
+								uploadedImages={uploadedImages}
+								defaultImages={defaultImages}
 								avatars={avatars}
-								images={images}
 								shapes={shapes}
-								slides={slideList}
 								reloadImages={() => this.loadImages()}
 							/>
-						</Grid>
+						</Grid>}
 					</Grid>
 				</Box>
 			</Box>
@@ -1026,14 +1065,18 @@ class ImageMapEditor extends Component {
 
 const mapStateToProps = state => ({
 	activeTab: state.toolbar.activeTab,
-	previousTab: state.toolbar.previousTab
+	previousTab: state.toolbar.previousTab,
+	video: state.video.video,
+	slides: state.video.slides
 });
 
 const mapDispatchToProps  = {
 	setActiveObject,
 	setActiveTab,
 	setPreviousTab,
-	setShowBackdrop
+	setShowBackdrop,
+	setVideo,
+	setSlides
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ImageMapEditor));

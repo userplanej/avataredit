@@ -6,8 +6,12 @@ export const postImage = async (image) => {
   return await API.post(`${imagePath}create`, image);
 }
 
-export const getAllImages = async (id) => {
+export const getAllUserImages = async (id) => {
   return await API.get(`${imagePath}list?user_id=${id}`);
+}
+
+export const getAllDefaultImages = async () => {
+  return await API.get(`${imagePath}list?is_upload=false`);
 }
 
 export const getImage = async (id) => {

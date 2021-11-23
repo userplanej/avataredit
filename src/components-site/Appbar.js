@@ -22,7 +22,7 @@ import { setReloadUser, setCanSave } from '../redux/user/userSlice';
 
 import CustomInput from './inputs/CustomInput';
 import { postImageClip } from '../api/image/clip';
-import { getImagePackage, postImagePackage, updateImagePackage } from '../api/image/package';
+import { postImagePackage, updateImagePackage } from '../api/image/package';
 import { updateUser } from '../api/user/user';
 import { pathnameEnum } from './constants/Pathname';
 import { drawerWidth } from './constants/Drawer';
@@ -66,6 +66,7 @@ const Appbar = (props) => {
   const pathName = useSelector(state => state.navigation.pathName);
   const canSaveUser = useSelector(state => state.user.canSave);
   const userUpdated = useSelector(state => state.user.userUpdated);
+  const video = useSelector(state => state.video.video);
 
   const [title, setTitle] = useState('');
   const [titleSaved, setTitleSaved] = useState('');
@@ -78,18 +79,10 @@ const Appbar = (props) => {
     dispatch(setPathName(pathname));
 
     if (pathname === pathnameEnum.editor) {
-      getVideoData();
-    }
-  }, []);
-
-  const getVideoData = async () => {
-    const id = history.location.state?.id;
-    await getImagePackage(id).then(res => {
-      const video = res.data.body;
       setTitle(video.package_name);
       setTitleSaved(video.package_name);
-    });
-  }
+    }
+  }, []);
 
   const createNewVideo = async () => {
     dispatch(setShowBackdrop(true));
@@ -105,14 +98,21 @@ const Appbar = (props) => {
       background_type: null,
     }
 
+    let packageId = null;
     await postImagePackage(imagePackage).then((res) => {
-      const packageId = res.data.body.package_id;
+      packageId = res.data.body.package_id;
       imageClip.package_id = packageId;
     });
 
-    await postImageClip(imageClip).then(() => {
+    let clipId = null;
+    await postImageClip(imageClip).then((res) => {
+      clipId = res.data.body.clip_id;
+    });
+
+    // Update image package current clip_id
+    await updateImagePackage(packageId, { clip_id: clipId }).then(() => {
       dispatch(setShowBackdrop(false));
-      history.push(pathnameEnum.editor, { id: imageClip.package_id });
+      history.push(pathnameEnum.editor, { id: packageId });
     });
   }
 
@@ -168,6 +168,10 @@ const Appbar = (props) => {
 
   const handleBackToVideos = () => {
     history.push(pathnameEnum.videos);
+  }
+
+  const handleBackToAccount = () => {
+    history.push(pathnameEnum.account);
   }
 
   const playVideo = () => {
@@ -282,6 +286,12 @@ const Appbar = (props) => {
           {pathName === pathnameEnum.account &&
           <Box sx={boxStyle}>
             <Typography variant="h5" sx={{ color: '#fff' }}>Account Settings</Typography>
+          </Box>}
+
+          {pathName === pathnameEnum.billing &&
+          <Box sx={boxStyle}>
+            <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2 }} onClick={handleBackToAccount} />
+            <Typography variant="h5" sx={{ color: '#fff' }}>Billing information</Typography>
           </Box>}
         </Box>
 

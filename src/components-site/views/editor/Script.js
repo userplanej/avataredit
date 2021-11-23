@@ -76,7 +76,7 @@ const Script = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '90%' }}>
         <Tabs value={activeTab} onChange={handleChangeTab} aria-label="basic tabs example" variant="fullWidth">
           <Tab label="Type your script" id="simple-tab-1" />
@@ -91,59 +91,57 @@ const Script = () => {
         aria-labelledby={`vertical-tab-${0}`}
         style={{ width: '90%', backgroundColor: '#3c4045' }}
       >
-     
-          <Box sx={{ px: 2, pt: 2, width: '100%' }}>
-            <MultilineInput
-              minRows={10}
-              maxRows={10}
-              maxLength={3500}
-              value={textScript}
-              onChange={handleChangeTextScript}
-              sx={{ 
-                pb: 3, 
-                color: '#000',
-                backgroundColor: '#fff', 
-                ':focus-within': {
-                  backgroundColor: '#fff',
-                  border: '2px solid #e8dff4'
-                } 
-              }}
-            />
+        <Box sx={{ px: 2, pt: 2, width: '100%' }}>
+          <MultilineInput
+            minRows={10}
+            maxRows={10}
+            maxLength={3500}
+            value={textScript}
+            onChange={handleChangeTextScript}
+            sx={{ 
+              pb: 3, 
+              color: '#000',
+              backgroundColor: '#fff', 
+              ':focus-within': {
+                backgroundColor: '#fff',
+                border: '2px solid #e8dff4'
+              } 
+            }}
+          />
 
-            <Grid container sx={{ position: 'relative', px: 1, top: '-28px', justifyContent: 'space-between' }}>
-              <Grid item>
-                <Typography variant="caption" color="#9a9a9a" sx={{ cursor: 'pointer' }}>Issues with pronunciation or pauses? Click here.</Typography>
-              </Grid>
-              <Grid item>
-                <Typography variant="caption" color="#9a9a9a">{nbCharLeft} characters left</Typography>
-              </Grid>
+          <Grid container sx={{ position: 'relative', px: 1, top: '-28px', justifyContent: 'space-between' }}>
+            <Grid item>
+              <Typography variant="caption" color="#9a9a9a" sx={{ cursor: 'pointer' }}>Issues with pronunciation or pauses? Click here.</Typography>
             </Grid>
-            
-          </Box>
-
-          <Grid container sx={{ px: 2, pb: 2, display: 'flex', alignItems: 'center' }}>
-            <Grid item xs={8} sm={9} md={8} lg={8} xl={9}>
-              <Box 
-                onClick={handleOpenVoice}
-                sx={{ 
-                  textAlign: 'center', 
-                  py: 1, 
-                  height: '48px',
-                  color: '#fff', 
-                  borderRadius: '4px', 
-                  border: 'solid 2px #feffff', 
-                  backgroundColor: '#202427', 
-                  width: '95%',
-                  cursor: 'pointer'
-                }}>
-                  {selectedVoice && selectedVoice.value}
-                </Box>
-            </Grid>
-
-            <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
-              <Button variant="contained" sx={{ width: '100%'}}>Play script</Button>
+            <Grid item>
+              <Typography variant="caption" color="#9a9a9a">{nbCharLeft} characters left</Typography>
             </Grid>
           </Grid>
+        </Box>
+
+        <Grid container sx={{ px: 2, pb: 2, display: 'flex', alignItems: 'center' }}>
+          <Grid item xs={8} sm={9} md={8} lg={8} xl={9}>
+            <Box 
+              onClick={handleOpenVoice}
+              sx={{ 
+                textAlign: 'center', 
+                py: 1, 
+                height: '48px',
+                color: '#fff', 
+                borderRadius: '4px', 
+                border: 'solid 2px #feffff', 
+                backgroundColor: '#202427', 
+                width: '95%',
+                cursor: 'pointer'
+              }}>
+                {selectedVoice && selectedVoice.value}
+              </Box>
+          </Grid>
+
+          <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
+            <Button variant="contained" sx={{ width: '100%'}}>Play script</Button>
+          </Grid>
+        </Grid>
       </div>
 
       <div

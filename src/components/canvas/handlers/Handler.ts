@@ -688,19 +688,7 @@ class Handler implements HandlerOptions {
 			lockMovementY: !editable,
 			hoverCursor: !editable ? 'pointer' : 'move',
 		};
-		if (obj.type === 'i-text') {
-			option.editable = false;
-		} else if (obj.type === 'background') {
-			option.editable = false;
-			option.selectable = false;
-			option.lockMovementX = true;
-			option.lockMovementY = true;
-			option.hoverCursor = 'pointer';
-			option.locked = true;
-			option.hasControls = false;
-		} else {
-			option.editable = editable;
-		}
+		option.editable = obj.type === 'i-text' ? false : editable;
 		if (editable && this.workarea.layout === 'fullscreen') {
 			option.scaleX = this.workarea.scaleX;
 			option.scaleY = this.workarea.scaleY;
@@ -723,9 +711,6 @@ class Handler implements HandlerOptions {
 		// Create canvas object
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
-		} else if (obj.type ==='background'){
-			this.getObjects().filter(obj => obj.type === 'background').map((background) => this.canvas.remove(background));
-			createdObj = this.addBackground(newOption);
 		} else if (obj.type === 'group') {
 			// TODO...
 			// Group add function needs to be fixed
@@ -811,23 +796,6 @@ class Handler implements HandlerOptions {
 			filters: this.imageHandler.createFilters(filters),
 		});
 		this.setImage(createdObj, obj.src || obj.file);
-		return createdObj;
-	};
-	public addBackground = (obj: FabricImage) => {
-		const { objectOption } = this;
-		const { filters = [], ...otherOption } = obj;
-		const image = new Image();
-		if (obj.src) {
-			image.src = obj.src;
-		}
-		const createdObj = new fabric.Image(image, {
-			...objectOption,
-			...otherOption,
-		}) as FabricImage;
-		createdObj.set({
-			filters: this.imageHandler.createFilters(filters),
-		});
-		// this.setImage(createdObj, obj.src || obj.file);
 		return createdObj;
 	};
 

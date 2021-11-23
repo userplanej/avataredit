@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Tabs from '@mui/material/Tabs';
@@ -50,6 +50,10 @@ const ToolsView = (props) => {
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
   const [imageTab, setImageTab] = useState(0);
+
+  useEffect(() => {
+    dispatch(setActiveTab(0));
+  }, []);
 
   const handleChange = (event, newValue) => {
     dispatch(setActiveTab(newValue));
@@ -188,7 +192,7 @@ const ToolsView = (props) => {
               </Tabs>
             </Box>
             <TabPanel name="background" value={backgroundTab} index={0}>{props.backgroundsColors}</TabPanel>
-            <TabPanel name="background" value={backgroundTab} index={1}>{props.backgroundsImages}</TabPanel>
+            <TabPanel name="background" value={backgroundTab} index={1}>{props.backgroundsImagesDefault}</TabPanel>
             <TabPanel name="background" value={backgroundTab} index={2}>Videos</TabPanel>
             <TabPanel name="background" value={backgroundTab} index={3}>{props.backgroundsImagesUploaded}</TabPanel>
           </Box>
@@ -213,7 +217,7 @@ const ToolsView = (props) => {
                 <Tab label="Uploads" />
               </Tabs>
             </Box>
-            <TabPanel name="image" value={imageTab} index={0}>{props.images}</TabPanel>
+            <TabPanel name="image" value={imageTab} index={0}>{props.imagesDefault}</TabPanel>
             <TabPanel name="image" value={imageTab} index={1}>{props.imagesUploaded}</TabPanel>
           </Box>
         </TabPanel>

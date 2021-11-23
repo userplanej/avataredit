@@ -10,6 +10,10 @@ export const getAllImageClip = async () => {
   return await API.get(`${imageClipPath}list`);
 }
 
+export const getAllImageClipByPackageId = async (id) => {
+  return await API.get(`${imageClipPath}list?package_id=${id}`);
+}
+
 export const getImageClip = async (id) => {
   return await API.get(`${imageClipPath}detail/${id}`);
 }
