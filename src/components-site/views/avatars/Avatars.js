@@ -115,12 +115,12 @@ const Avatars = () => {
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
-              backgroundImage: avatarSelected && avatarSelected.avatar_dir !== null ? `url(${avatarSelected.avatar_dir})` : '',
+              backgroundImage: avatarSelected && avatarSelected.avatar_thumbnail_dir !== null ? `url(${avatarSelected.avatar_thumbnail_dir})` : '',
               backgroundPosition: 'center', /* Center the image */
               backgroundSize: 'cover'
             }}
           >
-            {avatarSelected && (avatarSelected.avatar_dir === null || avatarSelected.avatar_dir === '') && <PanoramaIcon fontSize="large" />}
+            {avatarSelected && (avatarSelected.avatar_thumbnail_dir === null || avatarSelected.avatar_thumbnail_dir === '') && <PanoramaIcon fontSize="large" />}
           </Box>
 
           <Typography variant="h5" sx={{ my: 2, color: '#fff' }}>{avatarSelected && avatarSelected.avatar_name}</Typography>

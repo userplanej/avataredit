@@ -419,6 +419,7 @@ class ImageMapItems extends Component {
 		const isAvatar = item.type === 'avatar';
 		const isImage = item.type === 'image';
 		const isShape = item.type === 'shape';
+		const source = item.option.src_thumbnail ? item.option.src_thumbnail : item.option.src;
 
 		return item.type === 'text' ? (
 			<Box
@@ -470,8 +471,7 @@ class ImageMapItems extends Component {
 							width: '125px', 
 							height: '100px', 
 							backgroundColor: isBackgroundColor ? item.option.backgroundColor : 'white',
-							// backgroundImage: isShape || isAvatar || isImage || isBackgroundImage ? `url(${item.option.src})` : '',
-							backgroundImage: item.option.src_thumbnail ? `url(${item.option.src_thumbnail})` : `url(${item.option.src})`,
+							backgroundImage: (isShape || isAvatar || isImage || isBackgroundImage) && source ? `url(${source})` : '',
 							backgroundPosition: 'center', /* Center the image */
 							backgroundRepeat: 'no-repeat', /* Do not repeat the image */
 							backgroundSize: isShape ? 'none' : 'cover', /* Resize the background image to cover the entire container */
