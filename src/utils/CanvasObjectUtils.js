@@ -40,6 +40,7 @@ export const createAvatarObject = (avatar) => {
       "name": "",
       "file": null,
       "src": avatar.avatar_dir,
+      "src_thumbnail": avatar.avatar_thumbnail_dir,
       "link": {},
       "tooltip": {
         "enabled": false

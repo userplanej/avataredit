@@ -76,12 +76,12 @@ const Avatars = () => {
                       display: 'flex',
                       alignItems: 'center', 
                       justifyContent: 'center',
-                      backgroundImage: avatar.avatar_dir !== null ? `url(${avatar.avatar_dir})` : '',
+                      backgroundImage: avatar.avatar_thumbnail_dir !== null ? `url(${avatar.avatar_thumbnail_dir})` : '',
                       backgroundPosition: 'center', /* Center the image */
                       backgroundSize: 'cover'
                     }}
                   >
-                    {(avatar.avatar_dir === null || avatar.avatar_dir === '') && <PanoramaIcon fontSize="large" />}
+                    {(avatar.avatar_thumbnail_dir === null || avatar.avatar_thumbnail_dir === '') && <PanoramaIcon fontSize="large" />}
                   </Box>
                 </Box>
 

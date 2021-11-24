@@ -185,7 +185,7 @@ const Slides = (props) => {
   }
 
   const copySlide = async () => {
-    saveCurrentSlide().then(() => {
+    saveCurrentSlide().then(async () => {
       const selectedSlide = slides.find(slide => slide.clip_id === selectedSlideId);
       if (selectedSlide) {
         const imageClip = {
