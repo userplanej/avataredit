@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const VideoPreview = (props) => {
+const PlayVideo = (props) => {
   const { open, close, source } = props;
 
   return (
@@ -24,4 +24,4 @@ const VideoPreview = (props) => {
   );
 }
  
-export default VideoPreview;
+export default PlayVideo;

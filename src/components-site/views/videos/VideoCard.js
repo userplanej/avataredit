@@ -72,7 +72,8 @@ const VideoCard = (props) => {
   const handleClickVideo = () => {
     const id = video.package_id;
     dispatch(setVideo(video));
-    history.push(pathnameEnum.editor, { id });
+    const path = video.is_draft ? pathnameEnum.editor : pathnameEnum.preview;
+    history.push(path, { id });
   }
 
   const options = [

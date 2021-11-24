@@ -58,7 +58,7 @@ const Appbar = (props) => {
     /**
      * Open video preview dialog
      */
-    openVideoPreview,
+    openPlayVideo,
     /**
      * Change the preview video source
      */
@@ -232,9 +232,10 @@ const Appbar = (props) => {
         dispatch(setShowBackdrop(false));
         const url = URL.createObjectURL(new Blob([res.data]));
         changeVideoSource(url);
-        openVideoPreview();
+        openPlayVideo();
       });
-    } catch {
+    } catch (error) {
+      console.log(error);
       showAlert('An error occured while trying to play the video', 'error');
       dispatch(setShowBackdrop(false));
     }
@@ -277,12 +278,22 @@ const Appbar = (props) => {
             <Typography variant="h5" sx={{ color: '#fff' }}>All videos</Typography>
           </Box>}
 
+          {pathName === pathnameEnum.preview &&
+          <Box sx={boxStyle}>
+          <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={handleBackToVideos} />
+          <Typography variant="h5" sx={{ color: '#fff' }}>Back to videos</Typography>
+        </Box>}
+
           {pathName === pathnameEnum.editor &&
           <CustomInput 
             value={title}
             onChange={handleChangeTitle}
             onBlur={saveTitle}
-            startAdornment={<InputAdornment position="start"><ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff" }} onClick={handleBackToVideos} /></InputAdornment>}
+            startAdornment={
+              <InputAdornment position="start">
+                <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", cursor: 'pointer' }} onClick={handleBackToVideos} />
+              </InputAdornment>
+            }
             sx={{ backgroundColor: '#3c4045' }}
           />
           }
@@ -299,7 +310,7 @@ const Appbar = (props) => {
 
           {pathName === pathnameEnum.billing &&
           <Box sx={boxStyle}>
-            <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2 }} onClick={handleBackToAccount} />
+            <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={handleBackToAccount} />
             <Typography variant="h5" sx={{ color: '#fff' }}>Billing information</Typography>
           </Box>}
         </Box>
@@ -307,7 +318,7 @@ const Appbar = (props) => {
         {/* Right part */}
         {pathName === pathnameEnum.home &&
         <Box sx={boxStyle}>
-          <Button variant="contained" color="secondary" sx={{ maxWidth: '100%', mr: 1, color: '#fff' }}>Import powerpoint</Button>
+          <Button variant="contained" color="secondary" sx={{ maxWidth: 'none', mr: 1, color: '#fff' }}>Import powerpoint</Button>
           <Button variant="contained" onClick={createNewVideo}>Create new video</Button>
         </Box>}
 
@@ -337,7 +348,7 @@ const Appbar = (props) => {
           <Button 
             variant="contained" 
             color="secondary" 
-            sx={{ maxWidth: '100%', px: 2, mx: 2, backgroundColor: '#3c4045', border: 'none' }}
+            sx={{ maxWidth: '100%', px: { xs: 1, lg: 2 }, mx: 2, backgroundColor: '#3c4045', border: 'none' }}
             onClick={openDiscardDraft}
           >
             Discard draft
@@ -345,12 +356,12 @@ const Appbar = (props) => {
           <Button 
             variant="contained" 
             color="secondary" 
-            sx={{ px: 7, mr: 2, backgroundColor: '#3c4045', border: 'none' }}
+            sx={{ px: { xs: 1, lg: 7 }, mr: 2, backgroundColor: '#3c4045', border: 'none' }}
             onClick={playVideo}
           >
             Play
           </Button>
-          <Button variant="contained" sx={{ px: 5 }} onClick={openGenerateVideo}>Generate video</Button>
+          <Button variant="contained" sx={{ px: { xs: 1, lg: 5 } }} onClick={openGenerateVideo}>Generate video</Button>
         </Box>}
 
         {pathName === pathnameEnum.avatars &&
@@ -360,8 +371,8 @@ const Appbar = (props) => {
 
         {pathName === pathnameEnum.account &&
         <Box sx={boxStyle}>
-          <Button variant="contained" onClick={cancelUserChanges} disabled={!canSaveUser} color="secondary" sx={{ mr: 2, px: 7 }}>Cancel</Button>
-          <Button variant="contained" onClick={saveUser} disabled={!canSaveUser} sx={{ px: 8 }}>Save</Button>
+          <Button variant="contained" onClick={cancelUserChanges} disabled={!canSaveUser} color="secondary" sx={{ mr: 2, px: { xs: 1, sm: 7 } }}>Cancel</Button>
+          <Button variant="contained" onClick={saveUser} disabled={!canSaveUser} sx={{ px: { xs: 1, sm: 8 } }}>Save</Button>
         </Box>}
       </Toolbar>
     </AppBar>

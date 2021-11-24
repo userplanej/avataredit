@@ -13,6 +13,7 @@ import Templates from './views/templates/Templates';
 import Account from './views/account/Account';
 import Backdrop from './backdrop/Backdrop';
 import Billing from './views/billing/Billing';
+import VideoPreview from './views/videos/VideoPreview';
 
 import { setPathName } from '../redux/navigation/navigationSlice';
 import { pathnameEnum } from './constants/Pathname';
@@ -25,6 +26,7 @@ export default function Main() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const pathname = history.location.pathname;
+  const isEditor = pathname === pathnameEnum.editor;
 
   useEffect(() => {
     return history.listen((location) => { 
@@ -41,7 +43,7 @@ export default function Main() {
   }
 
   return (
-    <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
+    <Box sx={{ display: 'flex', height: '100%', width: '100%', pt: isEditor ? 8 : 10 }}>
       {pathname !== pathnameEnum.editor && <Appbar handleDrawerToggle={() => handleDrawerToggle()} />}
       {pathname !== pathnameEnum.editor && <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>}
       <Switch>
@@ -52,6 +54,7 @@ export default function Main() {
         <Route exact path={pathnameEnum.avatars} component={Avatars} />
         <Route exact path={pathnameEnum.account} component={Account} />
         <Route exact path={pathnameEnum.billing} component={Billing} />
+        <Route exact path={pathnameEnum.preview} component={VideoPreview} />
         <Redirect from="/studio/" to={pathnameEnum.home} />
       </Switch>
 
