@@ -234,8 +234,8 @@ const Appbar = (props) => {
         changeVideoSource(url);
         openVideoPreview();
       });
-    } catch (error) {
-      showAlert(error, 'error');
+    } catch {
+      showAlert('An error occured while trying to play the video', 'error');
       dispatch(setShowBackdrop(false));
     }
   }
