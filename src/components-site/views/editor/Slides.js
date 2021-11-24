@@ -142,7 +142,7 @@ const Slides = (props) => {
         html5_script: JSON.stringify(objects),
         // html5_dir: location
       }
-      updateImageClip(activeSlideId, dataToSend);
+      await updateImageClip(activeSlideId, dataToSend);
     // });
   }
 
