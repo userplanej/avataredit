@@ -5,7 +5,7 @@ import { Badge, Button, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
 import SandBox from '../sandbox/SandBox';
-import { Grid } from '@mui/material';
+import { Grid, Container } from '@mui/material';
 import { Box } from '@mui/system';
 
 import '../../libs/fontawesome-5.2.0/css/all.css';
@@ -20,7 +20,7 @@ import Sidebar from '../../components-site/Sidebar';
 import Script from '../../components-site/views/editor/Script';
 import GenerateVideo from '../../components-site/views/editor/GenerateVideo';
 import DiscardDraft from '../../components-site/views/editor/DiscardDraft';
-import VideoPreview from '../../components-site/views/editor/VideoPreview';
+import PlayVideo from '../../components-site/views/editor/PlayVideo';
 
 import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
@@ -112,7 +112,7 @@ class ImageMapEditor extends Component {
 		src: undefined,
 		openGenerateVideo: false,
 		openDiscardDraft: false,
-		openVideoPreview: false,
+		openPlayVideo: false,
 		videoSource: '',
 		mobileOpen: false,
 		packageId: this.props.history.location.state?.id,
@@ -257,9 +257,6 @@ class ImageMapEditor extends Component {
 			this.forceUpdate();
 			if (!editing) {
 				this.changeEditing(true);
-			}
-			if (target.type === 'background') {
-				return;
 			}
 			if (target.type === 'activeSelection') {
 				this.canvasHandlers.onSelect(null);
@@ -929,12 +926,12 @@ class ImageMapEditor extends Component {
 		this.setState({ openDiscardDraft: false });
 	}
 
-	handleOpenVideoPreview = () => {
-		this.setState({ openVideoPreview: true });
+	handleOpenPlayVideo = () => {
+		this.setState({ openPlayVideo: true });
 	}
 
-	handleCloseVideoPreview = () => {
-		this.setState({ openVideoPreview: false });
+	handleClosePlayVideo = () => {
+		this.setState({ openPlayVideo: false });
 	}
 
 	handleChangeVideoSource = (source) => {
@@ -954,7 +951,7 @@ class ImageMapEditor extends Component {
 			mobileOpen,
 			openGenerateVideo,
 			openDiscardDraft,
-			openVideoPreview,
+			openPlayVideo,
 			videoSource,
 			packageId
 		} = this.state;
@@ -984,10 +981,10 @@ class ImageMapEditor extends Component {
 		} = this.handlers;
 
 		return (
-			<Box sx={{ display: 'flex', backgroundColor: '#f7f7f7', overflow: { md: 'hidden' }, height: '100%', width: '100%' }}>
+			<Box sx={{ width: '100%', display: 'flex', overflow: { md: 'hidden' } }}>
 				<GenerateVideo open={openGenerateVideo} close={() => this.handleCloseGenerateVideo()} />
 				<DiscardDraft open={openDiscardDraft} close={() => this.handleCloseDiscardDraft()} />
-				<VideoPreview open={openVideoPreview} close={() => this.handleCloseVideoPreview()} source={videoSource} />
+				<PlayVideo open={openPlayVideo} close={() => this.handleClosePlayVideo()} source={videoSource} />
 
 				{this.canvasRef && this.props.video &&
 				<Appbar 
@@ -995,7 +992,7 @@ class ImageMapEditor extends Component {
 					canvasRef={this.canvasRef}
 					openGenerateVideo={() => this.handleOpenGenerateVideo()}
 					openDiscardDraft={() => this.handleOpenDiscardDraft()}
-					openVideoPreview={() => this.handleOpenVideoPreview()}
+					openPlayVideo={() => this.handleOpenPlayVideo()}
 					changeVideoSource={(source) => this.handleChangeVideoSource(source)}
 				/>}
 
@@ -1004,17 +1001,17 @@ class ImageMapEditor extends Component {
 					handleDrawerToggle={() => this.handleDrawerToggle()}
 				/>
 
-				<Box sx={{ mt: 8, width: '100%', backgroundColor: '#202427' }}>
-					<Grid container sx={{ height: '100%', width: '100%' }}>
+				<Box sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
+					<Grid container sx={{ width: '100%', height: '100%' }}>
 						{this.canvasRef && this.props.slides.length > 0 &&
 						<Grid item xs={12} md={3} lg={2} xl={2}>
-							<Box sx={{ backgroundColor: '#24282c', height: '100%', width: '90%' }}>
+							<Box sx={{ backgroundColor: '#24282c', height: '100%' }}>
 								<Slides canvasRef={this.canvasRef} packageId={packageId} />
 							</Box>
 						</Grid>}
 						
-						<Grid item xs={12} md={6} lg={5} xl={5}>
-							<Box sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
+						<Grid item xs={12} md={9} lg={5} xl={5.5}>
+							<Box sx={{ py: 5, display: 'flex', justifyContent: 'center' }}>
 								<Canvas
 									ref={c => {
 										this.canvasRef = c;
@@ -1042,7 +1039,7 @@ class ImageMapEditor extends Component {
 						</Grid>
 
 						{this.canvasRef && 
-						<Grid item xs={12} md={5} lg={5} xl={5}>
+						<Grid item xs={12} md={12} lg={5} xl={4.5}>
 							<ImageMapItems
 								canvasRef={this.canvasRef}
 								descriptors={descriptors}
