@@ -1,12 +1,12 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 
 const Templates = () => {
   return (
-    <Box sx={{ mt: 10 }}>
+    <Container>
       {/* <Typography variant="h5" sx={{ ml: 4 }}>Templates</Typography> */}
-    </Box>
+    </Container>
   );
 }
  

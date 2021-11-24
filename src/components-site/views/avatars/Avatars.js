@@ -13,6 +13,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Container from '@mui/material/Container';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
@@ -60,7 +61,7 @@ const Avatars = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', height: '100%', mt: 14 }}>
+    <Container maxWidth={false}>
       <Grid container sx={{ display: 'flex' }}>
         {avatars.map(avatar => {
           return (
@@ -146,7 +147,7 @@ const Avatars = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Container>
   );
 }
  

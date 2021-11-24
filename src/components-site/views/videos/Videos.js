@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import Box from '@mui/material/Box';
-import { Grid } from '@mui/material';
+import { Grid, Container } from '@mui/material';
 
 import SearchInput from '../../inputs/SearchInput';
 import SortInput from '../../inputs/SortInput';
@@ -10,12 +10,6 @@ import VideoCard from './VideoCard';
 
 import { getAllImagePackage } from '../../../api/image/package';
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
-
-const boxStyle = {
-  mt: '24px', 
-  ml: '32px', 
-  width: '95%'
-}
 
 const sortItems = [
   {
@@ -92,31 +86,33 @@ const Videos = () => {
   }
   
   return (
-    <Box sx={{ mt: '64px', width: '100%' }}>
-      <Grid container sx={boxStyle}>
-        <Grid item xs={11} sm={6} md={5} lg={5} xl={3}>
-          <SearchInput fullWidth placeholder="Search" onChange={handleSearch} sx={{ margin: 0 }} />
+    <Container maxWidth={false}>
+      <Box sx={{ pb: 3 }}>
+        <Grid container>
+          <Grid item xs={11} sm={6} md={5} lg={5} xl={3}>
+            <SearchInput fullWidth placeholder="Search" onChange={handleSearch} sx={{ margin: 0 }} />
+          </Grid>
+
+          <Grid item xs={11} sm={6} md={7} lg={7} xl={9} sx={{ mt: { xs: 1, sm: 0 }, display: 'flex', justifyContent: 'end'}}>
+            <SortInput 
+              id="sort-videos"
+              name="sort-videos"
+              items={sortItems}
+              value={sortType}
+              onChange={handleChangeSortType}
+              onClickButton={handleChangeSortOrder}
+              isSortAsc={isSortAsc}
+            />
+          </Grid>
         </Grid>
 
-        <Grid item xs={11} sm={6} md={7} lg={7} xl={9} sx={{ mt: { xs: 1, sm: 0 }, display: 'flex', justifyContent: 'end'}}>
-          <SortInput 
-            id="sort-videos"
-            name="sort-videos"
-            items={sortItems}
-            value={sortType}
-            onChange={handleChangeSortType}
-            onClickButton={handleChangeSortOrder}
-            isSortAsc={isSortAsc}
-          />
-        </Grid>
-      </Grid>
-
-      <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' }, maxHeight: '730px', overflowY: 'auto' }}>        
-        {videosListToDisplay && videosListToDisplay.map(video => {
-          return <VideoCard key={video.package_id} video={video} reloadVideosList={() => loadVideos()} />
-        })}
+        <Box sx={{ mt: 2, '& .MuiGrid-root': { m: '0px' }, maxHeight: '730px', overflowY: 'auto' }}>        
+          {videosListToDisplay && videosListToDisplay.map(video => {
+            return <VideoCard key={video.package_id} video={video} reloadVideosList={() => loadVideos()} />
+          })}
+        </Box>
       </Box>
-    </Box>
+    </Container>
   );
 }
  

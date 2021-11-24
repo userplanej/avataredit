@@ -23,7 +23,6 @@ const ITEM_HEIGHT = 48;
 const slideContainerStyle = {
   width: '100%',
   height: '192px',
-  margin: '5px 0px 5px',
   padding: '0',
   display: 'flex',
   flexDirection: 'column',
@@ -44,7 +43,8 @@ const slideContainerStyle = {
 // }
 
 const addSlideContainerStyle = {
-  width: '100%',
+  minWidth: '185px',
+  maxWidth: '185px',
   height: '128px',
   border: 'solid 2px #e8e9e9',
   color: '#fff',
@@ -260,12 +260,12 @@ const Slides = (props) => {
             onClick={() => changeSlide(slideId)}
           >
             <Grid container /*sx={isActive ? { borderLeft: '4px solid #df678c' } : null}*/>
-              <Grid item xs={1} md={1} xl={1} sx={{ px: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
+              <Grid item xs={1} md={1} xl={1.5} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
                 <Box>{index + 1}</Box>
                 {/* <DragIndicatorIcon sx={{ mt: '28px', cursor: 'grab' }} /> */}
               </Grid>
               
-              <Grid item xs={10} md={9} xl={9}>
+              <Grid item xs={10} md={9} xl={10.5}>
                 <Box 
                   sx={{ 
                     minWidth: '185px',
@@ -319,8 +319,8 @@ const Slides = (props) => {
             </Grid>
 
             <Grid container /*sx={isActive ? { borderLeft: '4px solid #e8e9e9'} : null}*/>
-              <Grid item xs={1} md={1} xl={1} sx={{ px: 2 }}></Grid>
-              <Grid item xs={10} md={9} xl={9}>
+              <Grid item xs={1} md={1} xl={1.5}></Grid>
+              <Grid item xs={10} md={9} xl={10.5}>
                 <Button variant="contained" variant="secondary" sx={btnAddTransitionStyle}>
                   Add transitions
                 </Button>
@@ -336,11 +336,13 @@ const Slides = (props) => {
         onClick={() => addSlide()}
       >
         <Grid container>
-          <Grid item xs={1} md={1} xl={1} sx={{ px: 2 }}></Grid>
+          <Grid item xs={1} md={1} xl={1.5}></Grid>
 
-          <Grid item xs={10} md={9} xl={9} sx={addSlideContainerStyle}>
-            <AddIcon sx={{ color: '#fff', mb: '10px', fontSize: '2rem' }} />
-            <Typography sx={{ fontSize: '14px'}}>Add slides</Typography>
+          <Grid item xs={10} md={9} xl={10.5}>
+            <Box sx={addSlideContainerStyle}>
+              <AddIcon sx={{ color: '#fff', mb: '10px', fontSize: '2rem' }} />
+              <Typography sx={{ fontSize: '14px'}}>Add slides</Typography>
+            </Box>
           </Grid>
         </Grid>
       </ListItem>

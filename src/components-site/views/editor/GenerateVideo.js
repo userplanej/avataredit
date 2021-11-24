@@ -68,7 +68,7 @@ const GenerateVideo = (props) => {
           />
           
           <Box>
-            <Typography variant="h4" >Video summary</Typography>
+            <Typography variant="h4">Video summary</Typography>
             <Typography variant="h5">Avatar</Typography>
           </Box>
         </Box>

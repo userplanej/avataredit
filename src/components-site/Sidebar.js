@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -8,15 +8,12 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
 import PersonIcon from '@mui/icons-material/Person';
 import Stack from '@mui/material/Stack';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
-
-import { setPathName } from '../redux/navigation/navigationSlice';
 
 import { pathnameEnum } from './constants/Pathname';
 import { drawerWidth } from './constants/Drawer';
@@ -157,7 +154,6 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
 };
 
 const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
-  const dispatch = useDispatch();
   const history = useHistory();
   const pathName = useSelector(state => state.navigation.pathName);
 

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Grid } from '@mui/material';
+import { Grid, Container } from '@mui/material';
 
 import SearchInput from '../../inputs/SearchInput';
 import SortInput from '../../inputs/SortInput';
@@ -11,12 +11,6 @@ import VideoCard from '../videos/VideoCard';
 
 import { getAllImagePackage } from '../../../api/image/package';
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
-
-const boxStyle = {
-  mt: 3, 
-  ml: 4, 
-  width: '95%'
-}
 
 const sortItems = [
   {
@@ -93,35 +87,37 @@ const Home = () => {
   }
 
   return (
-    <Box sx={{ mt: 7, width: '100%' }}>
-      <Typography variant="h5" color="#fff" sx={boxStyle}>Templates</Typography>
-      
-      <Grid container sx={{ ...boxStyle, alignItems: 'center' }}>
-        <Grid item xs={11} sm={5} md={5} lg={7} xl={8}>
-          <Typography variant="h5" color="#fff">Recent videos</Typography>
+    <Container maxWidth={false}>
+      <Box sx={{ pb: 3 }}>
+        <Typography variant="h5" color="#fff">Templates</Typography>
+        
+        <Grid container sx={{ alignItems: 'center' }}>
+          <Grid item xs={11} sm={5} md={5} lg={7} xl={8}>
+            <Typography variant="h5" color="#fff">Recent videos</Typography>
+          </Grid>
+
+          <Grid item xs={11} sm={7} md={7} lg={5} xl={4} sx={{ mt: { xs: 1, sm: 0 }, display: 'flex', justifyContent: 'end'}}>
+            <SearchInput placeholder="Search" onChange={handleSearch} sx={{ margin: 0, mr: 1 }} />
+
+            <SortInput 
+              id="sort-videos"
+              name="sort-videos"
+              items={sortItems}
+              value={sortType}
+              onChange={handleChangeSortType}
+              onClickButton={handleChangeSortOrder}
+              isSortAsc={isSortAsc}
+            />
+          </Grid>
         </Grid>
 
-        <Grid item xs={11} sm={7} md={7} lg={5} xl={4} sx={{ mt: { xs: 1, sm: 0 }, display: 'flex', justifyContent: 'end'}}>
-          <SearchInput placeholder="Search" onChange={handleSearch} sx={{ margin: 0, mr: 1 }} />
-
-          <SortInput 
-            id="sort-videos"
-            name="sort-videos"
-            items={sortItems}
-            value={sortType}
-            onChange={handleChangeSortType}
-            onClickButton={handleChangeSortOrder}
-            isSortAsc={isSortAsc}
-          />
-        </Grid>
-      </Grid>
-
-      <Box sx={{ ...boxStyle, '& .MuiGrid-root': { m: '0px' }, maxHeight: '420px', overflowY: 'auto' }}>
-        {videosListToDisplay && videosListToDisplay.map(video => {
-          return <VideoCard key={video.package_id} video={video} reloadVideosList={() => loadVideos()} />
-        })}
+        <Box sx={{ mt: 2, '& .MuiGrid-root': { m: '0px' }, maxHeight: '420px', overflowY: 'auto' }}>
+          {videosListToDisplay && videosListToDisplay.map(video => {
+            return <VideoCard key={video.package_id} video={video} reloadVideosList={() => loadVideos()} />
+          })}
+        </Box>
       </Box>
-    </Box>
+    </Container>
   );
 }
  

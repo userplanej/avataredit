@@ -151,7 +151,7 @@ const ToolsView = (props) => {
 
   return (
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
-      <Grid item xs={8} md={8} lg={8} xl={9} sx={{ backgroundColor: '#3c4045' }}>
+      <Grid item xs={9} md={10} lg={9} xl={10} sx={{ backgroundColor: '#3c4045' }}>
         <TabPanel name="main" value={activeTab} index={0}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
         </TabPanel>
@@ -231,7 +231,7 @@ const ToolsView = (props) => {
         </TabPanel>
       </Grid>
 
-      <Grid item xs={2} md={4} lg={3} xl={2} sx={{ backgroundColor: '#30353a', height: '100%' }}>
+      <Grid item xs={3} md={2} lg={3} xl={2} sx={{ backgroundColor: '#30353a', height: '100%' }}>
         <Tabs
           orientation="vertical"
           indicatorColor="secondary"

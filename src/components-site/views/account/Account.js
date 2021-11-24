@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Grid, InputLabel, Button, Link, FormControlLabel, Switch, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Grid, InputLabel, Button, Link, FormControlLabel, Switch, Dialog, DialogTitle, DialogContent, DialogActions, Container } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 import DeleteAccount from './DeleteAccount';
@@ -287,101 +287,103 @@ const Account = () => {
   }
 
   return (
-    <Box sx={{ mt: 10, ml: 4, width: '100%' }}>
-      <Typography variant="h5" color="#fff">Account information</Typography>
+    <Container maxWidth={false}>
+      <Box sx={{ pb: 3 }}>
+        <Typography variant="h5" color="#fff">Account information</Typography>
 
-      <Grid container sx={{ mt: 2, width: '100%' }}>
-        <Grid item xs={9} md={6} xl={4}>
-          <InputLabel>Email</InputLabel>
-          <CustomInput 
-            placeholder="Email" 
-            fullWidth  
-            id="email"
-            type="email" 
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => onChangeValue(fieldNames.email, event.target.value)}
-          />
-        </Grid>
-      </Grid>
-
-      <Grid container sx={{ mt: 1, width: '100%' }}>
-        <InputLabel>Password</InputLabel>
-        <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-          <Grid item xs ={9} md={6} xl={4}>
+        <Grid container sx={{ mt: 2, width: '100%' }}>
+          <Grid item xs={9} md={6} xl={4}>
+            <InputLabel>Email</InputLabel>
             <CustomInput 
-              value="**********" 
+              placeholder="Email" 
               fullWidth  
-              id="password"
-              type="password" 
-              name="password"
-              autoComplete="password"
-              disabled
+              id="email"
+              type="email" 
+              name="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => onChangeValue(fieldNames.email, event.target.value)}
             />
           </Grid>
-          
-          <Grid item xs={3} md={3} xl={2} sx={{ pl: 1 }}>
-            <Button variant="contained" color="secondary" fullWidth onClick={openChangePassword}>Change</Button>
+        </Grid>
+
+        <Grid container sx={{ mt: 1, width: '100%' }}>
+          <InputLabel>Password</InputLabel>
+          <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+            <Grid item xs ={9} md={6} xl={4}>
+              <CustomInput 
+                value="**********" 
+                fullWidth  
+                id="password"
+                type="password" 
+                name="password"
+                autoComplete="password"
+                disabled
+              />
+            </Grid>
+            
+            <Grid item xs={3} md={3} xl={2} sx={{ pl: 1 }}>
+              <Button variant="contained" color="secondary" fullWidth onClick={openChangePassword}>Change</Button>
+            </Grid>
+          </Box>
+        </Grid>
+
+        <Box sx={{ mt: 2, color: '#fff' }}>
+          {"To cancel your account, "}
+          <Link color="#df678c" onClick={() => setOpenDeleteAccountDialog(true)}>please click here.</Link>
+        </Box>
+
+        <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Personal information</Typography>
+
+        <Grid container sx={{ mt: 2, width: '100%' }}>
+          <Grid item xs={9} md={6} xl={4}>
+            <InputLabel>Name</InputLabel>
+            <CustomInput 
+              placeholder="Name" 
+              fullWidth  
+              id="name"
+              name="name"
+              autoComplete="name"
+              onChange={(event) => onChangeValue(fieldNames.name, event.target.value)}
+              value={name}
+            />
+          </Grid>
+        </Grid>
+
+        <Grid container sx={{ mt: 2, width: '100%' }}>
+          <Grid item xs={9} md={6} xl={4}>
+            <InputLabel>Short bio</InputLabel>
+            <MultilineInput 
+              placeholder="Short bio"
+              minRows={4}
+              maxRows={4} 
+              id="bio"
+              name="bio"
+              onChange={(event) => onChangeValue(fieldNames.bio, event.target.value)}
+              sx={{ boxShadow: '3px 3px 6px 0 rgb(0 0 0 / 2%)' }}
+              value={bio}
+            />
+          </Grid>
+        </Grid>
+
+        <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Notifications</Typography>
+
+        <Box sx={{ mt: 1.5, ml: 1 }}>
+          <Grid container>
+            <Grid item><FormControlLabel control={<Switch defaultChecked sx={{ mr: 1 }} />} label="Video processing complete" sx={{ color: '#fff' }} /></Grid>
+          </Grid>
+
+          <Grid container sx={{ mt: 2 }}>
+            <Grid item><FormControlLabel control={<Switch sx={{ mr: 1 }} />} label="Product updates" sx={{ color: '#fff' }} /></Grid>
           </Grid>
         </Box>
-      </Grid>
 
-      <Box sx={{ mt: 2, color: '#fff' }}>
-        {"To cancel your account, "}
-        <Link color="#df678c" onClick={() => setOpenDeleteAccountDialog(true)}>please click here.</Link>
-      </Box>
+        <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Billing information</Typography>
 
-      <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Personal information</Typography>
-
-      <Grid container sx={{ mt: 2, width: '100%' }}>
-        <Grid item xs={9} md={6} xl={4}>
-          <InputLabel>Name</InputLabel>
-          <CustomInput 
-            placeholder="Name" 
-            fullWidth  
-            id="name"
-            name="name"
-            autoComplete="name"
-            onChange={(event) => onChangeValue(fieldNames.name, event.target.value)}
-            value={name}
-          />
-        </Grid>
-      </Grid>
-
-      <Grid container sx={{ mt: 2, width: '100%' }}>
-        <Grid item xs={9} md={6} xl={4}>
-          <InputLabel>Short bio</InputLabel>
-          <MultilineInput 
-            placeholder="Short bio"
-            minRows={4}
-            maxRows={4} 
-            id="bio"
-            name="bio"
-            onChange={(event) => onChangeValue(fieldNames.bio, event.target.value)}
-            sx={{ boxShadow: '3px 3px 6px 0 rgb(0 0 0 / 2%)' }}
-            value={bio}
-          />
-        </Grid>
-      </Grid>
-
-      <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Notifications</Typography>
-
-      <Box sx={{ mt: 1.5, ml: 1 }}>
-        <Grid container>
-          <Grid item><FormControlLabel control={<Switch defaultChecked sx={{ mr: 1 }} />} label="Video processing complete" sx={{ color: '#fff' }} /></Grid>
-        </Grid>
-
-        <Grid container sx={{ mt: 2 }}>
-          <Grid item><FormControlLabel control={<Switch sx={{ mr: 1 }} />} label="Product updates" sx={{ color: '#fff' }} /></Grid>
-        </Grid>
-      </Box>
-
-      <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Billing information</Typography>
-
-      <Box sx={{ mt: 2, color: '#fff' }}>
-        {"To see invoices change credit card, VAT or address, "}
-        <Link color="#df678c" onClick={() => handleShowBillingPage()}>please click here.</Link>
+        <Box sx={{ mt: 2, color: '#fff' }}>
+          {"To see invoices change credit card, VAT or address, "}
+          <Link color="#df678c" onClick={() => handleShowBillingPage()}>please click here.</Link>
+        </Box>
       </Box>
 
       <Dialog
@@ -419,7 +421,7 @@ const Account = () => {
         open={openDeleteAccountDialog}
         close={() => setOpenDeleteAccountDialog(false)}
       />
-    </Box>
+    </Container>
   );
 }
  
