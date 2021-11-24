@@ -93,8 +93,8 @@ const Script = () => {
       >
         <Box sx={{ px: 2, pt: 2, width: '100%' }}>
           <MultilineInput
-            minRows={10}
-            maxRows={10}
+            minRows={8}
+            maxRows={15}
             maxLength={3500}
             value={textScript}
             onChange={handleChangeTextScript}
@@ -105,7 +105,10 @@ const Script = () => {
               ':focus-within': {
                 backgroundColor: '#fff',
                 border: '2px solid #e8dff4'
-              } 
+              },
+              'textarea': {
+                resize: 'vertical'
+              }
             }}
           />
 
