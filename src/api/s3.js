@@ -7,5 +7,5 @@ export const uploadFile = async (file, type) => {
 }
 
 export const deleteFile = async (file) => {
-  return await API.post(`${s3Path}/delete`, file);
+  return await API.delete(`${s3Path}/delete`, file);
 }
