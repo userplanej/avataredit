@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import { Button, Typography, Dialog, DialogActions, DialogContent, DialogTitle, ClickAwayListener, InputLabel } from '@mui/material';
 import { Box } from '@mui/system';
@@ -13,12 +14,18 @@ const labelStyle = {
 }
 
 const GenerateVideo = (props) => {
-  const { open, close } = props;
+  const { video, slides, open, close } = props;
+  // const video = useSelector(state => state.video.video);
+  // const slides = useSelector(state => state.video.slides);
 
-  const [title, setTitle] = useState('New video');
+  const [title, setTitle] = useState(video.package_name);
   const [isEditTitle, setIsEditTitle] = useState(false);
   const [description, setDescription] = useState('Insert your description here');
   const [isEditDescription, setIsEditDescription] = useState(false);
+
+  useEffect(() => {
+    setTitle(video.package_name);
+  }, [video]);
 
   const handleEditTitle = () => {
     setIsEditTitle(true);
@@ -44,6 +51,11 @@ const GenerateVideo = (props) => {
     setIsEditDescription(false);
   }
   
+  const handleClose = () => {
+    close();
+    setTitle(video.package_name);
+  }
+
   return (
     <Dialog
       maxWidth="md"
@@ -52,7 +64,7 @@ const GenerateVideo = (props) => {
       aria-describedby="generate-video-dialog-description"
     >
       <DialogTitle id="generate-video-dialog-title" sx={{ textAlign: 'right' }}>
-        <CloseIcon fontSize="large" onClick={close} sx={{ cursor: 'pointer', color: '#fff' }} />
+        <CloseIcon fontSize="large" onClick={handleClose} sx={{ cursor: 'pointer', color: '#fff' }} />
       </DialogTitle>
 
       <DialogContent sx={{ pl: 5, pr: 15 }}>
@@ -112,10 +124,15 @@ const GenerateVideo = (props) => {
         }
 
         <InputLabel sx={labelStyle}>Script</InputLabel>
-        <Typography variant="h6" sx={{ color: "#fff" }}>
-          Lorem ipsum Lorem ipsumLorem ipsumLorem ipsum Lorem ipsumLorem ipsumLorem ipsum Lorem ipsumLorem 
-          ipsumLorem ipsum Lorem ipsumLorem ipsumLorem ipsum Lorem ipsumLorem ipsumLorem ipsum Lorem ipsumLorem ipsumLorem 
-        </Typography>
+        <Box sx={{ overflow: 'hidden', maxHeight: '80px' }}>
+          {slides && slides.map(slide => {
+            return (
+              <Typography key={slide.clip_id} variant="h6" sx={{ color: "#fff" }}>
+                {slide.text_script} 
+              </Typography>
+            );
+          })}
+        </Box>
 
         <InputLabel sx={labelStyle}>Estimated time</InputLabel>
         <Typography variant="h6" sx={{ color: "#fff" }}>4 min</Typography>

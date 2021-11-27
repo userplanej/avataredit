@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
+import { Switch, Route, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
@@ -21,12 +21,12 @@ import { pathnameEnum } from './constants/Pathname';
 export default function Main() {
   const dispatch = useDispatch();
   const history = useHistory();
+  const routeMatch = useRouteMatch(`${pathnameEnum.editor}/:id`);
   const showBackdrop = useSelector(state => state.backdrop.showBackdrop);
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const pathname = history.location.pathname;
-  const isEditor = pathname === pathnameEnum.editor;
+  const isEditor = routeMatch !== null;
 
   useEffect(() => {
     return history.listen((location) => { 
@@ -44,12 +44,12 @@ export default function Main() {
 
   return (
     <Box sx={{ display: 'flex', height: '100%', width: '100%', pt: isEditor ? 8 : 10 }}>
-      {pathname !== pathnameEnum.editor && <Appbar handleDrawerToggle={() => handleDrawerToggle()} />}
-      {pathname !== pathnameEnum.editor && <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>}
+      {!isEditor && <Appbar handleDrawerToggle={() => handleDrawerToggle()} />}
+      {/* {!isEditor && <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>} */}
       <Switch>
         <Route exact path={pathnameEnum.home} component={Home} />
         <Route exact path={pathnameEnum.videos} component={Videos} />
-        <Route exact path={pathnameEnum.editor} component={Editor} />
+        <Route exact path={pathnameEnum.editor + '/:id'} component={Editor} />
         <Route exact path={pathnameEnum.templates} component={Templates} />
         <Route exact path={pathnameEnum.avatars} component={Avatars} />
         <Route exact path={pathnameEnum.account} component={Account} />

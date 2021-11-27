@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
+
 import { Button, Grid, Tab, Tabs, Typography, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import { Box } from '@mui/system';
 import CloseIcon from '@mui/icons-material/Close';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 import MultilineInput from '../../inputs/MultilineInput';
+
+import { getImageClip, updateImageClip } from '../../../api/image/clip';
+
+import { setActiveSlide, setIsSaving } from '../../../redux/video/videoSlice';
+
+import { showAlert } from '../../../utils/AlertUtils';
 
 const defaultNbCharLeft = 3500;
 
@@ -37,6 +46,10 @@ const voices = [
 ];
 
 const Script = () => {
+  const dispatch = useDispatch();
+  const activeSlide = useSelector(state => state.video.activeSlide);
+  const activeSlideId = useSelector(state => state.video.activeSlideId);
+
   // Store active tab index
   const [activeTab, setActiveTab] = useState(0);
   // Store text value of script
@@ -47,6 +60,12 @@ const Script = () => {
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
   // Store current selected voice
   const [selectedVoice, setSelectedVoice] = useState(null);
+
+  useEffect(() => {
+    const script = activeSlide && activeSlide.text_script !== null ? activeSlide.text_script : '';
+    setTextScript(script);
+    updateNbCharLeft(script);
+  }, [activeSlide]);
 
   // Action triggered when changing tab
   const handleChangeTab = (event, value) => {
@@ -65,8 +84,35 @@ const Script = () => {
   const handleChangeTextScript = (event) => {
     const value = event.target.value;
     setTextScript(value);
-    const newNbCharLeft = defaultNbCharLeft - value.length;
+    updateNbCharLeft(value);
+  }
+
+  const updateNbCharLeft = (script) => {
+    const newNbCharLeft = defaultNbCharLeft - script.length;
     setNbCharLeft(newNbCharLeft);
+  }
+
+  const handleSaveTextScript = async (event) => {
+    if (activeSlide.text_script === textScript) {
+      return;
+    }
+
+    dispatch(setIsSaving(true));
+
+    const script = event.target.value;
+    
+    const dataToSend = {
+      text_script: script
+    }
+
+    await updateImageClip(activeSlideId, dataToSend).then(async () => {
+      await getImageClip(activeSlideId).then((res) => {
+        const clip = res.data.body;
+        dispatch(setActiveSlide(clip));
+
+        dispatch(setIsSaving(false));
+      });
+    });
   }
 
   // Action triggered when selecting a voice
@@ -75,12 +121,61 @@ const Script = () => {
     handleCloseVoiceDialog();
   }
 
+  const handlePlayScript = async () => {
+    if (textScript === null || textScript === '') {
+      showAlert('The slide has no script. Please type a script.', 'error')
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('lifecycleName', 'TTS-only-Lifecycle');
+    formData.append('catalogInstanceName', 'TTS-only-Catalog');
+    formData.append('target', 'SoftwareCatalogInstance');
+    formData.append('async', false);
+
+    let payload = {
+      'text': textScript,
+      'voiceName': 'kor_female1',
+      'apiId': 'ryu',
+      'apiKey': 'd0cad9547b9c4a65a5cdfe50072b1588'
+    };
+
+    formData.append('payload', JSON.stringify(payload));
+
+    const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
+    const headers = {
+      AccessKey: 'SerengetiAdministrationAccessKey',
+      SecretKey: 'SerengetiAdministrationSecretKey',
+      LoginId: 'maum-orchestra-com'
+    }
+
+    await axios({
+      method: 'post',
+      url: url, 
+      data: formData,
+      headers: headers
+    }).then(async (res) => {
+      const blob = new Blob([res.data], { type: 'audio/mp3' });
+      // const file = new File(blob, "test.wav", { type: "audio/wav" });
+      const url = URL.createObjectURL(blob);
+      console.log(url)
+      const audio = new Audio(url)
+      audio.load()
+      await audio.play();
+
+      // var a = document.createElement("a");
+      // a.href = url;
+      // a.download = "test.wav";
+      // a.click();
+    });
+  }
+
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '90%' }}>
         <Tabs value={activeTab} onChange={handleChangeTab} aria-label="basic tabs example" variant="fullWidth">
           <Tab label="Type your script" id="simple-tab-1" />
-          <Tab label="Upload your voice" id="simple-tab-2" />
+          {/* <Tab label="Upload your voice" id="simple-tab-2" /> */}
         </Tabs>
       </Box>
       
@@ -98,6 +193,7 @@ const Script = () => {
             maxLength={3500}
             value={textScript}
             onChange={handleChangeTextScript}
+            onBlur={handleSaveTextScript}
             sx={{ 
               pb: 3, 
               color: '#000',
@@ -105,6 +201,9 @@ const Script = () => {
               ':focus-within': {
                 backgroundColor: '#fff',
                 border: '2px solid #e8dff4'
+              },
+              ':hover': {
+                backgroundColor: '#fff'
               },
               'textarea': {
                 resize: 'vertical'
@@ -142,7 +241,9 @@ const Script = () => {
           </Grid>
 
           <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
-            <Button variant="contained" sx={{ width: '100%'}}>Play script</Button>
+            <Button variant="contained" sx={{ width: '100%'}} /*onClick={handlePlayScript}*/>
+              Play script
+            </Button>
           </Grid>
         </Grid>
       </div>

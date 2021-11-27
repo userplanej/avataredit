@@ -11,11 +11,10 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-import { postImageClip, updateImageClip, getAllImageClipByPackageId, deleteImageClip } from '../../../api/image/clip';
+import { postImageClip, deleteImageClip } from '../../../api/image/clip';
 import { updateImagePackage } from '../../../api/image/package';
-import { uploadFile } from '../../../api/s3';
 
-import { setSlides, setActiveSlideId } from '../../../redux/video/videoSlice';
+import { setActiveSlideId, setActiveSlide, setIsSaving } from '../../../redux/video/videoSlice';
 import { showAlert } from '../../../utils/AlertUtils';
 
 const ITEM_HEIGHT = 48;
@@ -75,10 +74,8 @@ const btnAddTransitionStyle = {
 }
 
 const Slides = (props) => {
-  const { canvasRef, packageId } = props;
+  const { video, slides, canvasRef, packageId, loadSlides } = props;
   const dispatch = useDispatch();
-  const video = useSelector(state => state.video.video);
-  const slides = useSelector(state => state.video.slides);
   const activeSlideId = useSelector(state => state.video.activeSlideId);
 
   const [selectedSlideId, setSelectedSlideId] = useState(0);
@@ -86,16 +83,9 @@ const Slides = (props) => {
   const openMenu = Boolean(anchorEl);
 
   useEffect(() => {
-    loadSlide(video.clip_id);
-    dispatch(setActiveSlideId(video.clip_id));
+    const clipId = video.clip_id;
+    loadSlide(clipId);
   }, []);
-  
-	const loadAllSlides = async () => {
-		await getAllImageClipByPackageId(packageId).then(res => {
-			const slides = res.data.body.rows;
-			dispatch(setSlides(slides));
-		});
-	}
 
   const saveVideoActiveClipId = async (id) => {
     const dataToSend = {
@@ -105,9 +95,8 @@ const Slides = (props) => {
   }
 
   const addSlide = async () => {
-    saveCurrentSlide();
+    dispatch(setIsSaving(true));
 
-    // Clear canvas
     canvasRef.handler.clear(true);
     canvasRef.handler.workareaHandler.initialize();
     
@@ -119,49 +108,32 @@ const Slides = (props) => {
     }
     
     await postImageClip(imageClip).then((res) => {
+      const clip = res.data.body;
       const clipId = res.data.body.clip_id;
-      loadAllSlides();
+      loadSlides();
+      dispatch(setActiveSlide(clip));
       dispatch(setActiveSlideId(clipId));
       saveVideoActiveClipId(clipId);
+      
+      dispatch(setIsSaving(false));
     });
   }
 
-  const saveCurrentSlide = async () => {
-    // const canvasBlob = canvasRef.handler.getCanvasImageAsBlob();
-    // const fileName = `video-${packageId}-slide-${activeSlideId}`;
-    // const file = new File([canvasBlob], fileName, { type: "image/png" });
-
-    // const formData = new FormData();
-    // formData.append('adminId', 'admin1018');
-    // formData.append('images', file);
-
-    // await uploadFile(formData, 'slide-thumbnail').then((res) => {
-    //   const location = res.data.body.location;
-      const objects = canvasRef.handler.exportJSON();
-      const dataToSend = {
-        html5_script: JSON.stringify(objects),
-        // html5_dir: location
-      }
-      await updateImageClip(activeSlideId, dataToSend);
-    // });
-  }
-
-  const changeSlide = (id) => {
-    if (id === activeSlideId) {
-      return;
-    }
-
-    saveCurrentSlide().then(() => {
+  const changeSlide = async (id) => {
+    if (id !== activeSlideId) {
       loadSlide(id);
-      loadAllSlides();
-    });
+    }
   }
 
-  const loadSlide = (id) => {
+  const loadSlide = async (id) => {
     const slideToLoad = slides.find(slide => slide.clip_id === id);
     if (slideToLoad) {
       canvasRef.handler.clear(true);
-      canvasRef.handler.importJSON(JSON.parse(slideToLoad.html5_script));
+      canvasRef.handler.workareaHandler.initialize();
+      if (slideToLoad.html5_script !== null) {
+        await canvasRef.handler.importJSON(JSON.parse(slideToLoad.html5_script));
+      }
+      dispatch(setActiveSlide(slideToLoad));
       dispatch(setActiveSlideId(id));
       saveVideoActiveClipId(id);
     }
@@ -175,7 +147,7 @@ const Slides = (props) => {
     }
 
     await deleteImageClip(selectedSlideId).then(() => {
-      loadAllSlides();
+      loadSlides();
       // If active slide is deleted, we need to load the first not deleted slide
       if (selectedSlideId === activeSlideId) {
         const firstSlide = slides.find(slide => slide.clip_id !== selectedSlideId);
@@ -185,24 +157,28 @@ const Slides = (props) => {
   }
 
   const copySlide = async () => {
-    saveCurrentSlide().then(async () => {
-      const selectedSlide = slides.find(slide => slide.clip_id === selectedSlideId);
-      if (selectedSlide) {
-        const imageClip = {
-          package_id: packageId,
-          background_type: selectedSlide.background_type,
-          html5_script: selectedSlide.html5_script,
-          html5_dir: selectedSlide.html5_dir
-        }
-
-        await postImageClip(imageClip).then((res) => {
-          const clipId = res.data.body.clip_id;
-          loadAllSlides().then(() => loadSlide(clipId));
-          dispatch(setActiveSlideId(clipId));
-          saveVideoActiveClipId(clipId);
-        });
+    dispatch(setIsSaving(true));
+    
+    const selectedSlide = slides.find(slide => slide.clip_id === selectedSlideId);
+    if (selectedSlide) {
+      const imageClip = {
+        package_id: packageId,
+        background_type: selectedSlide.background_type,
+        html5_script: selectedSlide.html5_script,
+        html5_dir: selectedSlide.html5_dir
       }
-    });
+
+      await postImageClip(imageClip).then((res) => {
+        const clip = res.data.body;
+        const clipId = res.data.body.clip_id;
+        loadSlides().then(() => loadSlide(clipId));
+        dispatch(setActiveSlide(clip));
+        dispatch(setActiveSlideId(clipId));
+        saveVideoActiveClipId(clipId);
+        
+        dispatch(setIsSaving(false));
+      });
+    }
   }
 
   const handleClickMenu = (event, id) => {
@@ -245,7 +221,7 @@ const Slides = (props) => {
       {slides && slides.length > 0 && slides.map((slide, index) => {
         const slideId = slide.clip_id;
         const isActive = activeSlideId === slideId;
-        const hasImage = false;//slide.html5_dir !== null ;
+        const hasImage = slide.html5_dir !== null ;
 
         return (
           <ListItem
@@ -272,22 +248,29 @@ const Slides = (props) => {
                     maxWidth: '185px',
                     height: '128px',
                     border: isActive ? '3px solid #df678c' : null,
-                    backgroundColor: !hasImage ? '#fff' : null,
+                    backgroundColor: !hasImage ? '#f7f7f7' : null,
                     backgroundImage: hasImage ? `url(${slide.html5_dir})` : '',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
                     position: 'relative'
                   }}
-                >
-                  {!hasImage && <PanoramaIcon />}
-                </Box>
+                />
 
                 <MoreVertIcon 
                   id={`slide-menu-btn-${slideId}`}
                   className="slide-menu" 
                   onClick={(event) => handleClickMenu(event, slideId)} 
-                  sx={{ display: 'none', position: 'absolute', top: '20px', left: '190px', cursor: 'pointer' }} 
+                  sx={{ 
+                    display: 'none',
+                    position: 'absolute',
+                    top: '20px',
+                    left: { xs: '185px', sm: '210px', md: '180px', lg: '180px', xl: '190px' },
+                    cursor: 'pointer'
+                  }} 
                 />
 
                 <Menu

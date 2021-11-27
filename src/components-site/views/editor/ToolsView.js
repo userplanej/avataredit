@@ -9,6 +9,8 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import FlipToBackIcon from '@mui/icons-material/FlipToBack';
 import FlipToFrontIcon from '@mui/icons-material/FlipToFront';
+import PersonIcon from '@mui/icons-material/Person';
+import { Stack, Slider } from '@mui/material';
 
 import { setActiveObject } from '../../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
@@ -50,6 +52,7 @@ const ToolsView = (props) => {
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
   const [imageTab, setImageTab] = useState(0);
+  const [avatarSize, setAvatarSize] = useState(100);
 
   useEffect(() => {
     dispatch(setActiveTab(0));
@@ -71,6 +74,10 @@ const ToolsView = (props) => {
   const handleChangeImageTab = (event, newValue) => {
     setImageTab(newValue);
   }
+
+  const handleChangeAvatarSize = (event, newValue) => {
+    setAvatarSize(newValue);
+  };
 
   const renderMoveButtons = () => {
     const { canvasRef } = props;
@@ -152,11 +159,12 @@ const ToolsView = (props) => {
   return (
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
       <Grid item xs={9} md={10} lg={9} xl={10} sx={{ backgroundColor: '#3c4045' }}>
-        <TabPanel name="main" value={activeTab} index={0}>
+        {/* <TabPanel name="main" value={activeTab} index={0}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
-        </TabPanel>
+        </TabPanel> */}
 
-        <TabPanel name="main" value={activeTab} index={1}>
+        <TabPanel name="main" value={activeTab} index={0}>
+        {/* <TabPanel name="main" value={activeTab} index={1}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar, size and alignment</Typography>
           <Box sx={{ height: '600px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
 
@@ -174,41 +182,66 @@ const ToolsView = (props) => {
                 <Tab label="Voice only" />
               </Tabs>
             </Box>
-            <TabPanel name="avatar" value={avatarTab} index={0}>Full body</TabPanel>
+            <TabPanel name="avatar" value={avatarTab} index={0}>
+              <Box sx={{ p: 2, backgroundColor: '#262c34' }}>
+                <Box sx={{ display: 'flex' }}>
+                  <Button fullWidth sx={{ color: '#8c8d8d' }}>Left</Button>
+                  <Button variant="contained" fullWidth>Center</Button>
+                  <Button fullWidth sx={{ color: '#8c8d8d' }}>Right</Button>
+                </Box>
+
+                <Box sx={{ mt: 2 }}>
+                  <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+                    <PersonIcon fontSize="small" sx={{ color: '#fff' }} />
+                    <Slider aria-label="Avatar size" value={avatarSize} onChange={handleChangeAvatarSize} sx={{ color: '#fff' }} />
+                    <PersonIcon fontSize="large" sx={{ color: '#fff' }} />
+                  </Stack>
+                </Box>
+              </Box>
+            </TabPanel>
             <TabPanel name="avatar" value={avatarTab} index={1}>Circle</TabPanel>
-            <TabPanel name="avatar" value={avatarTab} index={2}>Voice only</TabPanel>
+            <TabPanel name="avatar" value={avatarTab} index={2}>
+              <Box sx={{ p: 7, backgroundColor: '#262c34', color: '#fff', textAlign: 'center' }}>
+                Avatar will not be shown on this slide.
+              </Box>
+            </TabPanel>
           </Box>
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={2}>
+        <TabPanel name="main" value={activeTab} index={1}>
+        {/* <TabPanel name="main" value={activeTab} index={2}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Select background</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs value={backgroundTab} variant="fullWidth" scrollButtons="auto" onChange={handleChangeBackgroundTab} aria-label="backgrounds-tabs">
                 <Tab label="Colors" />
                 <Tab label="Images" />
-                <Tab label="Videos" />
+                {/* <Tab label="Videos" /> */}
                 <Tab label="Uploads" />
               </Tabs>
             </Box>
             <TabPanel name="background" value={backgroundTab} index={0}>{props.backgroundsColors}</TabPanel>
             <TabPanel name="background" value={backgroundTab} index={1}>{props.backgroundsImagesDefault}</TabPanel>
-            <TabPanel name="background" value={backgroundTab} index={2}>Videos</TabPanel>
-            <TabPanel name="background" value={backgroundTab} index={3}>{props.backgroundsImagesUploaded}</TabPanel>
+            {/* <TabPanel name="background" value={backgroundTab} index={2}>{props.backgroundsVideosDefault}</TabPanel> */}
+            <TabPanel name="background" value={backgroundTab} index={2}>{props.backgroundsImagesUploaded}</TabPanel>
+            {/* <TabPanel name="background" value={backgroundTab} index={3}>{props.backgroundsImagesUploaded}</TabPanel> */}
           </Box>
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={3}>
+        <TabPanel name="main" value={activeTab} index={2}>
+        {/* <TabPanel name="main" value={activeTab} index={3}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Text</Typography>
           {props.texts}
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={4}>
+        <TabPanel name="main" value={activeTab} index={3}>
+        {/* <TabPanel name="main" value={activeTab} index={4}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Select shape</Typography>
           {props.shapes}
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={5}>
+        <TabPanel name="main" value={activeTab} index={4}>
+        {/* <TabPanel name="main" value={activeTab} index={5}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Select images</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
@@ -222,11 +255,12 @@ const ToolsView = (props) => {
           </Box>
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={6}>
+        {/* <TabPanel name="main" value={activeTab} index={6}>
           <Typography variant="h6">Select music</Typography>
-        </TabPanel>
+        </TabPanel> */}
 
-        <TabPanel name="main" value={activeTab} index={7}>
+        <TabPanel name="main" value={activeTab} index={5}>
+        {/* <TabPanel name="main" value={activeTab} index={7}> */}
           {renderFormat()}
         </TabPanel>
       </Grid>
@@ -255,13 +289,13 @@ const ToolsView = (props) => {
             }
           }}
         >
-          <Tab label="Template" {...a11yProps(0)} />
+          {/* <Tab label="Template" {...a11yProps(0)} /> */}
           <Tab label="Avatar" {...a11yProps(1)} />
           <Tab label="Background" {...a11yProps(2)} />
           <Tab label="Text" {...a11yProps(3)} />
           <Tab label="Shapes" {...a11yProps(4)} />
           <Tab label="Images" {...a11yProps(5)} />
-          <Tab label="Music" {...a11yProps(6)} />
+          {/* <Tab label="Music" {...a11yProps(6)} /> */}
           {activeObject && <Tab label="Format" {...a11yProps(7)} />}
         </Tabs>
       </Grid>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import axios from 'axios';
 
 import AppBar from '@mui/material/AppBar';
@@ -21,6 +21,7 @@ import { setPathName } from '../redux/navigation/navigationSlice';
 import { setShowBackdrop } from '../redux/backdrop/backdropSlice';
 import { setDialogAlertOpen, setDialogAlertTitle, setDialogAlertMessage, setDialogAlertButtonText } from '../redux/dialog-alert/dialogAlertSlice';
 import { setReloadUser, setCanSave } from '../redux/user/userSlice';
+import { setIsSaving } from '../redux/video/videoSlice';
 
 import { postImageClip } from '../api/image/clip';
 import { postImagePackage, updateImagePackage } from '../api/image/package';
@@ -39,6 +40,14 @@ const boxStyle = {
 
 const Appbar = (props) => {
   const {
+    /**
+     * Current video
+     */
+    video,
+    /**
+     * Update the current video
+     */
+    setVideo,
     /**
      * Toggle drawer when screen has a small size
      */
@@ -67,22 +76,28 @@ const Appbar = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
+  const routeMatch = useRouteMatch(`${pathnameEnum.editor}/:id`);
+
   const pathName = useSelector(state => state.navigation.pathName);
+  // User settings page
   const canSaveUser = useSelector(state => state.user.canSave);
   const userUpdated = useSelector(state => state.user.userUpdated);
-  const video = useSelector(state => state.video.video);
+  // Editor page
+  const activeSlide = useSelector(state => state.video.activeSlide);
+  const isSaving = useSelector(state => state.video.isSaving);
 
   const [title, setTitle] = useState('');
   const [titleSaved, setTitleSaved] = useState('');
   
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
   const cannotRedo = canvasRef && !canvasRef.handler?.transactionHandler.redos.length;
+  const isEditorPage = routeMatch !== null;
 
   useEffect(() => {
     const pathname = history.location.pathname;
     dispatch(setPathName(pathname));
 
-    if (pathname === pathnameEnum.editor) {
+    if (isEditorPage) {
       setTitle(video.package_name);
       setTitleSaved(video.package_name);
     }
@@ -100,6 +115,7 @@ const Appbar = (props) => {
     const imageClip = {
       package_id: null,
       background_type: null,
+      text_script: ''
     }
 
     let packageId = null;
@@ -116,7 +132,7 @@ const Appbar = (props) => {
     // Update image package current clip_id
     await updateImagePackage(packageId, { clip_id: clipId }).then(() => {
       dispatch(setShowBackdrop(false));
-      history.push(pathnameEnum.editor, { id: packageId });
+      history.push(pathnameEnum.editor + `/${packageId}`);
     });
   }
 
@@ -124,10 +140,21 @@ const Appbar = (props) => {
     setTitle(event.target.value);
   }
 
-  const saveTitle = () => {
+  const saveTitle = async () => {
     if (title !== '' && title !== titleSaved) {
-      const id = history.location.state?.id;
-      updateImagePackage(id, { package_name: title }).then(() => setTitleSaved(title));
+      dispatch(setIsSaving(true));
+
+      const id = routeMatch.params.id;
+      await updateImagePackage(id, { package_name: title }).then(() => {
+        const updatedVideo = {
+          ...video,
+          package_name: title
+        }
+        setVideo(updatedVideo);
+
+        setTitleSaved(title);
+        dispatch(setIsSaving(false));
+      });
     }
   }
 
@@ -178,61 +205,98 @@ const Appbar = (props) => {
     history.push(pathnameEnum.account);
   }
 
-  const playVideo = () => {
-    dispatch(setShowBackdrop(true));
-    // const canvasObjects = canvasRef.handler.getObjects();
+  const playVideo = async () => {
+    if (isSaving) {
+      showAlert('Please wait for changes to be saved.', 'warning')
+      return;
+    }
 
-    // let file = await fetch('https://upload.wikimedia.org/wikipedia/commons/9/91/Checked_icon.png').then(r => r.blob()).then(blobFile => new File([blobFile], "test", { type: "image/png" }));
+    const script = activeSlide.text_script;
+    if (script === null || script === '') {
+      showAlert('The slide has no script. Please type a script.', 'error')
+      return;
+    }
+
+    dispatch(setShowBackdrop(true));
 
     try {
-      const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
-      const file = new File([canvasBlob], "test", { type: "image/png" });
+      let file = null;
+      let canvasImagePromise = new Promise((resolve, reject) => {
+        try {
+          const objects = canvasRef.handler?.getObjects();
+          const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
 
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('lifecycleName', 'Studio_Main_Action_Lifecycle');
-      formData.append('catalogInstanceName', 'Studio_Main_Action_Catalog');
-      formData.append('target', 'SoftwareCatalogInstance');
-      formData.append('async', false);
+          canvasRef.handler?.removeById(avatar.id);
+          const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
+          file = new File([canvasBlob], "canvas", { type: "image/png" });
 
-      let payload = {
-        text: 'Hello, this is a test',
-        width: '1280',
-        height: '720',
-        speaker: '0',
-        background: '',
-        action: '1'
-        // apiId: 'ryu',
-        // apiKey: 'd0cad9547b9c4a65a5cdfe50072b1588',
-        // objects: []
-      };
+          resolve();
+        } catch (error) {
+          console.log(error);
+          reject();
+        }
+      });
+      
+      canvasImagePromise.then(async () => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('lifecycleName', 'Studio_Main_Action_Lifecycle');
+        formData.append('catalogInstanceName', 'Studio_Main_Action_Catalog1');
+        formData.append('target', 'SoftwareCatalogInstance');
+        formData.append('async', false);
 
-      // let objects = [];
-      // canvasObjects.map(object => {
-      //   objects.push(object.toObject());
-      // });
-      // payload.objects.push({ objects });
+        let payload = {
+          "text": script,
+          "width": "1280",
+          "height": "720",
+          "speaker": "0",
+          "action": "greeting",
+          "model": "jesong",
+          "transparent": "false",
+          "resolution": "HD",
+          "apiId": "ryu",
+          "apiKey": "d0cad9547b9c4a65a5cdfe50072b1588"
+        };
 
-      formData.append('payload', payload);
+        formData.append('payload', JSON.stringify(payload));
+  
+        const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
+        const headers = {
+          AccessKey: 'SerengetiAdministrationAccessKey',
+          SecretKey: 'SerengetiAdministrationSecretKey',
+          LoginId: 'maum-orchestra-com'
+        }
+  
+        await axios({
+          method: 'post',
+          url: url, 
+          data: formData,
+          headers: headers,
+          responseType: 'blob'
+        }).then((res) => {
+          dispatch(setShowBackdrop(false));
 
-      const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
-      const headers = {
-        AccessKey: 'SerengetiAdministrationAccessKey',
-        SecretKey: 'SerengetiAdministrationSecretKey',
-        LoginId: 'maum-orchestra-com'
-      }
+          const blob = res.data;
 
-      axios({
-        method: 'post',
-        url: url, 
-        data: formData,
-        headers: headers,
-        responseType: 'blob'
-      }).then((res) => {
+          // const url = URL.createObjectURL(blob);
+          // const a = document.createElement("a");
+          // a.href = url;
+          // a.download = 'test.mp4';
+          // a.click();
+
+          var reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = function () {
+            var b64 = reader.result.replace(/^data:.+;base64,/, '');
+            var src = "data:video/webm;base64," + b64;
+            changeVideoSource(src);
+            openPlayVideo();
+          }
+        });
+      },
+      () => {
+        showAlert('There was a problem while converting the canvas to image.', 'error');
         dispatch(setShowBackdrop(false));
-        const url = URL.createObjectURL(new Blob([res.data]));
-        changeVideoSource(url);
-        openPlayVideo();
       });
     } catch (error) {
       console.log(error);
@@ -241,16 +305,13 @@ const Appbar = (props) => {
     }
   }
 
-  const isEditorPage = () => {
-    return pathName === pathnameEnum.editor;
-  }
-
   return (
     <AppBar
       position="fixed"
       sx={{
-        width: { lg: `calc(100% - ${isEditorPage() ? '0' : drawerWidth}px)`, xl: `calc(100% - ${drawerWidth}px)` },
-        ml: { lg: `${isEditorPage() ? '0' : drawerWidth}px`, xl: `${drawerWidth}px` },
+        width: '100%',
+        // width: { lg: `calc(100% - ${isEditorPage ? '0' : drawerWidth}px)`, xl: `calc(100% - ${drawerWidth}px)` },
+        ml: { lg: `${isEditorPage ? '0' : drawerWidth}px`, xl: `${drawerWidth}px` },
         backgroundColor: '#24282c',
         boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.05)'
       }}
@@ -263,7 +324,7 @@ const Appbar = (props) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, color: '#fff', display: { lg: isEditorPage() ? 'block' : 'none', xl: 'none' } }}
+            sx={{ mr: 2, color: '#fff', display: { lg: isEditorPage ? 'block' : 'none', xl: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -280,11 +341,11 @@ const Appbar = (props) => {
 
           {pathName === pathnameEnum.preview &&
           <Box sx={boxStyle}>
-          <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={handleBackToVideos} />
-          <Typography variant="h5" sx={{ color: '#fff' }}>Back to videos</Typography>
-        </Box>}
+            <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={handleBackToVideos} />
+            <Typography variant="h5" sx={{ color: '#fff' }}>Back to videos</Typography>
+          </Box>}
 
-          {pathName === pathnameEnum.editor &&
+          {isEditorPage &&
           <CustomInput 
             value={title}
             onChange={handleChangeTitle}
@@ -327,8 +388,9 @@ const Appbar = (props) => {
           <Button variant="contained" onClick={createNewVideo}>Create new video</Button>
         </Box>}
 
-        {pathName === pathnameEnum.editor && 
+        {isEditorPage && 
         <Box sx={boxStyle}>
+          <Typography sx={{ mr: 1 }}>{isSaving ? 'Saving...' : 'All changes saved'}</Typography>
           <Button 
             variant="contained" 
             color="secondary" 

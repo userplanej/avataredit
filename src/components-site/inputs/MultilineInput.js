@@ -38,6 +38,10 @@ const MultilineInput = (props) => {
      */
     onChange,
     /**
+     * On blur function triggered when input loses focus
+     */
+    onBlur,
+    /**
      * Max number of characters
      */
     maxLength,
@@ -57,6 +61,7 @@ const MultilineInput = (props) => {
       maxRows={maxRows}
       value={value}
       onChange={onChange}
+      onBlur={onBlur}
       inputProps={{ maxLength: maxLength }}
       variant="filled"
       disableUnderline

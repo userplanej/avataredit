@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
@@ -155,7 +155,7 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
 
 const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   const history = useHistory();
-  const pathName = useSelector(state => state.navigation.pathName);
+  const routeMatch = useRouteMatch(`${pathnameEnum.editor}/:id`);
 
   const [activeKey, setActiveKey] = useState('home');
   const [anchorEl, setAnchorEl] = useState(null);
@@ -187,7 +187,7 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   }
 
   const isEditorPage = () => {
-    return pathName === pathnameEnum.editor;
+    return routeMatch !== null;
   }
 
   return (

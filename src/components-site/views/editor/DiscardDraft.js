@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { Button, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -13,9 +13,10 @@ import { pathnameEnum } from '../../constants/Pathname';
 const DiscardDraft = (props) => {
   const { open, close } = props;
   const history = useHistory();
+  const routeMatch = useRouteMatch(`${pathnameEnum.editor}/:id`);
   
   const doDiscardDraft = async () => {
-    const id = history.location.state?.id;
+    const id = routeMatch.params.id;
     await deleteImagePackage(id).then(() => {
       showAlert('Draft discarded successfully', 'success')
       history.push(pathnameEnum.videos);

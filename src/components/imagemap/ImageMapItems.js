@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { notification, message } from 'antd';
 import { v4 } from 'uuid';
 import { Flex } from '../flex';
-import Icon from '../icon/Icon';
 import { Box } from '@mui/system';
 import UploadIcon from '@mui/icons-material/Upload';
 
@@ -12,8 +11,10 @@ import ToolsView from '../../components-site/views/editor/ToolsView';
 import SearchInput from '../../components-site/inputs/SearchInput';
 
 import { getStringShortcut } from '../../utils/StringUtils';
+
 import { uploadFile } from '../../api/s3';
 import { postImage } from '../../api/image/image';
+
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 
 notification.config({
@@ -159,7 +160,7 @@ class ImageMapItems extends Component {
 	/* eslint-disable react/sort-comp, react/prop-types */
 	handlers = {
 		onAddItem: (item, centered) => {
-			const { canvasRef } = this.props;
+			const { canvasRef, onSaveSlide } = this.props;
 			if (canvasRef.handler.interactionMode === 'polygon') {
 				message.info('Already drawing');
 				return;
@@ -179,6 +180,9 @@ class ImageMapItems extends Component {
 				});
 			}
 			canvasRef.handler.add(option, centered);
+
+			// Save slide thumbnail
+			// onSaveSlide();
 		},
 		onAddSVG: (option, centered) => {
 			const { canvasRef } = this.props;
@@ -231,10 +235,12 @@ class ImageMapItems extends Component {
 		onChangeWorkareaBackgroundColor: (color) => {
 			this.props.canvasRef.handler.workareaHandler.setImage(null, false);
 			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor(color);
+			// this.props.onSaveSlide();
 		},
 		onChangeWorkareaBackgroundImage: (src) => {
 			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor('#e8e9e9');
 			this.props.canvasRef.handler.workareaHandler.setImage(src, true);
+			// this.props.onSaveSlide();
 		}
 	};
 
@@ -260,6 +266,7 @@ class ImageMapItems extends Component {
 			target.classList.remove('over');
 		},
 		onDrop: e => {
+			console.log('test')
 			e = e || window.event;
 			if (e.preventDefault) {
 				e.preventDefault();
@@ -474,17 +481,13 @@ class ImageMapItems extends Component {
 							backgroundImage: (isShape || isAvatar || isImage || isBackgroundImage) && source ? `url(${source})` : '',
 							backgroundPosition: 'center', /* Center the image */
 							backgroundRepeat: 'no-repeat', /* Do not repeat the image */
-							backgroundSize: isShape ? 'none' : 'cover', /* Resize the background image to cover the entire container */
+							backgroundSize: isShape ? 'contain' : 'cover', /* Resize the background image to cover the entire container */
 							display: 'flex', 
 							flexDirection: 'column', 
 							textAlign: 'center',
 							borderRadius: '10px'
 						}}
-					>
-						{/* {isShape && <img src={item.option.src} />} */}
-						{/* {!isBackground || !isAvatar || !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />} */}
-						{/* {!isBackground && !isAvatar && !isImage && <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />} */}
-					</Box>
+					/>
 				</Box>
 				{this.state.collapse ? null : <div className="rde-editor-items-item-text" key={`name-${item.name}`}>{getStringShortcut(item.name, 13)}</div>}
 			</Box>
@@ -543,13 +546,17 @@ class ImageMapItems extends Component {
 	}
 
 	render() {
-		const { canvasRef, descriptors, backgrounds, uploadedBackgroundImages, defaultBackgroundImages, avatars, uploadedImages, defaultImages, shapes } = this.props;
+		const { 
+			canvasRef, descriptors, backgrounds, uploadedBackgroundImages, defaultBackgroundImages, 
+			defaultBackgroundVideos, avatars, uploadedImages, defaultImages, shapes 
+		} = this.props;
 
 		const textsItems = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
 		const shapesItems = Object.keys(shapes).map(key => this.renderItems(shapes[key], key, 'shape'));
 		const backgroundsColorsItems = Object.keys(backgrounds).map(key => this.renderItems(backgrounds[key], key, 'background-color'));
 		const backgroundsImagesDefaultItems = Object.keys(defaultBackgroundImages).map(key => this.renderItems(defaultBackgroundImages[key], key, 'background-image'));
 		const backgroundsImagesUploadedItems = Object.keys(uploadedBackgroundImages).map(key => this.renderItems(uploadedBackgroundImages[key], key, 'background-image', true));
+		const backgroundsVideosDefaultItems = Object.keys(defaultBackgroundVideos).map(key => this.renderItems(defaultBackgroundVideos[key], key, 'background-image'));
 		const avatarsItems = Object.keys(avatars).map(key => this.renderItems(avatars[key], key, 'avatar'));
 		const imagesUploadedItems = Object.keys(uploadedImages).map(key => this.renderItems(uploadedImages[key], key, 'image', true));
 		const imagesDefaultItems = Object.keys(defaultImages).map(key => this.renderItems(defaultImages[key], key, 'image'));
@@ -565,6 +572,7 @@ class ImageMapItems extends Component {
 					backgroundsColors={backgroundsColorsItems}
 					backgroundsImagesDefault={backgroundsImagesDefaultItems}
 					backgroundsImagesUploaded={backgroundsImagesUploadedItems}
+					backgroundsVideosDefault={backgroundsVideosDefaultItems}
 					avatars={avatarsItems}
 				/>
 			</Box>

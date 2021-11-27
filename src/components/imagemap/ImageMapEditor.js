@@ -5,7 +5,7 @@ import { Badge, Button, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
 import SandBox from '../sandbox/SandBox';
-import { Grid, Container } from '@mui/material';
+import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 
 import '../../libs/fontawesome-5.2.0/css/all.css';
@@ -25,15 +25,17 @@ import PlayVideo from '../../components-site/views/editor/PlayVideo';
 import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
-import { setVideo, setSlides } from '../../redux/video/videoSlice';
+import { setActiveSlide, setActiveSlideId } from '../../redux/video/videoSlice';
 
 import { getImagePackage } from '../../api/image/package';
 import { getAllUserImages, getAllDefaultImages } from '../../api/image/image';
 import { getAllAvatars } from '../../api/avatar/avatar';
 import { getAllShapes } from '../../api/shape/shape';
-import { getAllImageClipByPackageId } from '../../api/image/clip';
+import { getAllImageClipByPackageId, updateImageClip } from '../../api/image/clip';
+import { getAllVideos } from '../../api/video/video';
+import { uploadFile, deleteFile } from '../../api/s3';
 
-import { createAvatarObject, createImageObject, createBackgroundImageObject, createShapeObject } from '../../utils/CanvasObjectUtils';
+import { createAvatarObject, createImageObject, createBackgroundImageObject, createShapeObject, createBackgroundVideoObject } from '../../utils/CanvasObjectUtils';
 
 const propertiesToInclude = [
 	'id',
@@ -95,7 +97,8 @@ const defaultOption = {
 	},
 };
 
-const indexFormatTab = 7;
+const indexFormatTab = 5;
+// const indexFormatTab = 7;
 
 class ImageMapEditor extends Component {
 	state = {
@@ -115,15 +118,19 @@ class ImageMapEditor extends Component {
 		openPlayVideo: false,
 		videoSource: '',
 		mobileOpen: false,
-		packageId: this.props.history.location.state?.id,
+		packageId: this.props.match.params.id,
 		descriptors: {},
 		avatars: {},
 		shapes: {},
 		backgrounds: {},
 		uploadedBackgroundImages: {},
 		defaultBackgroundImages: {},
+		defaultBackgroundVideos: {},
 		uploadedImages: {},
-		defaultImages: {}
+		defaultImages: {},
+		videos: {},
+		slides: [],
+		video: null
 	};
 
 	componentDidMount() {
@@ -141,7 +148,8 @@ class ImageMapEditor extends Component {
 			this.loadImageClips(),
 			this.loadAvatars(),
 			this.loadImages(),
-			this.loadShapes()
+			this.loadShapes(),
+			// this.loadVideos()
 		]).then(() => {
 			this.props.setShowBackdrop(false);
 			this.setState({ selectedItem: null });
@@ -154,7 +162,8 @@ class ImageMapEditor extends Component {
 
 		await getImagePackage(packageId).then(res => {
       const video = res.data.body;
-      this.props.setVideo(video);
+			this.setState({ video });
+      this.props.setActiveSlideId(video.clip_id);
     });
 	}
 
@@ -163,7 +172,10 @@ class ImageMapEditor extends Component {
 		
 		await getAllImageClipByPackageId(packageId).then(res => {
 			const slides = res.data.body.rows;
-			this.props.setSlides(slides);
+			this.setState({ slides });
+
+			const currentSlide = slides.find(slide => slide.clip_id === this.props.activeSlideId);
+			this.props.setActiveSlide(currentSlide);
 		});
 	}
 
@@ -250,6 +262,24 @@ class ImageMapEditor extends Component {
 			this.setState({ shapes: shapeList })
 		});
 	}
+
+	// loadVideos = async () => {
+	// 	await getAllVideos().then(res => {
+	// 		const videos = res.data.body;
+
+	// 		const backgroundVideoArray = [];
+	// 		videos.forEach(video => {
+	// 			const backgroundImageObject = createBackgroundVideoObject(video);
+	// 			backgroundVideoArray.push(backgroundImageObject);
+	// 		});
+			
+	// 		const backgroundVideoList = {
+	// 			"VIDEO": backgroundVideoArray
+	// 		}
+
+	// 		this.setState({ defaultBackgroundVideos: backgroundVideoList })
+	// 	});
+	// }
 
 	canvasHandlers = {
 		onAdd: target => {
@@ -597,6 +627,7 @@ class ImageMapEditor extends Component {
 					<Menu.Item
 						onClick={() => {
 							this.canvasRef.handler.removeById(target.id);
+							// this.canvasHandlers.onSaveSlide();
 						}}
 					>
 						{i18n.t('action.delete')}
@@ -607,6 +638,40 @@ class ImageMapEditor extends Component {
 		onTransaction: transaction => {
 			this.forceUpdate();
 		},
+		onSaveSlide: async () => {
+			setTimeout(async () => {
+				const { packageId } = this.state;
+				const { activeSlideId, activeSlide } = this.props;
+		
+				const canvasBlob = this.canvasRef.handler.getCanvasImageAsBlob();
+				const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
+				const file = new File([canvasBlob], fileName, { type: "image/png" });
+		
+				const formData = new FormData();
+				formData.append('adminId', 'admin1018');
+				formData.append('images', file);
+		
+				// Delete old thumbnail
+				const oldLocation = activeSlide.html5_dir;
+				if (oldLocation !== null) {
+					const dataToSend = {
+						location: oldLocation
+					}
+					deleteFile(dataToSend);
+				}
+
+				await uploadFile(formData, 'slide-thumbnail').then(async (res) => {
+					const location = res.data.body.location;
+					const objects = this.canvasRef.handler.exportJSON();
+					const dataToSend = {
+						html5_script: JSON.stringify(objects),
+						html5_dir: location
+					}
+		
+					await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
+				});
+			}, 500);
+		}
 	};
 
 	handlers = {
@@ -938,6 +1003,10 @@ class ImageMapEditor extends Component {
 		this.setState({ videoSource: source });
 	}
 
+	setVideo = (video) => {
+		this.setState({ video });
+	}
+
 	render() {
 		const {
 			avatars,
@@ -948,12 +1017,15 @@ class ImageMapEditor extends Component {
 			backgrounds,
 			uploadedBackgroundImages,
 			defaultBackgroundImages,
+			defaultBackgroundVideos,
 			mobileOpen,
 			openGenerateVideo,
 			openDiscardDraft,
 			openPlayVideo,
 			videoSource,
-			packageId
+			packageId,
+			video,
+			slides
 		} = this.state;
 		const {
 			onAdd,
@@ -966,6 +1038,7 @@ class ImageMapEditor extends Component {
 			onClick,
 			onContext,
 			onTransaction,
+			onSaveSlide
 		} = this.canvasHandlers;
 		const {
 			onChangePreview,
@@ -982,12 +1055,14 @@ class ImageMapEditor extends Component {
 
 		return (
 			<Box sx={{ width: '100%', display: 'flex', overflow: { md: 'hidden' } }}>
-				<GenerateVideo open={openGenerateVideo} close={() => this.handleCloseGenerateVideo()} />
+				{video && slides && slides.length > 0 && <GenerateVideo video={video} slides={slides} open={openGenerateVideo} close={() => this.handleCloseGenerateVideo()} />}
 				<DiscardDraft open={openDiscardDraft} close={() => this.handleCloseDiscardDraft()} />
 				<PlayVideo open={openPlayVideo} close={() => this.handleClosePlayVideo()} source={videoSource} />
 
-				{this.canvasRef && this.props.video &&
+				{this.canvasRef && video &&
 				<Appbar 
+					video={video}
+					setVideo={(video) => this.setVideo(video)}
 					handleDrawerToggle={() => this.handleDrawerToggle()}
 					canvasRef={this.canvasRef}
 					openGenerateVideo={() => this.handleOpenGenerateVideo()}
@@ -996,19 +1071,21 @@ class ImageMapEditor extends Component {
 					changeVideoSource={(source) => this.handleChangeVideoSource(source)}
 				/>}
 
-				<Sidebar 
+				{/* <Sidebar 
 					mobileOpen={mobileOpen} 
 					handleDrawerToggle={() => this.handleDrawerToggle()}
-				/>
+				/> */}
 
 				<Box sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
 					<Grid container sx={{ width: '100%', height: '100%' }}>
-						{this.canvasRef && this.props.slides.length > 0 &&
+						
 						<Grid item xs={12} md={3} lg={2} xl={2}>
 							<Box sx={{ backgroundColor: '#24282c', height: '100%' }}>
-								<Slides canvasRef={this.canvasRef} packageId={packageId} />
+							{/* {this.canvasRef && video && slides && slides.length > 0 &&
+								<Slides video={video} slides={slides} loadSlides={() => this.loadImageClips()} canvasRef={this.canvasRef} packageId={packageId} />
+							} */}
 							</Box>
-						</Grid>}
+						</Grid>
 						
 						<Grid item xs={12} md={9} lg={5} xl={5.5}>
 							<Box sx={{ py: 5, display: 'flex', justifyContent: 'center' }}>
@@ -1035,6 +1112,7 @@ class ImageMapEditor extends Component {
 									}}
 								/>
 							</Box>
+
 							<Script />
 						</Grid>
 
@@ -1046,11 +1124,13 @@ class ImageMapEditor extends Component {
 								backgrounds={backgrounds}
 								uploadedBackgroundImages={uploadedBackgroundImages}
 								defaultBackgroundImages={defaultBackgroundImages}
+								defaultBackgroundVideos={defaultBackgroundVideos}
 								uploadedImages={uploadedImages}
 								defaultImages={defaultImages}
 								avatars={avatars}
 								shapes={shapes}
 								reloadImages={() => this.loadImages()}
+								onSaveSlide={onSaveSlide}
 							/>
 						</Grid>}
 					</Grid>
@@ -1063,8 +1143,8 @@ class ImageMapEditor extends Component {
 const mapStateToProps = state => ({
 	activeTab: state.toolbar.activeTab,
 	previousTab: state.toolbar.previousTab,
-	video: state.video.video,
-	slides: state.video.slides
+	activeSlide: state.video.activeSlide,
+	activeSlideId: state.video.activeSlideId
 });
 
 const mapDispatchToProps  = {
@@ -1072,8 +1152,8 @@ const mapDispatchToProps  = {
 	setActiveTab,
 	setPreviousTab,
 	setShowBackdrop,
-	setVideo,
-	setSlides
+	setActiveSlide,
+	setActiveSlideId
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ImageMapEditor));

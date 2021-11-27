@@ -16,10 +16,6 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { getTimeElapsedSinceDate } from '../../../utils/DateUtils';
 import { getStringShortcut } from '../../../utils/StringUtils';
 
-import { setVideo } from '../../../redux/video/videoSlice';
-import { setPathName } from '../../../redux/navigation/navigationSlice';
-import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
-
 import { deleteImagePackage } from '../../../api/image/package';
 
 import { pathnameEnum } from '../../constants/Pathname';
@@ -71,9 +67,8 @@ const VideoCard = (props) => {
 
   const handleClickVideo = () => {
     const id = video.package_id;
-    dispatch(setVideo(video));
-    const path = video.is_draft ? pathnameEnum.editor : pathnameEnum.preview;
-    history.push(path, { id });
+    const path = video.is_draft ? pathnameEnum.editor + `/${id}` : pathnameEnum.preview;
+    history.push(path);
   }
 
   const options = [
