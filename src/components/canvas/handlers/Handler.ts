@@ -1311,7 +1311,7 @@ class Handler implements HandlerOptions {
 			obj.setElement(source);
 			obj.setCoords();
 			this.canvas.renderAll();
-		});
+		}, this.canvas.getContext(), 'Anonymous');
 	};
 
 	/**
