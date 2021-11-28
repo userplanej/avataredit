@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { Button, Typography, Dialog, DialogActions, DialogContent, DialogTitle, ClickAwayListener, InputLabel } from '@mui/material';
 import { Box } from '@mui/system';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
+
+import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
 import CustomInput from '../../inputs/CustomInput';
 
@@ -14,7 +17,8 @@ import { updateImagePackage } from '../../../api/image/package';
 import { requestVideo } from '../../../api/mindslab';
 
 import { showAlert } from '../../../utils/AlertUtils';
-import axios from 'axios';
+
+import { pathnameEnum } from '../../constants/Pathname';
 
 const labelStyle = {
   color: "#9a9a9a",
@@ -23,8 +27,11 @@ const labelStyle = {
 
 const GenerateVideo = (props) => {
   const { canvasRef, video, slides, open, close, textScript } = props;
+  const dispatch = useDispatch();
+  const history = useHistory();
   // const video = useSelector(state => state.video.video);
   // const slides = useSelector(state => state.video.slides);
+  const selectedAvatar = useSelector(state => state.video.selectedAvatar);
 
   const [title, setTitle] = useState(video.package_name);
   const [isEditTitle, setIsEditTitle] = useState(false);
@@ -70,14 +77,20 @@ const GenerateVideo = (props) => {
         
     // const script = activeSlide.text_script;
     if (script === null || script === '') {
-      showAlert('The slide has no script. Please type a script.', 'error')
+      showAlert('The slide has no script. Please type a script.', 'error');
       return;
     }
 
+    if (selectedAvatar === null) {
+      showAlert('You need to select an avatar.', 'error');
+      return;
+    }
+
+    close();
     dispatch(setShowBackdrop(true));
 
-    // Set video as permanent
-    updateImagePackage(video.package_id, { is_draft: false });
+    // Set video as permanent and change title
+    updateImagePackage(video.package_id, { is_draft: false, package_name: title });
 
     try {
       let file = null;
@@ -107,10 +120,7 @@ const GenerateVideo = (props) => {
         requestVideo(file, script).then(async (res) => {
           const blob = res.data;
           const filename = `${video.package_name}-${new Date().getTime()}.mp4`;
-          console.log(blob)
-          console.log(filename)
           const file = new File([blob], filename, { type: "video/mp4" });
-          console.log(file)
           const formData = new FormData();
           formData.append('adminId', 'admin1018');
           formData.append('images', file);
@@ -121,12 +131,14 @@ const GenerateVideo = (props) => {
             const dataToSend = {
               video_id: video.package_id,
               user_id: user.user_id,
-              video_name: video.package_name,
-              video_dir: location
+              video_name: title,
+              video_dir: location,
+              description: description
             }
 
             postOutput(dataToSend).then(() => {
               dispatch(setShowBackdrop(false));
+              history.push(`${pathnameEnum.videos}/${video.package_id}`);
             });
           });
 
@@ -146,13 +158,20 @@ const GenerateVideo = (props) => {
       },
       () => {
         showAlert('There was a problem while converting the canvas to image.', 'error');
-        // dispatch(setShowBackdrop(false));
+        dispatch(setShowBackdrop(false));
       });
     } catch (error) {
       console.log(error);
-      showAlert('An error occured while trying to play the video', 'error');
-      // dispatch(setShowBackdrop(false));
+      showAlert('An error occured while trying to generate the video', 'error');
+      dispatch(setShowBackdrop(false));
     }
+  }
+
+  const getSrcThumbnail = () => {
+    if (selectedAvatar.option) {
+      return selectedAvatar.option.src_thumbnail;
+    }
+    return selectedAvatar.src_thumbnail;
   }
 
   return (
@@ -174,13 +193,17 @@ const GenerateVideo = (props) => {
               width: '200px',
               height: '200px',
               borderRadius: '260px',
-              mr: 10
+              mr: 10,
+              backgroundImage: selectedAvatar ? `url(${getSrcThumbnail()})` : '',
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center'
             }}
           />
           
           <Box>
             <Typography variant="h4">Video summary</Typography>
-            <Typography variant="h5">Avatar</Typography>
+            <Typography variant="h5">{selectedAvatar ? selectedAvatar.name : ''} Avatar</Typography>
           </Box>
         </Box>
         
@@ -224,20 +247,20 @@ const GenerateVideo = (props) => {
 
         <InputLabel sx={labelStyle}>Script</InputLabel>
         <Box sx={{ overflow: 'hidden', maxHeight: '80px' }}>
-          {slides && slides.map(slide => {
-            return (
-              <Typography key={slide.clip_id} variant="h6" sx={{ color: "#fff" }}>
+          {/* {slides && slides.map(slide => {
+            return ( */}
+              <Typography /*key={slide.clip_id}*/ variant="h6" sx={{ color: "#fff" }}>
                 {/* NOTE: Temporary (due to hiding functionalities) */}
                 {textScript}
                 
                 {/* {slide.text_script}  */}
               </Typography>
-            );
-          })}
+            {/* ); */}
+          {/* })} */}
         </Box>
 
         <InputLabel sx={labelStyle}>Estimated time</InputLabel>
-        <Typography variant="h6" sx={{ color: "#fff" }}>4 min</Typography>
+        <Typography variant="h6" sx={{ color: "#fff" }}>2 min</Typography>
       </DialogContent>
       
       <DialogActions>
@@ -245,7 +268,7 @@ const GenerateVideo = (props) => {
           Cancel
         </Button>
 
-        <Button variant="contained" fullWidth /*onClick={doGenerateVideo}*/>
+        <Button variant="contained" fullWidth onClick={doGenerateVideo}>
           Save and proceed
         </Button>
       </DialogActions>

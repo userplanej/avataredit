@@ -62,9 +62,12 @@ const Script = (props) => {
   const [selectedVoice, setSelectedVoice] = useState(null);
 
   useEffect(() => {
-    // const script = activeSlide && activeSlide.text_script !== null ? activeSlide.text_script : '';
-    // setTextScript(script);
-    // updateNbCharLeft(script);
+    const script = activeSlide && activeSlide.text_script !== null ? activeSlide.text_script : '';
+    setTextScript(script);
+    updateNbCharLeft(script);
+    
+    // NOTE: Temporary (due to hiding functionalities)
+    props.setTextScript(script);
   }, [activeSlide]);
 
   // Action triggered when changing tab
@@ -196,7 +199,7 @@ const Script = (props) => {
             maxLength={3500}
             value={textScript}
             onChange={handleChangeTextScript}
-            // onBlur={handleSaveTextScript}
+            onBlur={handleSaveTextScript}
             sx={{ 
               pb: 3, 
               color: '#000',
@@ -225,7 +228,7 @@ const Script = (props) => {
         </Box>
 
         <Grid container sx={{ px: 2, pb: 2, display: 'flex', alignItems: 'center' }}>
-          <Grid item xs={8} sm={9} md={8} lg={8} xl={9}>
+          {/* <Grid item xs={8} sm={9} md={8} lg={8} xl={9}>
             <Box 
               onClick={handleOpenVoice}
               sx={{ 
@@ -241,13 +244,13 @@ const Script = (props) => {
               }}>
                 {selectedVoice && selectedVoice.value}
               </Box>
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
-            <Button variant="contained" sx={{ width: '100%'}} /*onClick={handlePlayScript}*/>
+          {/* <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
+            <Button variant="contained" sx={{ width: '100%'}} onClick={handlePlayScript}>
               Play script
             </Button>
-          </Grid>
+          </Grid> */}
         </Grid>
       </div>
 

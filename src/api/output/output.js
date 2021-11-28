@@ -10,6 +10,8 @@ export const getAllOutputs = async () => {
   return await API.get(`${outputPath}list`);
 }
 
+export const getOutputByVideoId = async (videoId) => await API.get(`${outputPath}list?video_id=${videoId}`);
+
 export const getOutput = async (id) => {
   return await API.get(`${outputPath}detail/${id}`);
 }

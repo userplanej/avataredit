@@ -5,7 +5,8 @@ const initialState = {
   slides: {},
   activeSlide: null,
   activeSlideId: 0,
-  isSaving: false
+  isSaving: false,
+  selectedAvatar: null
 }
 
 export const videoSlice = createSlice({
@@ -26,11 +27,14 @@ export const videoSlice = createSlice({
     },
     setIsSaving: (state, action) => {
       state.isSaving = action.payload;
+    },
+    setSelectedAvatar: (state, action) => {
+      state.selectedAvatar = action.payload
     }
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { setVideo, setSlides, setActiveSlide, setActiveSlideId, setIsSaving } = videoSlice.actions;
+export const { setVideo, setSlides, setActiveSlide, setActiveSlideId, setIsSaving, setSelectedAvatar } = videoSlice.actions;
 
 export default videoSlice.reducer;

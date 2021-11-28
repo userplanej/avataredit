@@ -68,6 +68,7 @@ const ToolsView = (props) => {
 
   useEffect(() => {
     dispatch(setActiveTab(0));
+    dispatch(setActiveObject(null));
   }, []);
 
   const handleChange = (event, newValue) => {

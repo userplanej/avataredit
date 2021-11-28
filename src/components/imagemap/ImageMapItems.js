@@ -17,6 +17,7 @@ import { postImage } from '../../api/image/image';
 
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 import { setLeft, setTop, setWidth, setHeight } from '../../redux/object/objectSlice';
+import { setSelectedAvatar } from '../../redux/video/videoSlice';
 
 notification.config({
 	top: 80,
@@ -131,6 +132,7 @@ class ImageMapItems extends Component {
 	componentWillUnmount() {
 		const { canvasRef } = this.props;
 		this.detachEventListener(canvasRef);
+		this.props.setSelectedAvatar(null);
 	}
 
 	waitForCanvasRender = canvas => {
@@ -179,9 +181,9 @@ class ImageMapItems extends Component {
 					}
 					canvasRef.handler.remove(obj);
 				});
+				this.props.setSelectedAvatar(item);
 			}
 			const target = canvasRef.handler.add(option, centered);
-
 
 			// Update format values
 			this.props.setLeft(Math.round(target.left));
@@ -194,7 +196,7 @@ class ImageMapItems extends Component {
 			// }, 1200);
 
 			// Save slide thumbnail
-			// onSaveSlide();
+			onSaveSlide();
 		},
 		onAddSVG: (option, centered) => {
 			const { canvasRef } = this.props;
@@ -247,12 +249,12 @@ class ImageMapItems extends Component {
 		onChangeWorkareaBackgroundColor: (color) => {
 			this.props.canvasRef.handler.workareaHandler.setImage(null, false);
 			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor(color);
-			// this.props.onSaveSlide();
+			this.props.onSaveSlide();
 		},
 		onChangeWorkareaBackgroundImage: (src) => {
 			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor('#e8e9e9');
 			this.props.canvasRef.handler.workareaHandler.setImage(src, true);
-			// this.props.onSaveSlide();
+			this.props.onSaveSlide();
 		}
 	};
 
@@ -594,6 +596,7 @@ class ImageMapItems extends Component {
 
 const mapDispatchToProps  = {
 	setShowBackdrop,
+	setSelectedAvatar,
 	setLeft,
 	setTop,
 	setWidth,

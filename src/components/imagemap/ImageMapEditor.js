@@ -25,7 +25,7 @@ import PlayVideo from '../../components-site/views/editor/PlayVideo';
 import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
-import { setActiveSlide, setActiveSlideId } from '../../redux/video/videoSlice';
+import { setActiveSlide, setActiveSlideId, setSelectedAvatar } from '../../redux/video/videoSlice';
 import { setLeft, setTop, setWidth, setHeight } from '../../redux/object/objectSlice';
 
 import { getImagePackage } from '../../api/image/package';
@@ -624,7 +624,8 @@ class ImageMapEditor extends Component {
 					<Menu.Item
 						onClick={() => {
 							this.canvasRef.handler.removeById(target.id);
-							// this.canvasHandlers.onSaveSlide();
+							this.props.setSelectedAvatar(null);
+							this.canvasHandlers.onSaveSlide();
 						}}
 					>
 						{i18n.t('action.delete')}
@@ -636,38 +637,38 @@ class ImageMapEditor extends Component {
 			this.forceUpdate();
 		},
 		onSaveSlide: async () => {
-			setTimeout(async () => {
+			// setTimeout(async () => {
 				const { packageId } = this.state;
 				const { activeSlideId, activeSlide } = this.props;
 		
-				const canvasBlob = this.canvasRef.handler.getCanvasImageAsBlob();
-				const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
-				const file = new File([canvasBlob], fileName, { type: "image/png" });
+				// const canvasBlob = this.canvasRef.handler.getCanvasImageAsBlob();
+				// const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
+				// const file = new File([canvasBlob], fileName, { type: "image/png" });
 		
-				const formData = new FormData();
-				formData.append('adminId', 'admin1018');
-				formData.append('images', file);
+				// const formData = new FormData();
+				// formData.append('adminId', 'admin1018');
+				// formData.append('images', file);
 		
 				// Delete old thumbnail
-				const oldLocation = activeSlide.html5_dir;
-				if (oldLocation !== null) {
-					const dataToSend = {
-						location: oldLocation
-					}
-					deleteFile(dataToSend);
-				}
+				// const oldLocation = activeSlide.html5_dir;
+				// if (oldLocation !== null) {
+				// 	const dataToSend = {
+				// 		location: oldLocation
+				// 	}
+				// 	deleteFile(dataToSend);
+				// }
 
-				await uploadFile(formData, 'slide-thumbnail').then(async (res) => {
-					const location = res.data.body.location;
+				// await uploadFile(formData, 'slide-thumbnail').then(async (res) => {
+				// 	const location = res.data.body.location;
 					const objects = this.canvasRef.handler.exportJSON();
 					const dataToSend = {
 						html5_script: JSON.stringify(objects),
-						html5_dir: location
+						// html5_dir: location
 					}
 		
 					await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
-				});
-			}, 500);
+				// });
+			// }, 500);
 		}
 	};
 
@@ -948,6 +949,10 @@ class ImageMapEditor extends Component {
 				if (e.code === code.ESCAPE) {
 					this.handlers.onChangePreview(false);
 				}
+				if (e.code === code.DELETE) {
+					this.props.setSelectedAvatar(null);
+					this.canvasHandlers.onSaveSlide();
+				}
 			});
 		},
 	};
@@ -1097,9 +1102,9 @@ class ImageMapEditor extends Component {
 						
 						<Grid item xs={12} md={3} lg={2} xl={2}>
 							<Box sx={{ backgroundColor: '#24282c', height: '100%' }}>
-							{/* {this.canvasRef && video && slides && slides.length > 0 &&
+							{this.canvasRef && video && slides && slides.length > 0 &&
 								<Slides video={video} slides={slides} loadSlides={() => this.loadImageClips()} canvasRef={this.canvasRef} packageId={packageId} />
-							} */}
+							}
 							</Box>
 						</Grid>
 						
@@ -1173,6 +1178,7 @@ const mapDispatchToProps  = {
 	setShowBackdrop,
 	setActiveSlide,
 	setActiveSlideId,
+	setSelectedAvatar,
 	setLeft,
 	setTop,
 	setWidth,

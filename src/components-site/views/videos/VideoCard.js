@@ -67,23 +67,23 @@ const VideoCard = (props) => {
 
   const handleClickVideo = () => {
     const id = video.package_id;
-    const path = video.is_draft ? pathnameEnum.editor + `/${id}` : pathnameEnum.preview;
+    const path = video.is_draft ? pathnameEnum.editor + `/${id}` : pathnameEnum.videos + `/${id}`;
     history.push(path);
   }
 
   const options = [
-    {
-      name: 'Download',
-      action: (event) => handleCloseMenu(event)
-    },
-    {
-      name: 'Duplicate',
-      action: (event) => handleCloseMenu(event)
-    },
-    {
-      name: 'Create template',
-      action: (event) => handleCloseMenu(event)
-    },
+    // {
+    //   name: 'Download',
+    //   action: (event) => handleCloseMenu(event)
+    // },
+    // {
+    //   name: 'Duplicate',
+    //   action: (event) => handleCloseMenu(event)
+    // },
+    // {
+    //   name: 'Create template',
+    //   action: (event) => handleCloseMenu(event)
+    // },
     {
       name: 'Delete',
       action: (event, id) => handleDeleteVideo(event, id)
@@ -110,9 +110,9 @@ const VideoCard = (props) => {
         }
       }}
     >
-      <Grid item xs={3} sm={2} md={1} lg={1} xl={1} sx={gridStyle}>
+      {/* <Grid item xs={3} sm={2} md={1} lg={1} xl={1} sx={gridStyle}>
         <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 35 }, color: '#fff', width: '100%' }} onClick={handleSelectVideo} />
-      </Grid>
+      </Grid> */}
 
       <Grid item xs={16} sm={13} md={9} lg={10} xl={7} sx={gridStyle}>
         <Box sx={{ minWidth: '80px', height: '80px', borderRadius: '5px', backgroundColor: '#fff', mr: 2 }}></Box>
@@ -144,7 +144,7 @@ const VideoCard = (props) => {
       </Grid>
 
       <Grid item xs={10} sm={5} md={2} lg={2} xl={2} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6" sx={{ color: '#fff' }}>{video.time ? video.time : '00:00:00'}</Typography>
+        {/* <Typography variant="h6" sx={{ color: '#fff' }}>{video.time ? video.time : '00:00:00'}</Typography> */}
       </Grid>
 
       <Grid item xs={10} sm={7} md={2} lg={2} xl={4} sx={{ textAlign: 'center' }}>
@@ -168,11 +168,11 @@ const VideoCard = (props) => {
       </Grid>
 
       <Grid item xs={6} sm={4} md={2} lg={2} xl={2} sx={{ ...gridStyle, justifyContent: 'center' }}>
-        {!video.is_draft && 
+        {/* {!video.is_draft && 
         <Box sx={playButtonStyle}>
           <PlayArrowIcon sx={{ mr: '5px' }} />
           <Typography variant="h6" sx={{ color: '#fff' }}>Play</Typography>
-        </Box>}
+        </Box>} */}
       </Grid>
 
       <Grid item xs={6} sm={4} md={1} lg={1} xl={2} sx={{ ...gridStyle, justifyContent: 'center' }}>

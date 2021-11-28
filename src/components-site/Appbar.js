@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import axios from 'axios';
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -77,7 +76,8 @@ const Appbar = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const routeMatch = useRouteMatch(`${pathnameEnum.editor}/:id`);
+  const routeMatchEditor = useRouteMatch(`${pathnameEnum.editor}/:id`);
+  const routeMatchPreview = useRouteMatch(`${pathnameEnum.videos}/:id`);
 
   const pathName = useSelector(state => state.navigation.pathName);
   // User settings page
@@ -86,13 +86,15 @@ const Appbar = (props) => {
   // Editor page
   const activeSlide = useSelector(state => state.video.activeSlide);
   const isSaving = useSelector(state => state.video.isSaving);
+  const selectedAvatar = useSelector(state => state.video.selectedAvatar);
 
   const [title, setTitle] = useState('');
   const [titleSaved, setTitleSaved] = useState('');
   
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
   const cannotRedo = canvasRef && !canvasRef.handler?.transactionHandler.redos.length;
-  const isEditorPage = routeMatch !== null;
+  const isEditorPage = routeMatchEditor !== null;
+  const isPreviewVideoPage = routeMatchPreview !== null;
 
   useEffect(() => {
     const pathname = history.location.pathname;
@@ -145,7 +147,7 @@ const Appbar = (props) => {
     if (title !== '' && title !== titleSaved) {
       dispatch(setIsSaving(true));
 
-      const id = routeMatch.params.id;
+      const id = routeMatchEditor.params.id;
       await updateImagePackage(id, { package_name: title }).then(() => {
         const updatedVideo = {
           ...video,
@@ -218,6 +220,11 @@ const Appbar = (props) => {
     // const script = activeSlide.text_script;
     if (script === null || script === '') {
       showAlert('The slide has no script. Please type a script.', 'error')
+      return;
+    }
+
+    if (selectedAvatar === null) {
+      showAlert('You need to select an avatar.', 'error');
       return;
     }
 
@@ -314,7 +321,7 @@ const Appbar = (props) => {
             <Typography variant="h5" sx={{ color: '#fff' }}>All videos</Typography>
           </Box>}
 
-          {pathName === pathnameEnum.preview &&
+          {isPreviewVideoPage &&
           <Box sx={boxStyle}>
             <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={handleBackToVideos} />
             <Typography variant="h5" sx={{ color: '#fff' }}>Back to videos</Typography>

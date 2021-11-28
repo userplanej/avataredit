@@ -54,7 +54,7 @@ export default function Main() {
         <Route exact path={pathnameEnum.avatars} component={Avatars} />
         <Route exact path={pathnameEnum.account} component={Account} />
         <Route exact path={pathnameEnum.billing} component={Billing} />
-        <Route exact path={pathnameEnum.preview} component={VideoPreview} />
+        <Route exact path={pathnameEnum.videos + '/:id'} component={VideoPreview} />
         <Redirect from="/studio/" to={pathnameEnum.home} />
       </Switch>
 

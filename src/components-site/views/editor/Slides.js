@@ -14,7 +14,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { postImageClip, deleteImageClip } from '../../../api/image/clip';
 import { updateImagePackage } from '../../../api/image/package';
 
-import { setActiveSlideId, setActiveSlide, setIsSaving } from '../../../redux/video/videoSlice';
+import { setActiveSlideId, setActiveSlide, setIsSaving, setSelectedAvatar } from '../../../redux/video/videoSlice';
 import { showAlert } from '../../../utils/AlertUtils';
 
 const ITEM_HEIGHT = 48;
@@ -131,7 +131,13 @@ const Slides = (props) => {
       canvasRef.handler.clear(true);
       canvasRef.handler.workareaHandler.initialize();
       if (slideToLoad.html5_script !== null) {
-        await canvasRef.handler.importJSON(JSON.parse(slideToLoad.html5_script));
+        const objects = JSON.parse(slideToLoad.html5_script);
+        await canvasRef.handler.importJSON(objects);
+
+        const avatar = objects.find(obj => obj.subtype === 'avatar');
+        if (avatar) {
+          dispatch(setSelectedAvatar(avatar));
+        }
       }
       dispatch(setActiveSlide(slideToLoad));
       dispatch(setActiveSlideId(id));
@@ -217,7 +223,7 @@ const Slides = (props) => {
 
   return (
     <List>
-      <Box sx={{ maxHeight: '650px', overflowY: 'auto' }}>
+      {/* <Box sx={{ maxHeight: '650px', overflowY: 'auto' }}>
       {slides && slides.length > 0 && slides.map((slide, index) => {
         const slideId = slide.clip_id;
         const isActive = activeSlideId === slideId;
@@ -232,13 +238,13 @@ const Slides = (props) => {
                 display: 'block'
               }
             }}
-            // sx={isActive ? slideActiveContainerStyle : slideContainerStyle}
+            $$$TOCOMMENT sx={isActive ? slideActiveContainerStyle : slideContainerStyle}$$$
             onClick={() => changeSlide(slideId)}
           >
-            <Grid container /*sx={isActive ? { borderLeft: '4px solid #df678c' } : null}*/>
+            <Grid container $$$TOCOMMENT sx={isActive ? { borderLeft: '4px solid #df678c' } : null}$$$>
               <Grid item xs={1} md={1} xl={1.5} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
                 <Box>{index + 1}</Box>
-                {/* <DragIndicatorIcon sx={{ mt: '28px', cursor: 'grab' }} /> */}
+                $$$TOCOMMENT <DragIndicatorIcon sx={{ mt: '28px', cursor: 'grab' }} />$$$
               </Grid>
               
               <Grid item xs={10} md={9} xl={10.5}>
@@ -301,7 +307,7 @@ const Slides = (props) => {
               </Grid>
             </Grid>
 
-            <Grid container /*sx={isActive ? { borderLeft: '4px solid #e8e9e9'} : null}*/>
+            <Grid container $$$TOCOMMENT sx={isActive ? { borderLeft: '4px solid #e8e9e9'} : null}$$$>
               <Grid item xs={1} md={1} xl={1.5}></Grid>
               <Grid item xs={10} md={9} xl={10.5}>
                 <Button variant="contained" variant="secondary" sx={btnAddTransitionStyle}>
@@ -312,9 +318,9 @@ const Slides = (props) => {
           </ListItem>
         )
       })}
-      </Box>
+      </Box> */}
 
-      <ListItem 
+      {/* <ListItem 
         sx={{ ...slideContainerStyle, mt: 0 }}
         onClick={() => addSlide()}
       >
@@ -328,7 +334,7 @@ const Slides = (props) => {
             </Box>
           </Grid>
         </Grid>
-      </ListItem>
+      </ListItem> */}
     </List>
   );
 }

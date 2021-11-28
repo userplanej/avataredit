@@ -25,3 +25,9 @@ export const deleteUser = async (id) => {
 export const signInUser = async (user) => {
   return await API.post(`${userPath}signIn`, user);
 }
+
+export const sendResetCode = async (data) => await API.post(`${userPath}sendresetcode`, data);
+
+export const checkResetCode = async (data) => await API.post(`${userPath}checkresetcode`, data);
+
+export const setNewPassword = async (data) => await API.post(`${userPath}newpassword`, data);

@@ -5,6 +5,7 @@ export const createAvatarObject = (avatar) => {
     "type": "avatar",
     "option": {
       "type": "image",
+      "name": avatar.avatar_name,
       "subtype": "avatar",
       "version": "3.6.6",
       "originX": "center",
