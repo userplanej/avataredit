@@ -8,13 +8,21 @@ import EditIcon from '@mui/icons-material/Edit';
 
 import CustomInput from '../../inputs/CustomInput';
 
+import { uploadFile } from '../../../api/s3';
+import { postOutput } from '../../../api/output/output';
+import { updateImagePackage } from '../../../api/image/package';
+import { requestVideo } from '../../../api/mindslab';
+
+import { showAlert } from '../../../utils/AlertUtils';
+import axios from 'axios';
+
 const labelStyle = {
   color: "#9a9a9a",
   mt: 3
 }
 
 const GenerateVideo = (props) => {
-  const { video, slides, open, close } = props;
+  const { canvasRef, video, slides, open, close, textScript } = props;
   // const video = useSelector(state => state.video.video);
   // const slides = useSelector(state => state.video.slides);
 
@@ -54,6 +62,97 @@ const GenerateVideo = (props) => {
   const handleClose = () => {
     close();
     setTitle(video.package_name);
+  }
+
+  const doGenerateVideo = async () => {
+    // NOTE: Temporary (due to hiding functionalities)
+    const script = props.textScript;
+        
+    // const script = activeSlide.text_script;
+    if (script === null || script === '') {
+      showAlert('The slide has no script. Please type a script.', 'error')
+      return;
+    }
+
+    dispatch(setShowBackdrop(true));
+
+    // Set video as permanent
+    updateImagePackage(video.package_id, { is_draft: false });
+
+    try {
+      let file = null;
+      let canvasImagePromise = new Promise((resolve, reject) => {
+        try {
+          const objects = canvasRef.handler?.getObjects();
+          const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
+          if (avatar) {
+            canvasRef.handler?.removeById(avatar.id);
+          }
+
+          const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
+          file = new File([canvasBlob], "canvas", { type: "image/png" });
+
+          if (avatar) {
+            canvasRef.handler?.add(avatar);
+          }
+
+          resolve();
+        } catch (error) {
+          console.log(error);
+          reject();
+        }
+      });
+      
+      canvasImagePromise.then(async () => {
+        requestVideo(file, script).then(async (res) => {
+          const blob = res.data;
+          const filename = `${video.package_name}-${new Date().getTime()}.mp4`;
+          console.log(blob)
+          console.log(filename)
+          const file = new File([blob], filename, { type: "video/mp4" });
+          console.log(file)
+          const formData = new FormData();
+          formData.append('adminId', 'admin1018');
+          formData.append('images', file);
+
+          await uploadFile(formData, 'generated-video').then((res) => { 
+            const location = res.data.body.location;
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            const dataToSend = {
+              video_id: video.package_id,
+              user_id: user.user_id,
+              video_name: video.package_name,
+              video_dir: location
+            }
+
+            postOutput(dataToSend).then(() => {
+              dispatch(setShowBackdrop(false));
+            });
+          });
+
+          // const url = URL.createObjectURL(blob);
+          // const a = document.createElement("a");
+          // a.href = url;
+          // a.download = 'test.mp4';
+          // a.click();
+
+          // var reader = new FileReader();
+          // reader.readAsDataURL(blob);
+          // reader.onloadend = function () {
+          //   var b64 = reader.result.replace(/^data:.+;base64,/, '');
+          //   var src = "data:video/webm;base64," + b64;
+          // }
+        });
+      },
+      () => {
+        showAlert('There was a problem while converting the canvas to image.', 'error');
+        // dispatch(setShowBackdrop(false));
+      });
+    } catch (error) {
+      console.log(error);
+      showAlert('An error occured while trying to play the video', 'error');
+      // dispatch(setShowBackdrop(false));
+    }
   }
 
   return (
@@ -128,7 +227,10 @@ const GenerateVideo = (props) => {
           {slides && slides.map(slide => {
             return (
               <Typography key={slide.clip_id} variant="h6" sx={{ color: "#fff" }}>
-                {slide.text_script} 
+                {/* NOTE: Temporary (due to hiding functionalities) */}
+                {textScript}
+                
+                {/* {slide.text_script}  */}
               </Typography>
             );
           })}
@@ -143,7 +245,7 @@ const GenerateVideo = (props) => {
           Cancel
         </Button>
 
-        <Button variant="contained" fullWidth onClick={close}>
+        <Button variant="contained" fullWidth /*onClick={doGenerateVideo}*/>
           Save and proceed
         </Button>
       </DialogActions>

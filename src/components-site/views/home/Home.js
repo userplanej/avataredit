@@ -89,7 +89,7 @@ const Home = () => {
   return (
     <Container maxWidth={false}>
       <Box sx={{ pb: 3 }}>
-        <Typography variant="h5" color="#fff">Templates</Typography>
+        {/* <Typography variant="h5" color="#fff">Templates</Typography> */}
         
         <Grid container sx={{ alignItems: 'center' }}>
           <Grid item xs={11} sm={5} md={5} lg={7} xl={8}>
@@ -111,7 +111,7 @@ const Home = () => {
           </Grid>
         </Grid>
 
-        <Box sx={{ mt: 2, '& .MuiGrid-root': { m: '0px' }, maxHeight: '420px', overflowY: 'auto' }}>
+        <Box sx={{ mt: 2, '& .MuiGrid-root': { m: '0px' }, /*maxHeight: '420px', overflowY: 'auto'*/ }}>
           {videosListToDisplay && videosListToDisplay.map(video => {
             return <VideoCard key={video.package_id} video={video} reloadVideosList={() => loadVideos()} />
           })}

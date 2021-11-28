@@ -45,7 +45,7 @@ const voices = [
   },
 ];
 
-const Script = () => {
+const Script = (props) => {
   const dispatch = useDispatch();
   const activeSlide = useSelector(state => state.video.activeSlide);
   const activeSlideId = useSelector(state => state.video.activeSlideId);
@@ -62,9 +62,9 @@ const Script = () => {
   const [selectedVoice, setSelectedVoice] = useState(null);
 
   useEffect(() => {
-    const script = activeSlide && activeSlide.text_script !== null ? activeSlide.text_script : '';
-    setTextScript(script);
-    updateNbCharLeft(script);
+    // const script = activeSlide && activeSlide.text_script !== null ? activeSlide.text_script : '';
+    // setTextScript(script);
+    // updateNbCharLeft(script);
   }, [activeSlide]);
 
   // Action triggered when changing tab
@@ -85,6 +85,9 @@ const Script = () => {
     const value = event.target.value;
     setTextScript(value);
     updateNbCharLeft(value);
+
+    // NOTE: Temporary (due to hiding functionalities)
+    props.setTextScript(value);
   }
 
   const updateNbCharLeft = (script) => {
@@ -193,7 +196,7 @@ const Script = () => {
             maxLength={3500}
             value={textScript}
             onChange={handleChangeTextScript}
-            onBlur={handleSaveTextScript}
+            // onBlur={handleSaveTextScript}
             sx={{ 
               pb: 3, 
               color: '#000',

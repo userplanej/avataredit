@@ -104,7 +104,7 @@ const VideoPreview = () => {
           </Box>
         </Grid>
         
-        <Grid item xs={12} lg={4} sx={{ p: 4, color: '#fff', backgroundColor: '#3c4045' }}>
+        <Grid item xs={12} lg={4} sx={{ p: 4, color: '#fff', backgroundColor: '#3c4045', height: '100%' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             Enable video sharing
             <Switch defaultChecked sx={{ mr: 1 }} />

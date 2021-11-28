@@ -8,6 +8,7 @@ import userReducer from './user/userSlice';
 import backdropReducer from './backdrop/backdropSlice';
 import dialogAlertReducer from './dialog-alert/dialogAlertSlice';
 import videoReducer from './video/videoSlice';
+import objectReducer from './object/objectSlice';
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     user: userReducer,
     backdrop: backdropReducer,
     dialogAlert: dialogAlertReducer,
-    video: videoReducer
+    video: videoReducer,
+    object: objectReducer
   },
 })

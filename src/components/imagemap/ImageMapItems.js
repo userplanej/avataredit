@@ -16,6 +16,7 @@ import { uploadFile } from '../../api/s3';
 import { postImage } from '../../api/image/image';
 
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
+import { setLeft, setTop, setWidth, setHeight } from '../../redux/object/objectSlice';
 
 notification.config({
 	top: 80,
@@ -179,7 +180,18 @@ class ImageMapItems extends Component {
 					canvasRef.handler.remove(obj);
 				});
 			}
-			canvasRef.handler.add(option, centered);
+			const target = canvasRef.handler.add(option, centered);
+
+
+			// Update format values
+			this.props.setLeft(Math.round(target.left));
+			this.props.setTop(Math.round(target.top));
+			// setTimeout(() => {
+			// 	this.props.setLeft(Math.round(target.left));
+			// 	this.props.setTop(Math.round(target.top));
+			// 	this.props.setWidth(target.width);
+			// 	this.props.setHeight(target.height);
+			// }, 1200);
 
 			// Save slide thumbnail
 			// onSaveSlide();
@@ -581,7 +593,11 @@ class ImageMapItems extends Component {
 }
 
 const mapDispatchToProps  = {
-	setShowBackdrop
+	setShowBackdrop,
+	setLeft,
+	setTop,
+	setWidth,
+	setHeight
 }
 
 export default connect(null, mapDispatchToProps)(ImageMapItems);

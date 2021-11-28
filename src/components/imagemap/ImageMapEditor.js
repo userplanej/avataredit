@@ -26,6 +26,7 @@ import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 import { setActiveSlide, setActiveSlideId } from '../../redux/video/videoSlice';
+import { setLeft, setTop, setWidth, setHeight } from '../../redux/object/objectSlice';
 
 import { getImagePackage } from '../../api/image/package';
 import { getAllUserImages, getAllDefaultImages } from '../../api/image/image';
@@ -130,7 +131,9 @@ class ImageMapEditor extends Component {
 		defaultImages: {},
 		videos: {},
 		slides: [],
-		video: null
+		video: null,
+		// NOTE: Temporary (due to hiding functionalities)
+		textScript: ''
 	};
 
 	componentDidMount() {
@@ -293,16 +296,18 @@ class ImageMapEditor extends Component {
 				return;
 			}
 			this.canvasRef.handler.select(target);
+			// Change tools tab
 			this.props.setActiveObject({ id: target.id, type: target.subtype ? target.subtype : target.type });
 			this.props.setPreviousTab(this.props.activeTab);
 			this.props.setActiveTab(indexFormatTab);
 		},
 		onSelect: target => {
 			const { selectedItem } = this.state;
-			if (!target || (target && target.type === 'background')) {
+			if (!target) {
 				this.setState({
 					selectedItem: target,
 				});
+				// Change tools tab
 				this.props.setActiveTab(this.props.previousTab);
 				this.props.setActiveObject(null);
 				return;
@@ -319,11 +324,16 @@ class ImageMapEditor extends Component {
 				this.setState({
 					selectedItem: target,
 				});
+
+				// Change tools tab
 				this.props.setActiveObject({ id: target.id, type: target.subtype ? target.subtype : target.type });
 				if (this.props.activeTab !== indexFormatTab) {
 					this.props.setPreviousTab(this.props.activeTab);
 				}
 				this.props.setActiveTab(indexFormatTab);
+
+				// Update format values
+				this.setFormatValues(target);
 				return;
 			}
 			this.canvasRef.handler.getObjects().forEach(obj => {
@@ -340,6 +350,7 @@ class ImageMapEditor extends Component {
 			if (!editing) {
 				this.changeEditing(true);
 			}
+			// Change tools tab
 			this.canvasHandlers.onSelect(null);
 			this.props.setActiveTab(this.props.previousTab);
 			this.props.setActiveObject(null);
@@ -587,13 +598,6 @@ class ImageMapEditor extends Component {
 					<Menu>
 						<Menu.Item
 							onClick={() => {
-								this.canvasRef.handler.toGroup();
-							}}
-						>
-							{i18n.t('action.object-group')}
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => {
 								this.canvasRef.handler.remove();
 							}}
 						>
@@ -605,13 +609,6 @@ class ImageMapEditor extends Component {
 			if (target.type === 'group') {
 				return (
 					<Menu>
-						<Menu.Item
-							onClick={() => {
-								this.canvasRef.handler.toActiveSelection();
-							}}
-						>
-							{i18n.t('action.object-ungroup')}
-						</Menu.Item>
 						<Menu.Item
 							onClick={() => {
 								this.canvasRef.handler.remove();
@@ -1007,6 +1004,13 @@ class ImageMapEditor extends Component {
 		this.setState({ video });
 	}
 
+	setFormatValues = (target) => {
+		this.props.setLeft(Math.round(target.left));
+		this.props.setTop(Math.round(target.top));
+		this.props.setWidth(target.width);
+		this.props.setHeight(target.height);
+	}
+
 	render() {
 		const {
 			avatars,
@@ -1055,21 +1059,33 @@ class ImageMapEditor extends Component {
 
 		return (
 			<Box sx={{ width: '100%', display: 'flex', overflow: { md: 'hidden' } }}>
-				{video && slides && slides.length > 0 && <GenerateVideo video={video} slides={slides} open={openGenerateVideo} close={() => this.handleCloseGenerateVideo()} />}
+				{this.canvasRef && video && slides && slides.length > 0 && 
+					<GenerateVideo 
+						canvasRef={this.canvasRef}
+						video={video}
+						slides={slides}
+						open={openGenerateVideo}
+						close={() => this.handleCloseGenerateVideo()}
+						textScript={this.state.textScript}
+					/>
+				}
 				<DiscardDraft open={openDiscardDraft} close={() => this.handleCloseDiscardDraft()} />
 				<PlayVideo open={openPlayVideo} close={() => this.handleClosePlayVideo()} source={videoSource} />
 
 				{this.canvasRef && video &&
-				<Appbar 
-					video={video}
-					setVideo={(video) => this.setVideo(video)}
-					handleDrawerToggle={() => this.handleDrawerToggle()}
-					canvasRef={this.canvasRef}
-					openGenerateVideo={() => this.handleOpenGenerateVideo()}
-					openDiscardDraft={() => this.handleOpenDiscardDraft()}
-					openPlayVideo={() => this.handleOpenPlayVideo()}
-					changeVideoSource={(source) => this.handleChangeVideoSource(source)}
-				/>}
+					<Appbar 
+						video={video}
+						setVideo={(video) => this.setVideo(video)}
+						handleDrawerToggle={() => this.handleDrawerToggle()}
+						canvasRef={this.canvasRef}
+						openGenerateVideo={() => this.handleOpenGenerateVideo()}
+						openDiscardDraft={() => this.handleOpenDiscardDraft()}
+						openPlayVideo={() => this.handleOpenPlayVideo()}
+						changeVideoSource={(source) => this.handleChangeVideoSource(source)}
+						// NOTE: Temporary (due to hiding functionalities)
+						textScript={this.state.textScript}
+					/>
+				}
 
 				{/* <Sidebar 
 					mobileOpen={mobileOpen} 
@@ -1113,7 +1129,10 @@ class ImageMapEditor extends Component {
 								/>
 							</Box>
 
-							<Script />
+							<Script 
+								// NOTE: Temporary (due to hiding functionalities)
+								setTextScript={(value) => this.setState({ textScript: value })}
+							/>
 						</Grid>
 
 						{this.canvasRef && 
@@ -1153,7 +1172,11 @@ const mapDispatchToProps  = {
 	setPreviousTab,
 	setShowBackdrop,
 	setActiveSlide,
-	setActiveSlideId
+	setActiveSlideId,
+	setLeft,
+	setTop,
+	setWidth,
+	setHeight
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ImageMapEditor));

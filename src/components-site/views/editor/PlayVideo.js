@@ -18,7 +18,7 @@ const PlayVideo = (props) => {
       </DialogTitle>
 
       <DialogContent>
-        <video controls>
+        <video controls style={{ width: '100%' }}>
           <source src={source} type="video/mp4" />
           <source type="video/webm" src={source} />
         </video>

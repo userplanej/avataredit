@@ -26,6 +26,7 @@ import { setIsSaving } from '../redux/video/videoSlice';
 import { postImageClip } from '../api/image/clip';
 import { postImagePackage, updateImagePackage } from '../api/image/package';
 import { updateUser } from '../api/user/user';
+import { requestVideo } from '../api/mindslab';
 
 import { pathnameEnum } from './constants/Pathname';
 import { drawerWidth } from './constants/Drawer';
@@ -206,12 +207,15 @@ const Appbar = (props) => {
   }
 
   const playVideo = async () => {
-    if (isSaving) {
-      showAlert('Please wait for changes to be saved.', 'warning')
-      return;
-    }
+    // if (isSaving) {
+    //   showAlert('Please wait for changes to be saved.', 'warning')
+    //   return;
+    // }
 
-    const script = activeSlide.text_script;
+    // NOTE: Temporary (due to hiding functionalities)
+    const script = props.textScript;
+    
+    // const script = activeSlide.text_script;
     if (script === null || script === '') {
       showAlert('The slide has no script. Please type a script.', 'error')
       return;
@@ -225,10 +229,16 @@ const Appbar = (props) => {
         try {
           const objects = canvasRef.handler?.getObjects();
           const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
+          if (avatar) {
+            canvasRef.handler?.removeById(avatar.id);
+          }
 
-          canvasRef.handler?.removeById(avatar.id);
           const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
           file = new File([canvasBlob], "canvas", { type: "image/png" });
+
+          if (avatar) {
+            canvasRef.handler?.add(avatar);
+          }
 
           resolve();
         } catch (error) {
@@ -238,42 +248,7 @@ const Appbar = (props) => {
       });
       
       canvasImagePromise.then(async () => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('lifecycleName', 'Studio_Main_Action_Lifecycle');
-        formData.append('catalogInstanceName', 'Studio_Main_Action_Catalog1');
-        formData.append('target', 'SoftwareCatalogInstance');
-        formData.append('async', false);
-
-        let payload = {
-          "text": script,
-          "width": "1280",
-          "height": "720",
-          "speaker": "0",
-          "action": "greeting",
-          "model": "jesong",
-          "transparent": "false",
-          "resolution": "HD",
-          "apiId": "ryu",
-          "apiKey": "d0cad9547b9c4a65a5cdfe50072b1588"
-        };
-
-        formData.append('payload', JSON.stringify(payload));
-  
-        const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
-        const headers = {
-          AccessKey: 'SerengetiAdministrationAccessKey',
-          SecretKey: 'SerengetiAdministrationSecretKey',
-          LoginId: 'maum-orchestra-com'
-        }
-  
-        await axios({
-          method: 'post',
-          url: url, 
-          data: formData,
-          headers: headers,
-          responseType: 'blob'
-        }).then((res) => {
+        requestVideo(file, script).then((res) => {
           dispatch(setShowBackdrop(false));
 
           const blob = res.data;
@@ -319,7 +294,7 @@ const Appbar = (props) => {
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         {/* Left part */}
         <Box sx={boxStyle}>
-          <IconButton
+          {/* <IconButton
             color="primary"
             aria-label="open drawer"
             edge="start"
@@ -327,7 +302,7 @@ const Appbar = (props) => {
             sx={{ mr: 2, color: '#fff', display: { lg: isEditorPage ? 'block' : 'none', xl: 'none' } }}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
 
           {pathName === pathnameEnum.home &&
           <Box sx={boxStyle}>
@@ -379,7 +354,7 @@ const Appbar = (props) => {
         {/* Right part */}
         {pathName === pathnameEnum.home &&
         <Box sx={boxStyle}>
-          <Button variant="contained" color="secondary" sx={{ maxWidth: 'none', mr: 1, color: '#fff' }}>Import powerpoint</Button>
+          {/* <Button variant="contained" color="secondary" sx={{ maxWidth: 'none', mr: 1, color: '#fff' }}>Import powerpoint</Button> */}
           <Button variant="contained" onClick={createNewVideo}>Create new video</Button>
         </Box>}
 
@@ -390,7 +365,7 @@ const Appbar = (props) => {
 
         {isEditorPage && 
         <Box sx={boxStyle}>
-          <Typography sx={{ mr: 1 }}>{isSaving ? 'Saving...' : 'All changes saved'}</Typography>
+          {/* <Typography sx={{ mr: 1 }}>{isSaving ? 'Saving...' : 'All changes saved'}</Typography>
           <Button 
             variant="contained" 
             color="secondary" 
@@ -414,7 +389,7 @@ const Appbar = (props) => {
             onClick={openDiscardDraft}
           >
             Discard draft
-          </Button>
+          </Button> */}
           <Button 
             variant="contained" 
             color="secondary" 

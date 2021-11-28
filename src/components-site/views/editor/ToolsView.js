@@ -10,10 +10,18 @@ import Button from '@mui/material/Button';
 import FlipToBackIcon from '@mui/icons-material/FlipToBack';
 import FlipToFrontIcon from '@mui/icons-material/FlipToFront';
 import PersonIcon from '@mui/icons-material/Person';
-import { Stack, Slider } from '@mui/material';
+import { Stack, Slider, InputLabel } from '@mui/material';
 
 import { setActiveObject } from '../../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
+import { setHeight, setLeft, setTop, setWidth } from '../../../redux/object/objectSlice';
+
+import CustomInput from '../../inputs/CustomInput';
+
+const propertiesNames = {
+  position: 'position',
+  size: 'size'
+}
 
 function TabPanel(props) {
   const { children, value, index, name, ...other } = props;
@@ -48,6 +56,10 @@ const ToolsView = (props) => {
   const dispatch = useDispatch();
   const activeObject = useSelector((state) => state.canvas.activeObject);
   const activeTab = useSelector((state) => state.toolbar.activeTab);
+  const activeObjectLeft = useSelector(state => state.object.left);
+  const activeObjectTop = useSelector(state => state.object.top);
+  const activeObjectWidth = useSelector(state => state.object.width);
+  const activeObjectHeight = useSelector(state => state.object.height);
 
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
@@ -81,49 +93,160 @@ const ToolsView = (props) => {
 
   const renderMoveButtons = () => {
     const { canvasRef } = props;
+    const objects = canvasRef.handler.getObjects();
+    const activeObject = canvasRef.handler.getActiveObject();
+    const isBack = objects[0] === activeObject;
+    const isForward = objects[objects.length - 1] === activeObject;
+
     return (
-      <Box sx={{ mt: 1 }}>
+      <Box sx={{ mt: 1, mb: 2 }}>
         <Typography variant="h6">Move</Typography>
-        <Box sx={{ display: 'flex', mt: 1 }}>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            startIcon={<FlipToBackIcon />} 
-            onClick={() => canvasRef.handler.sendToBack()}
-            sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
-          >
-            Back
-          </Button>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            startIcon={<FlipToBackIcon />} 
-            onClick={() => canvasRef.handler.sendBackwards()}
-            sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
-          >
-            Backward
-          </Button>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            startIcon={<FlipToFrontIcon />} 
-            onClick={() => canvasRef.handler.bringForward()}
-            sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
-          >
-            Forward
-          </Button>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            startIcon={<FlipToFrontIcon />} 
-            onClick={() => canvasRef.handler.bringToFront()}
-            sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427' }}
-          >
-            Front
-          </Button>
-        </Box>
+        <Grid container spacing={1} sx={{ display: 'flex', mt: 1 }}>
+          <Grid item>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              fullWidth
+              startIcon={<FlipToBackIcon />} 
+              onClick={() => canvasRef.handler.sendToBack()}
+              disabled={isBack}
+              sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
+            >
+              Back
+            </Button>
+          </Grid>
+
+          <Grid item>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              fullWidth
+              startIcon={<FlipToBackIcon />} 
+              onClick={() => canvasRef.handler.sendBackwards()}
+              disabled={isBack}
+              sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
+            >
+              Backward
+            </Button>
+          </Grid>
+
+          <Grid item>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              fullWidth
+              startIcon={<FlipToFrontIcon />} 
+              onClick={() => canvasRef.handler.bringForward()}
+              disabled={isForward}
+              sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
+            >
+              Forward
+            </Button>
+          </Grid>
+
+          <Grid item>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              fullWidth
+              startIcon={<FlipToFrontIcon />} 
+              onClick={() => canvasRef.handler.bringToFront()}
+              disabled={isForward}
+              sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427' }}
+            >
+              Front
+            </Button>
+          </Grid>
+        </Grid>
       </Box>
     );
+  }
+
+  const renderLayout = () => {
+    return (
+      <Box sx={{ mt: 1 }}>
+        <Typography variant="h6">Layout</Typography>
+
+        {/* Position */}
+        <Grid container spacing={2}>
+          <Grid item xs={5}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <InputLabel>X</InputLabel>
+              <CustomInput
+                value={activeObjectLeft}
+                onChange={(event) => dispatch(setLeft(event.target.value))}
+                onBlur={() => changeObject(propertiesNames.position, { top: activeObjectTop, left: activeObjectLeft })}
+                sx={{ width: '100px', backgroundColor: '#3c4045', '& input': { textAlign: 'right' } }}
+              />
+            </Box>
+          </Grid>
+
+          <Grid item xs={2} />
+
+          <Grid item xs={5}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <InputLabel>Y</InputLabel>
+              <CustomInput
+                value={activeObjectTop}
+                onChange={(event) => dispatch(setTop(event.target.value))}
+                onBlur={() => changeObject(propertiesNames.position, { top: activeObjectTop, left: activeObjectLeft })}
+                sx={{ width: '100px', textAlign: 'right', backgroundColor: '#3c4045', '& input': { textAlign: 'right' } }}
+              />
+            </Box>
+          </Grid>
+        </Grid>
+
+        {/* Size */}
+        {/* <Grid container spacing={2}>
+          <Grid item xs={5}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <InputLabel>Width</InputLabel>
+              <CustomInput
+                value={activeObjectWidth}
+                onChange={(event) => dispatch(setWidth(event.target.value))}
+                onBlur={() => changeObject(propertiesNames.size, { width: activeObjectWidth, height: activeObjectHeight })}
+                sx={{ width: '100px', backgroundColor: '#3c4045', '& input': { textAlign: 'right' } }}
+              />
+            </Box>
+          </Grid>
+
+          <Grid item xs={2} />
+
+          <Grid item xs={5}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <InputLabel>Height</InputLabel>
+              <CustomInput
+                value={activeObjectHeight}
+                onChange={(event) => dispatch(setHeight(event.target.value))}
+                onBlur={() => changeObject(propertiesNames.size, { width: activeObjectWidth, height: activeObjectHeight })}
+                sx={{ width: '100px', textAlign: 'right', backgroundColor: '#3c4045', '& input': { textAlign: 'right' } }}
+              />
+            </Box>
+          </Grid>
+        </Grid> */}
+      </Box>
+    );
+  }
+
+  /**
+   * Change the selected element:
+   * Key => Values
+   * - position => { left: number, top: number }
+   * - size => { width: number, height: number }
+   * @param {string} key The property to change 
+   * @param {object} values The values of property changed
+   */
+  const changeObject = (key, values) => {
+    const { canvasRef } = props;
+    
+    if (key === propertiesNames.position) {
+      const { top, left } = values;
+      canvasRef.handler.setObject({ top, left });
+    }
+    if (key === propertiesNames.size) {
+      const { width, height } = values;
+      canvasRef.handler.setObject({ width, height });
+    }
   }
 
   const renderFormat = () => {
@@ -142,16 +265,18 @@ const ToolsView = (props) => {
     }
     return (
       <Box>
-        <Typography variant="h5" sx={{ mb: 2 }}>{title}</Typography>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Format
+          {/* {title} */}
+        </Typography>
 
         <hr />
         
         {renderMoveButtons()}
+
+        <hr />
         
-        {/* <Typography variant="h6">Layout</Typography>
-        <Box>
-          
-        </Box> */}
+        {renderLayout()}
       </Box>
     );
   }
@@ -168,7 +293,7 @@ const ToolsView = (props) => {
           <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar, size and alignment</Typography>
           <Box sx={{ height: '600px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
 
-          <Box sx={{ width: '100%' }}>
+          {/* <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs 
                 value={avatarTab} 
@@ -205,7 +330,7 @@ const ToolsView = (props) => {
                 Avatar will not be shown on this slide.
               </Box>
             </TabPanel>
-          </Box>
+          </Box> */}
         </TabPanel>
 
         <TabPanel name="main" value={activeTab} index={1}>

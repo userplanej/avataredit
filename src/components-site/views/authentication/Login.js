@@ -176,7 +176,7 @@ const Login = (props) => {
             </Link>
           </Box>
 
-          <Button href="https://sso.maum.ai/maum/loginMain?response_type=code&client_id=dataEditTool&redirect_uri=http://localhost:4000/login">Maum SSO</Button>
+          {/* <Button href="https://sso.maum.ai/maum/loginMain?response_type=code&client_id=dataEditTool&redirect_uri=http://localhost:4000/login">Maum SSO</Button> */}
         </Box>
       </Box>
     </Container>
