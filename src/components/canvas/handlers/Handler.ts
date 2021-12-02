@@ -47,7 +47,7 @@ import { TransactionEvent } from './TransactionHandler';
 import { LinkObject } from '../objects/Link';
 import { PortObject } from '../objects/Port';
 import { LinkOption } from './LinkHandler';
-import { defaults } from '../constants';
+import { defaults, scaling } from '../constants';
 
 export interface HandlerCallback {
 	/**
@@ -1016,6 +1016,10 @@ class Handler implements HandlerOptions {
 	 *
 	 */
 	public cut = () => {
+		const activeObject = this.canvas.getActiveObject() as FabricObject;
+		if (activeObject && typeof activeObject.cloneable !== 'undefined' && !activeObject.cloneable) {
+			return;
+		}
 		this.copy();
 		this.remove();
 		this.isCut = true;
@@ -1946,6 +1950,32 @@ class Handler implements HandlerOptions {
 			return new Blob([u8arr], {type:mime});
 		}
 		return null;
+	}
+
+	public setActiveObjectScale = (width: number, height: number) => {
+		const activeObject = this.getActiveObject();
+		const currentWidth = activeObject.width;
+		const currentHeight = activeObject.height;
+		
+		let scaleFactor = scaling.IMAGE;
+		if (activeObject.subtype === 'avatar') {
+			scaleFactor = scaling.AVATAR;
+		}
+		if (activeObject.subtype === 'shape') {
+			scaleFactor = scaling.SHAPE;
+		}
+		
+		const newScaledWidth = (width * scaleFactor) / currentWidth;
+		const newScaledHeight = (height * scaleFactor) / currentHeight;
+		
+		this.setObject({
+		  scaleX: parseFloat(newScaledWidth.toFixed(2)),
+		  scaleY: parseFloat(newScaledHeight.toFixed(2))
+		});
+	}
+
+	public discardActiveObject = () => {
+		this.canvas.discardActiveObject();
 	}
 }
 

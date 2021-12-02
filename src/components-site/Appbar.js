@@ -93,6 +93,7 @@ const Appbar = (props) => {
   
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
   const cannotRedo = canvasRef && !canvasRef.handler?.transactionHandler.redos.length;
+  const hasCanvasObjects = canvasRef && canvasRef.handler?.getObjects().length > 0;
   const isEditorPage = routeMatchEditor !== null;
   const isPreviewVideoPage = routeMatchPreview !== null;
 
@@ -209,15 +210,12 @@ const Appbar = (props) => {
   }
 
   const playVideo = async () => {
-    // if (isSaving) {
-    //   showAlert('Please wait for changes to be saved.', 'warning')
-    //   return;
-    // }
-
-    // NOTE: Temporary (due to hiding functionalities)
-    const script = props.textScript;
+    if (isSaving) {
+      showAlert('Please wait for changes to be saved.', 'warning')
+      return;
+    }
     
-    // const script = activeSlide.text_script;
+    const script = activeSlide.text_script;
     if (script === null || script === '') {
       showAlert('The slide has no script. Please type a script.', 'error')
       return;
@@ -291,9 +289,8 @@ const Appbar = (props) => {
     <AppBar
       position="fixed"
       sx={{
-        width: '100%',
-        // width: { lg: `calc(100% - ${isEditorPage ? '0' : drawerWidth}px)`, xl: `calc(100% - ${drawerWidth}px)` },
-        ml: { lg: `${isEditorPage ? '0' : drawerWidth}px`, xl: `${drawerWidth}px` },
+        width: { lg: `calc(100% - ${isEditorPage ? '0' : drawerWidth}px)`, xl: `calc(100% - ${isEditorPage ? '0' : drawerWidth}px)` },
+        ml: { lg: `${isEditorPage ? '0' : drawerWidth}px`, xl: `${isEditorPage ? '0' : drawerWidth}px` },
         backgroundColor: '#24282c',
         boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.05)'
       }}
@@ -301,15 +298,15 @@ const Appbar = (props) => {
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         {/* Left part */}
         <Box sx={boxStyle}>
-          {/* <IconButton
+          <IconButton
             color="primary"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, color: '#fff', display: { lg: isEditorPage ? 'block' : 'none', xl: 'none' } }}
+            sx={{ mr: 2, color: '#fff', display: { lg: isEditorPage ? 'block' : 'none', xl: isEditorPage ? 'block' : 'none' } }}
           >
             <MenuIcon />
-          </IconButton> */}
+          </IconButton>
 
           {pathName === pathnameEnum.home &&
           <Box sx={boxStyle}>
@@ -372,7 +369,7 @@ const Appbar = (props) => {
 
         {isEditorPage && 
         <Box sx={boxStyle}>
-          {/* <Typography sx={{ mr: 1 }}>{isSaving ? 'Saving...' : 'All changes saved'}</Typography>
+          <Typography sx={{ mr: 1 }}>{isSaving ? 'Saving...' : 'All changes saved'}</Typography>
           <Button 
             variant="contained" 
             color="secondary" 
@@ -395,8 +392,8 @@ const Appbar = (props) => {
             sx={{ maxWidth: '100%', px: { xs: 1, lg: 2 }, mx: 2, backgroundColor: '#3c4045', border: 'none' }}
             onClick={openDiscardDraft}
           >
-            Discard draft
-          </Button> */}
+            {hasCanvasObjects ? "Discard draft" : "Cancel"}
+          </Button>
           <Button 
             variant="contained" 
             color="secondary" 

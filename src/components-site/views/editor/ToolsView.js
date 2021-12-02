@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { fabric } from 'fabric';
 
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -12,15 +13,23 @@ import FlipToFrontIcon from '@mui/icons-material/FlipToFront';
 import PersonIcon from '@mui/icons-material/Person';
 import { Stack, Slider, InputLabel } from '@mui/material';
 
+import CustomInput from '../../inputs/CustomInput';
+
 import { setActiveObject } from '../../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
 import { setHeight, setLeft, setTop, setWidth } from '../../../redux/object/objectSlice';
 
-import CustomInput from '../../inputs/CustomInput';
+import { scaling } from '../../../components/canvas/constants';
 
 const propertiesNames = {
   position: 'position',
   size: 'size'
+}
+
+const avatarPositionValues = {
+  left: 'left',
+  center: 'center',
+  right: 'right'
 }
 
 function TabPanel(props) {
@@ -60,20 +69,25 @@ const ToolsView = (props) => {
   const activeObjectTop = useSelector(state => state.object.top);
   const activeObjectWidth = useSelector(state => state.object.width);
   const activeObjectHeight = useSelector(state => state.object.height);
+  const avatarPositionSaved = useSelector(state => state.object.avatarPosition);
 
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
   const [imageTab, setImageTab] = useState(0);
   const [avatarSize, setAvatarSize] = useState(100);
+  const [avatarPosition, setAvatarPosition] = useState('center');
 
   useEffect(() => {
     dispatch(setActiveTab(0));
     dispatch(setActiveObject(null));
   }, []);
 
+  useEffect(() => {
+    setAvatarPosition(avatarPositionSaved);
+  }, [avatarPositionSaved]);
+
   const handleChange = (event, newValue) => {
     dispatch(setActiveTab(newValue));
-    dispatch(setActiveObject(null));
   }
 
   const handleChangeAvatarTab = (event, newValue) => {
@@ -90,7 +104,22 @@ const ToolsView = (props) => {
 
   const handleChangeAvatarSize = (event, newValue) => {
     setAvatarSize(newValue);
+    updateAvatarSize(newValue);
   };
+
+  const updateAvatarSize = (size) => {
+    const { canvasRef } = props;
+    const objects = canvasRef.handler.getObjects();
+    const avatar = objects.find((obj) => obj.subtype === 'avatar');
+
+    const defaultScale = scaling.AVATAR - 0.01;
+    let newScale = (parseInt(size) * defaultScale) / 100;
+    // if (newScale === 0) {
+    //   newScale = 0.05;
+    // }
+    canvasRef.handler.setByObject(avatar, 'scaleX', newScale);
+    canvasRef.handler.setByObject(avatar, 'scaleY', newScale);
+  }
 
   const renderMoveButtons = () => {
     const { canvasRef } = props;
@@ -109,7 +138,7 @@ const ToolsView = (props) => {
               color="secondary" 
               fullWidth
               startIcon={<FlipToBackIcon />} 
-              onClick={() => canvasRef.handler.sendToBack()}
+              onClick={sendToBack}
               disabled={isBack}
               sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
             >
@@ -123,7 +152,7 @@ const ToolsView = (props) => {
               color="secondary" 
               fullWidth
               startIcon={<FlipToBackIcon />} 
-              onClick={() => canvasRef.handler.sendBackwards()}
+              onClick={sendBackwards}
               disabled={isBack}
               sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
             >
@@ -137,7 +166,7 @@ const ToolsView = (props) => {
               color="secondary" 
               fullWidth
               startIcon={<FlipToFrontIcon />} 
-              onClick={() => canvasRef.handler.bringForward()}
+              onClick={bringForward}
               disabled={isForward}
               sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
             >
@@ -151,7 +180,7 @@ const ToolsView = (props) => {
               color="secondary" 
               fullWidth
               startIcon={<FlipToFrontIcon />} 
-              onClick={() => canvasRef.handler.bringToFront()}
+              onClick={bringToFront}
               disabled={isForward}
               sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427' }}
             >
@@ -161,6 +190,26 @@ const ToolsView = (props) => {
         </Grid>
       </Box>
     );
+  }
+
+  const sendToBack = () => {
+    props.canvasRef.handler.sendToBack();
+    setTimeout(() => props.onSaveSlide(), 100);
+  }
+
+  const sendBackwards = () => {
+    props.canvasRef.handler.sendBackwards();
+    setTimeout(() => props.onSaveSlide(), 100);
+  }
+
+  const bringForward = () => {
+    props.canvasRef.handler.bringForward();
+    setTimeout(() => props.onSaveSlide(), 100);
+  }
+
+  const bringToFront = () => {
+    props.canvasRef.handler.bringToFront();
+    setTimeout(() => props.onSaveSlide(), 100);
   }
 
   const renderLayout = () => {
@@ -198,13 +247,13 @@ const ToolsView = (props) => {
         </Grid>
 
         {/* Size */}
-        {/* <Grid container spacing={2}>
+        <Grid container spacing={2}>
           <Grid item xs={5}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <InputLabel>Width</InputLabel>
               <CustomInput
                 value={activeObjectWidth}
-                onChange={(event) => dispatch(setWidth(event.target.value))}
+                onChange={(event) => dispatch(setWidth(parseInt(event.target.value)))}
                 onBlur={() => changeObject(propertiesNames.size, { width: activeObjectWidth, height: activeObjectHeight })}
                 sx={{ width: '100px', backgroundColor: '#3c4045', '& input': { textAlign: 'right' } }}
               />
@@ -218,13 +267,13 @@ const ToolsView = (props) => {
               <InputLabel>Height</InputLabel>
               <CustomInput
                 value={activeObjectHeight}
-                onChange={(event) => dispatch(setHeight(event.target.value))}
+                onChange={(event) => dispatch(setHeight(parseInt(event.target.value)))}
                 onBlur={() => changeObject(propertiesNames.size, { width: activeObjectWidth, height: activeObjectHeight })}
                 sx={{ width: '100px', textAlign: 'right', backgroundColor: '#3c4045', '& input': { textAlign: 'right' } }}
               />
             </Box>
           </Grid>
-        </Grid> */}
+        </Grid>
       </Box>
     );
   }
@@ -238,15 +287,17 @@ const ToolsView = (props) => {
    * @param {object} values The values of property changed
    */
   const changeObject = (key, values) => {
-    const { canvasRef } = props;
+    const { canvasRef, onSaveSlide } = props;
     
     if (key === propertiesNames.position) {
       const { top, left } = values;
-      canvasRef.handler.setObject({ top, left });
+      canvasRef.handler.setObject({ top: parseInt(top), left: parseInt(left) });
+      setTimeout(() => onSaveSlide(), 100);
     }
     if (key === propertiesNames.size) {
       const { width, height } = values;
-      canvasRef.handler.setObject({ width, height });
+      canvasRef.handler.setActiveObjectScale(width, height);
+      setTimeout(() => onSaveSlide(), 100);
     }
   }
 
@@ -282,19 +333,49 @@ const ToolsView = (props) => {
     );
   }
 
+  /**
+   * Align the avatar.
+   * @param {string} position One of: 'left', 'right' or 'center
+   */
+  const alignAvatar = (position) => {
+    const { canvasRef, onSaveSlide } = props;
+    const objects = canvasRef.handler.getObjects();
+    const avatar = objects.find((obj) => obj.subtype === 'avatar');
+
+    if (position === avatarPositionValues.left) {
+      avatar.centerV();
+      avatar.setCoords();
+      avatar.setPositionByOrigin(new fabric.Point(0, avatar.top), 'left', 'center');
+      setAvatarPosition(avatarPositionValues.left);
+    }
+    if (position === avatarPositionValues.center) {
+      avatar.center();
+      avatar.setCoords();
+      setAvatarPosition(avatarPositionValues.center);
+    }
+    if (position === avatarPositionValues.right) {
+      const workareaWidth = canvasRef.handler.workarea.width;
+      avatar.centerV();
+      avatar.setCoords();
+      avatar.setPositionByOrigin(new fabric.Point(workareaWidth, avatar.top), 'right', 'center');
+      setAvatarPosition(avatarPositionValues.right);
+    }
+    avatar.positionButton = position;
+    setTimeout(() => onSaveSlide(), 100);
+  }
+
   return (
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
       <Grid item xs={9} md={10} lg={9} xl={10} sx={{ backgroundColor: '#3c4045' }}>
-        {/* <TabPanel name="main" value={activeTab} index={0}>
-          <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
-        </TabPanel> */}
-
         <TabPanel name="main" value={activeTab} index={0}>
-        {/* <TabPanel name="main" value={activeTab} index={1}> */}
+          <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
+        </TabPanel>
+
+        <TabPanel name="main" value={activeTab} index={1}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar, size and alignment</Typography>
           <Box sx={{ height: '600px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
 
-          {/* <Box sx={{ width: '100%' }}>
+          <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs 
                 value={avatarTab} 
@@ -311,9 +392,30 @@ const ToolsView = (props) => {
             <TabPanel name="avatar" value={avatarTab} index={0}>
               <Box sx={{ p: 2, backgroundColor: '#262c34' }}>
                 <Box sx={{ display: 'flex' }}>
-                  <Button fullWidth sx={{ color: '#8c8d8d' }}>Left</Button>
-                  <Button variant="contained" fullWidth>Center</Button>
-                  <Button fullWidth sx={{ color: '#8c8d8d' }}>Right</Button>
+                  <Button
+                    variant={avatarPosition === avatarPositionValues.left ? 'contained' : 'text'}
+                    fullWidth
+                    sx={avatarPosition === avatarPositionValues.left ? null : { color: '#8c8d8d' }}
+                    onClick={() => alignAvatar(avatarPositionValues.left)}
+                  >
+                    Left
+                  </Button>
+                  <Button
+                    variant={avatarPosition === avatarPositionValues.center ? 'contained' : 'text'}
+                    fullWidth
+                    sx={avatarPosition === avatarPositionValues.center ? null : { color: '#8c8d8d' }}
+                    onClick={() => alignAvatar(avatarPositionValues.center)}
+                  >
+                    Center
+                  </Button>
+                  <Button
+                    variant={avatarPosition === avatarPositionValues.right ? 'contained' : 'text'}
+                    fullWidth
+                    sx={avatarPosition === avatarPositionValues.right ? null : { color: '#8c8d8d' }}
+                    onClick={() => alignAvatar(avatarPositionValues.right)}
+                  >
+                    Right
+                  </Button>
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
@@ -331,43 +433,38 @@ const ToolsView = (props) => {
                 Avatar will not be shown on this slide.
               </Box>
             </TabPanel>
-          </Box> */}
+          </Box>
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={1}>
-        {/* <TabPanel name="main" value={activeTab} index={2}> */}
+        <TabPanel name="main" value={activeTab} index={2}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select background</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs value={backgroundTab} variant="fullWidth" scrollButtons="auto" onChange={handleChangeBackgroundTab} aria-label="backgrounds-tabs">
                 <Tab label="Colors" />
                 <Tab label="Images" />
-                {/* <Tab label="Videos" /> */}
+                <Tab label="Videos" />
                 <Tab label="Uploads" />
               </Tabs>
             </Box>
             <TabPanel name="background" value={backgroundTab} index={0}>{props.backgroundsColors}</TabPanel>
             <TabPanel name="background" value={backgroundTab} index={1}>{props.backgroundsImagesDefault}</TabPanel>
-            {/* <TabPanel name="background" value={backgroundTab} index={2}>{props.backgroundsVideosDefault}</TabPanel> */}
-            <TabPanel name="background" value={backgroundTab} index={2}>{props.backgroundsImagesUploaded}</TabPanel>
-            {/* <TabPanel name="background" value={backgroundTab} index={3}>{props.backgroundsImagesUploaded}</TabPanel> */}
+            <TabPanel name="background" value={backgroundTab} index={2}>{props.backgroundsVideosDefault}</TabPanel>
+            <TabPanel name="background" value={backgroundTab} index={3}>{props.backgroundsImagesUploaded}</TabPanel>
           </Box>
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={2}>
-        {/* <TabPanel name="main" value={activeTab} index={3}> */}
+        <TabPanel name="main" value={activeTab} index={3}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Text</Typography>
           {props.texts}
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={3}>
-        {/* <TabPanel name="main" value={activeTab} index={4}> */}
+        <TabPanel name="main" value={activeTab} index={4}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select shape</Typography>
           {props.shapes}
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={4}>
-        {/* <TabPanel name="main" value={activeTab} index={5}> */}
+        <TabPanel name="main" value={activeTab} index={5}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select images</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
@@ -381,12 +478,11 @@ const ToolsView = (props) => {
           </Box>
         </TabPanel>
 
-        {/* <TabPanel name="main" value={activeTab} index={6}>
+        <TabPanel name="main" value={activeTab} index={6}>
           <Typography variant="h6">Select music</Typography>
-        </TabPanel> */}
+        </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={5}>
-        {/* <TabPanel name="main" value={activeTab} index={7}> */}
+        <TabPanel name="main" value={activeTab} index={7}>
           {renderFormat()}
         </TabPanel>
       </Grid>
@@ -415,13 +511,13 @@ const ToolsView = (props) => {
             }
           }}
         >
-          {/* <Tab label="Template" {...a11yProps(0)} /> */}
+          <Tab label="Template" {...a11yProps(0)} />
           <Tab label="Avatar" {...a11yProps(1)} />
           <Tab label="Background" {...a11yProps(2)} />
           <Tab label="Text" {...a11yProps(3)} />
           <Tab label="Shapes" {...a11yProps(4)} />
           <Tab label="Images" {...a11yProps(5)} />
-          {/* <Tab label="Music" {...a11yProps(6)} /> */}
+          <Tab label="Music" {...a11yProps(6)} />
           {activeObject && <Tab label="Format" {...a11yProps(7)} />}
         </Tabs>
       </Grid>

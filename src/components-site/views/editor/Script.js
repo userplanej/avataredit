@@ -65,9 +65,6 @@ const Script = (props) => {
     const script = activeSlide && activeSlide.text_script !== null ? activeSlide.text_script : '';
     setTextScript(script);
     updateNbCharLeft(script);
-    
-    // NOTE: Temporary (due to hiding functionalities)
-    props.setTextScript(script);
   }, [activeSlide]);
 
   // Action triggered when changing tab
@@ -88,9 +85,6 @@ const Script = (props) => {
     const value = event.target.value;
     setTextScript(value);
     updateNbCharLeft(value);
-
-    // NOTE: Temporary (due to hiding functionalities)
-    props.setTextScript(value);
   }
 
   const updateNbCharLeft = (script) => {
@@ -181,7 +175,7 @@ const Script = (props) => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '90%' }}>
         <Tabs value={activeTab} onChange={handleChangeTab} aria-label="basic tabs example" variant="fullWidth">
           <Tab label="Type your script" id="simple-tab-1" />
-          {/* <Tab label="Upload your voice" id="simple-tab-2" /> */}
+          <Tab label="Upload your voice" id="simple-tab-2" />
         </Tabs>
       </Box>
       
@@ -228,7 +222,7 @@ const Script = (props) => {
         </Box>
 
         <Grid container sx={{ px: 2, pb: 2, display: 'flex', alignItems: 'center' }}>
-          {/* <Grid item xs={8} sm={9} md={8} lg={8} xl={9}>
+          <Grid item xs={8} sm={9} md={8} lg={8} xl={9}>
             <Box 
               onClick={handleOpenVoice}
               sx={{ 
@@ -244,13 +238,13 @@ const Script = (props) => {
               }}>
                 {selectedVoice && selectedVoice.value}
               </Box>
-          </Grid> */}
+          </Grid>
 
-          {/* <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
+          <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
             <Button variant="contained" sx={{ width: '100%'}} onClick={handlePlayScript}>
               Play script
             </Button>
-          </Grid> */}
+          </Grid>
         </Grid>
       </div>
 

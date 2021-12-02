@@ -45,7 +45,7 @@ export default function Main() {
   return (
     <Box sx={{ display: 'flex', height: '100%', width: '100%', pt: isEditor ? 8 : 10 }}>
       {!isEditor && <Appbar handleDrawerToggle={() => handleDrawerToggle()} />}
-      {/* {!isEditor && <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>} */}
+      {!isEditor && <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={() => handleDrawerToggle()}/>}
       <Switch>
         <Route exact path={pathnameEnum.home} component={Home} />
         <Route exact path={pathnameEnum.videos} component={Videos} />

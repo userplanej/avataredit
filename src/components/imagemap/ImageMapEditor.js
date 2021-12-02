@@ -12,7 +12,7 @@ import '../../libs/fontawesome-5.2.0/css/all.css';
 import '../../styles/index.less';
 
 import Canvas from '../canvas/Canvas';
-import { code } from '../canvas/constants';
+import { scaling } from '../canvas/constants';
 import ImageMapItems from './ImageMapItems';
 import Slides from '../../components-site/views/editor/Slides';
 import Appbar from '../../components-site/Appbar';
@@ -98,8 +98,7 @@ const defaultOption = {
 	},
 };
 
-const indexFormatTab = 5;
-// const indexFormatTab = 7;
+const indexFormatTab = 7;
 
 class ImageMapEditor extends Component {
 	state = {
@@ -131,9 +130,7 @@ class ImageMapEditor extends Component {
 		defaultImages: {},
 		videos: {},
 		slides: [],
-		video: null,
-		// NOTE: Temporary (due to hiding functionalities)
-		textScript: ''
+		video: null
 	};
 
 	componentDidMount() {
@@ -156,7 +153,6 @@ class ImageMapEditor extends Component {
 		]).then(() => {
 			this.props.setShowBackdrop(false);
 			this.setState({ selectedItem: null });
-			this.shortcutHandlers.esc();
 		});
 	}
 
@@ -640,35 +636,35 @@ class ImageMapEditor extends Component {
 			// setTimeout(async () => {
 				const { packageId } = this.state;
 				const { activeSlideId, activeSlide } = this.props;
+
+				const canvasBlob = this.canvasRef.handler?.getCanvasImageAsBlob();
+				const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
+				const file = new File([canvasBlob], fileName, { type: "image/png" });
 		
-				// const canvasBlob = this.canvasRef.handler.getCanvasImageAsBlob();
-				// const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
-				// const file = new File([canvasBlob], fileName, { type: "image/png" });
-		
-				// const formData = new FormData();
-				// formData.append('adminId', 'admin1018');
-				// formData.append('images', file);
+				const formData = new FormData();
+				formData.append('adminId', 'admin1018');
+				formData.append('images', file);
 		
 				// Delete old thumbnail
-				// const oldLocation = activeSlide.html5_dir;
-				// if (oldLocation !== null) {
-				// 	const dataToSend = {
-				// 		location: oldLocation
-				// 	}
-				// 	deleteFile(dataToSend);
-				// }
+				const oldLocation = activeSlide.html5_dir;
+				if (oldLocation !== null) {
+					const dataToSend = {
+						location: oldLocation
+					}
+					deleteFile(dataToSend);
+				}
 
-				// await uploadFile(formData, 'slide-thumbnail').then(async (res) => {
-				// 	const location = res.data.body.location;
+				await uploadFile(formData, 'slide-thumbnail').then(async (res) => {
+					const location = res.data.body.location;
 					const objects = this.canvasRef.handler.exportJSON();
 					const dataToSend = {
 						html5_script: JSON.stringify(objects),
-						// html5_dir: location
+						html5_dir: location
 					}
 		
 					await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
-				// });
-			// }, 500);
+				});
+			// }, 1000);
 		}
 	};
 
@@ -693,8 +689,6 @@ class ImageMapEditor extends Component {
 				progress,
 			});
 		},
-	
-
 		onImport: files => {
 			if (files) {
 				this.props.setShowBackdrop(true);
@@ -734,30 +728,6 @@ class ImageMapEditor extends Component {
 				}, 500);
 			}
 		},
-		onSlide: () => {
-			alert("test222");
-			fetch("./sample1.json")
-			.then(res => res.json())
-			.then(data => alert(data));
-						alert("test");
-						const { objects, animations, styles, dataSources } = JSON.parse("./sample1.json");
-						this.setState({
-							animations,
-							styles,
-							dataSources,
-						});
-						if (objects) {
-							this.canvasRef.handler.clear(true);
-							const data = objects.filter(obj => {
-								if (!obj.id) {
-									return false;
-								}
-								return true;
-							});
-							this.canvasRef.handler.importJSON(data);
-						}
-					
-		},
 		onUpload: () => {
 			const inputEl = document.createElement('input');
 			inputEl.accept = '.json';
@@ -770,125 +740,6 @@ class ImageMapEditor extends Component {
 			inputEl.click();
 			inputEl.remove();
 		},
-		onLoadSlide: () => {
-			// console.log(e.target, "-------------------index---------------------")
-			fetch('/api/slides')
-			.then(res => res.json())
-			.then(({ slides }) => {
-			const { objects, animations, styles, dataSources} = JSON.parse(JSON.stringify(slides[0]));
-				this.setState({
-					animations,
-					styles,
-					dataSources
-				});
-				if (objects) {
-					this.canvasRef.handler.clear(true);
-					const data = objects.filter(obj => {
-						if (!obj.id) {
-							return false;
-						}
-						return true;
-					});
-					this.canvasRef.handler.importJSON(data);
-				}
-			});
-			
-		},
-		onBackgroundChange: () => {
-			const originalObjects = this.canvasRef.handler.exportJSON().filter(obj => {
-				if (!obj.id) {
-					return false;
-				}
-				return true;
-			});
-			const newObjects = {
-				
-					type: "image",
-					version: "3.6.6",
-					originX: "left",
-					originY: "top",
-					left: 830,
-					top: 403.6,
-					width: 600,
-					height: 400,
-					backgroundColor: "rgba(50, 50, 10, 1)",
-					crossOrigin: "",
-					cropX: 0,
-					cropY: 0,
-				    id: "workarea",
-					name: "",
-					link: {},
-					layout: "fixed",
-					workareaWidth: 600,
-					workareaHeight: 400,
-					src: "",
-					filters: []
-				
-			};
-			
-				const combinedObject = [newObjects, originalObjects[0]];
-				if (combinedObject) {
-					const data = combinedObject.filter(obj => {
-						if (!obj.id) {
-							return false;
-						}
-						return true;
-					});
-					this.canvasRef.handler.importJSON(data);
-			}
-		
-			
-			
-		},
-
-		// onAvatarChange : (url) => {
-		// 	// alert("this is reached;");
-		// 	console.log("----------here is the url----------", url);
-		// 	const originalObjects = this.canvasRef.handler.exportJSON().filter(obj => {
-		// 		if (!obj.id) {
-		// 			return false;
-		// 		}
-		// 		return true;
-		// 	});
-		// 	const newObjects = {
-				
-		// 			type: "image",
-		// 			version: "3.6.6",
-		// 			originX: "left",
-		// 			originY: "top",
-		// 			left: 830,
-		// 			top: 403.6,
-		// 			width: 600,
-		// 			height: 400,
-		// 			backgroundColor: "rgba(255, 255, 255, 1)",
-		// 			crossOrigin: "",
-		// 			cropX: 0,
-		// 			cropY: 0,
-		// 		    id: "workarea",
-		// 			name: "",
-		// 			link: {},
-		// 			layout: "fixed",
-		// 			workareaWidth: 600,
-		// 			workareaHeight: 400,
-		// 			src: url,
-		// 			filters: []
-				
-		// 	};
-			
-		// 		const combinedObject = [newObjects, originalObjects[0]];
-		// 		if (combinedObject) {
-		// 			const data = combinedObject.filter(obj => {
-		// 				if (!obj.id) {
-		// 					return false ;
-		// 				}
-		// 				return true;
-		// 			});
-		// 			this.canvasRef.handler.importJSON(data);
-		// 	}
-		
-			
-			
-		// },
 		onDownload: () => {
 			this.props.setShowBackdrop(true);
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
@@ -940,20 +791,6 @@ class ImageMapEditor extends Component {
 		},
 		onSaveImage: () => {
 			this.canvasRef.handler.saveCanvasImage();
-		},
-	};
-
-	shortcutHandlers = {
-		esc: () => {
-			document.addEventListener('keydown', e => {
-				if (e.code === code.ESCAPE) {
-					this.handlers.onChangePreview(false);
-				}
-				if (e.code === code.DELETE) {
-					this.props.setSelectedAvatar(null);
-					this.canvasHandlers.onSaveSlide();
-				}
-			});
 		},
 	};
 
@@ -1010,10 +847,22 @@ class ImageMapEditor extends Component {
 	}
 
 	setFormatValues = (target) => {
+		// Set position
 		this.props.setLeft(Math.round(target.left));
 		this.props.setTop(Math.round(target.top));
-		this.props.setWidth(target.width);
-		this.props.setHeight(target.height);
+
+		// Set size
+		let defaultScale = scaling.IMAGE;
+		if (target.subtype === 'avatar') {
+			defaultScale = scaling.AVATAR;
+		}
+		if (target.subtype === 'shape') {
+			defaultScale = scaling.SHAPE;
+		}
+		const width = (target.width * target.scaleX) / defaultScale;
+		const height = (target.height * target.scaleY) / defaultScale;
+		this.props.setWidth(Math.round(width));
+		this.props.setHeight(Math.round(height));
 	}
 
 	render() {
@@ -1049,18 +898,6 @@ class ImageMapEditor extends Component {
 			onTransaction,
 			onSaveSlide
 		} = this.canvasHandlers;
-		const {
-			onChangePreview,
-			onDownload,
-			onUpload,
-			onChangeAnimations,
-			onChangeStyles,
-			onChangeDataSources,
-			onSaveImage,
-			onLoadSlide,
-			onBackgroundChange,
-			onAvatarChange
-		} = this.handlers;
 
 		return (
 			<Box sx={{ width: '100%', display: 'flex', overflow: { md: 'hidden' } }}>
@@ -1087,15 +924,13 @@ class ImageMapEditor extends Component {
 						openDiscardDraft={() => this.handleOpenDiscardDraft()}
 						openPlayVideo={() => this.handleOpenPlayVideo()}
 						changeVideoSource={(source) => this.handleChangeVideoSource(source)}
-						// NOTE: Temporary (due to hiding functionalities)
-						textScript={this.state.textScript}
 					/>
 				}
 
-				{/* <Sidebar 
+				<Sidebar 
 					mobileOpen={mobileOpen} 
 					handleDrawerToggle={() => this.handleDrawerToggle()}
-				/> */}
+				/>
 
 				<Box sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
 					<Grid container sx={{ width: '100%', height: '100%' }}>
@@ -1134,10 +969,7 @@ class ImageMapEditor extends Component {
 								/>
 							</Box>
 
-							<Script 
-								// NOTE: Temporary (due to hiding functionalities)
-								setTextScript={(value) => this.setState({ textScript: value })}
-							/>
+							<Script />
 						</Grid>
 
 						{this.canvasRef && 

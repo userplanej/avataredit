@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import { notification, message } from 'antd';
 import { v4 } from 'uuid';
 import { Flex } from '../flex';
+
+import { code, scaling } from '../canvas/constants';
+
 import { Box } from '@mui/system';
 import UploadIcon from '@mui/icons-material/Upload';
 
@@ -16,7 +19,7 @@ import { uploadFile } from '../../api/s3';
 import { postImage } from '../../api/image/image';
 
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
-import { setLeft, setTop, setWidth, setHeight } from '../../redux/object/objectSlice';
+import { setLeft, setTop, setWidth, setHeight, setAvatarPosition } from '../../redux/object/objectSlice';
 import { setSelectedAvatar } from '../../redux/video/videoSlice';
 
 notification.config({
@@ -151,7 +154,55 @@ class ImageMapItems extends Component {
 		canvas.canvas.wrapperEl.addEventListener('dragover', this.events.onDragOver, false);
 		canvas.canvas.wrapperEl.addEventListener('dragleave', this.events.onDragLeave, false);
 		canvas.canvas.wrapperEl.addEventListener('drop', this.events.onDrop, false);
+		this.attachObjectEventListener(canvas);
+		this.attachDocumentEventListener();
 	};
+
+	attachObjectEventListener = canvas => {
+		const updateObject = (target, width, height) => this.updateObjectSize(target, width, height);
+		canvas.canvas.on({
+			'object:moving': () => {
+				const activeObject = canvas.handler.getActiveObject();
+				this.updateObjectPosition(activeObject);
+			},
+			'object:moved': () => {
+				const activeObject = canvas.handler.getActiveObject();
+				if (activeObject.subtype === 'avatar') {
+					activeObject.positionButton = null;
+					this.props.setAvatarPosition(null);
+				}
+				this.props.onSaveSlide();
+			},
+			'object:scaling': () => {
+				const activeObject = canvas.handler.getActiveObject();
+				let defaultScale = scaling.IMAGE;
+				if (activeObject.subtype === 'avatar') {
+					defaultScale = scaling.AVATAR;
+				}
+				if (activeObject.subtype === 'shape') {
+					defaultScale = scaling.SHAPE;
+				}
+				const newWidth = (activeObject.width * activeObject.scaleX) / defaultScale;
+				const newHeight = (activeObject.height * activeObject.scaleY) / defaultScale;
+				updateObject(activeObject, parseInt(newWidth), parseInt(newHeight));
+			},
+			'object:scaled': () => {
+				this.props.onSaveSlide();
+			},
+			'object:rotated': () => {
+				this.props.onSaveSlide();
+			}
+		});
+	}
+
+	attachDocumentEventListener = () => {
+		document.addEventListener('keydown', e => {
+			if (e.code === code.DELETE) {
+				this.props.setSelectedAvatar(null);
+				this.props.onSaveSlide();
+			}
+		});
+	}
 
 	detachEventListener = canvas => {
 		canvas.canvas.wrapperEl.removeEventListener('dragenter', this.events.onDragEnter);
@@ -160,10 +211,22 @@ class ImageMapItems extends Component {
 		canvas.canvas.wrapperEl.removeEventListener('drop', this.events.onDrop);
 	};
 
+	updateObjectPosition = (target) => {
+		this.props.setLeft(Math.round(target.left));
+		this.props.setTop(Math.round(target.top));
+	}
+
+	updateObjectSize = (target, width, height) => {
+		this.props.setWidth(width ? width : target.width);
+		this.props.setHeight(height ? height : target.height);
+	}
+
 	/* eslint-disable react/sort-comp, react/prop-types */
 	handlers = {
 		onAddItem: (item, centered) => {
 			const { canvasRef, onSaveSlide } = this.props;
+			const updateObjectPosition = (target) => this.updateObjectPosition(target);
+			const updateObjectSize = (target, width, height) => this.updateObjectSize(target, width, height);
 			if (canvasRef.handler.interactionMode === 'polygon') {
 				message.info('Already drawing');
 				return;
@@ -185,18 +248,13 @@ class ImageMapItems extends Component {
 			}
 			const target = canvasRef.handler.add(option, centered);
 
-			// Update format values
-			this.props.setLeft(Math.round(target.left));
-			this.props.setTop(Math.round(target.top));
-			// setTimeout(() => {
-			// 	this.props.setLeft(Math.round(target.left));
-			// 	this.props.setTop(Math.round(target.top));
-			// 	this.props.setWidth(target.width);
-			// 	this.props.setHeight(target.height);
-			// }, 1200);
-
-			// Save slide thumbnail
-			onSaveSlide();
+			setTimeout(() => {
+				// Update format values
+				updateObjectPosition(target);
+				updateObjectSize(target);
+				// Save slide thumbnail
+				onSaveSlide();
+			}, 1200);
 		},
 		onAddSVG: (option, centered) => {
 			const { canvasRef } = this.props;
@@ -280,7 +338,6 @@ class ImageMapItems extends Component {
 			target.classList.remove('over');
 		},
 		onDrop: e => {
-			console.log('test')
 			e = e || window.event;
 			if (e.preventDefault) {
 				e.preventDefault();
@@ -562,7 +619,7 @@ class ImageMapItems extends Component {
 	render() {
 		const { 
 			canvasRef, descriptors, backgrounds, uploadedBackgroundImages, defaultBackgroundImages, 
-			defaultBackgroundVideos, avatars, uploadedImages, defaultImages, shapes 
+			defaultBackgroundVideos, avatars, uploadedImages, defaultImages, shapes, onSaveSlide
 		} = this.props;
 
 		const textsItems = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
@@ -579,6 +636,7 @@ class ImageMapItems extends Component {
 			<Box height="100%">
 				<ToolsView 
 					canvasRef={canvasRef}
+					onSaveSlide={onSaveSlide}
 					texts={textsItems}
 					shapes={shapesItems}
 					imagesDefault={imagesDefaultItems}
@@ -600,7 +658,8 @@ const mapDispatchToProps  = {
 	setLeft,
 	setTop,
 	setWidth,
-	setHeight
+	setHeight,
+	setAvatarPosition
 }
 
 export default connect(null, mapDispatchToProps)(ImageMapItems);

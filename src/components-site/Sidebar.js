@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -193,7 +192,7 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   return (
     <Box
       component="nav"
-      sx={{ width: { lg: isEditorPage() ? 0 : drawerWidth, xl: drawerWidth }, flexShrink: { lg: 0 } }}
+      sx={{ width: { lg: isEditorPage() ? 0 : drawerWidth, xl: isEditorPage() ? 0 : drawerWidth }, flexShrink: { lg: 0 } }}
     >
       <Drawer
         sx={{
@@ -218,7 +217,7 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: 'none', sm: 'none', md: 'none', lg: isEditorPage() ? 'none' : 'block', xl: 'block' },
+          display: { xs: 'none', sm: 'none', md: 'none', lg: isEditorPage() ? 'none' : 'block', xl: isEditorPage() ? 'none' : 'block' },
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',

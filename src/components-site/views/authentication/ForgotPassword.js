@@ -220,12 +220,12 @@ const ForgotPassword = (props) => {
             </Button>
           </Box>
           
-          {/* {!isVerify && <Box sx={{ textAlign: 'center', mt: 2, color: '#fff' }}>
+          {!isVerify && <Box sx={{ textAlign: 'center', mt: 2, color: '#fff' }}>
             Still having trouble? {" "}
             <Link color="#df678c">
               Contact us at
             </Link>
-          </Box>} */}
+          </Box>}
         </Box>
       </Box>
     </Container>

@@ -31,6 +31,7 @@ const GenerateVideo = (props) => {
   const history = useHistory();
   // const video = useSelector(state => state.video.video);
   // const slides = useSelector(state => state.video.slides);
+  const activeSlide = useSelector(state => state.video.activeSlide);
   const selectedAvatar = useSelector(state => state.video.selectedAvatar);
 
   const [title, setTitle] = useState(video.package_name);
@@ -72,10 +73,7 @@ const GenerateVideo = (props) => {
   }
 
   const doGenerateVideo = async () => {
-    // NOTE: Temporary (due to hiding functionalities)
-    const script = props.textScript;
-        
-    // const script = activeSlide.text_script;
+    const script = activeSlide.text_script;
     if (script === null || script === '') {
       showAlert('The slide has no script. Please type a script.', 'error');
       return;
@@ -247,16 +245,13 @@ const GenerateVideo = (props) => {
 
         <InputLabel sx={labelStyle}>Script</InputLabel>
         <Box sx={{ overflow: 'hidden', maxHeight: '80px' }}>
-          {/* {slides && slides.map(slide => {
-            return ( */}
-              <Typography /*key={slide.clip_id}*/ variant="h6" sx={{ color: "#fff" }}>
-                {/* NOTE: Temporary (due to hiding functionalities) */}
-                {textScript}
-                
-                {/* {slide.text_script}  */}
+          {slides && slides.map(slide => {
+            return (
+              <Typography key={slide.clip_id} variant="h6" sx={{ color: "#fff" }}>
+                {slide.text_script} 
               </Typography>
-            {/* ); */}
-          {/* })} */}
+            );
+          })}
         </Box>
 
         <InputLabel sx={labelStyle}>Estimated time</InputLabel>

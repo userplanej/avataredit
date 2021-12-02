@@ -185,13 +185,13 @@ const VideoPreview = () => {
               </ClickAwayListener>
             }
 
-            {/* <Box sx={{ mt: 3 }}>
+            <Box sx={{ mt: 3 }}>
               <Link color="#df678c" onClick={handleOpenScriptDialog}>View scripts</Link>
-            </Box> */}
+            </Box>
           </Grid>
           
           <Grid item xs={12} lg={4} sx={{ p: 4, color: '#fff', backgroundColor: '#3c4045', height: '100%' }}>
-            {/* <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               Enable video sharing
               <Switch defaultChecked sx={{ mr: 1 }} />
             </Box>
@@ -203,9 +203,9 @@ const VideoPreview = () => {
             <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between' }}>
               Allow duplicates
               <Switch defaultChecked sx={{ mr: 1 }} />
-            </Box> */}
+            </Box>
 
-            {/* <Box sx={{ p: 2, mt: 2, backgroundColor: '#9a9a9a' }}>
+            <Box sx={{ p: 2, mt: 2, backgroundColor: '#9a9a9a' }}>
               <Typography variant="subtitle1" color="#3c4045">Share your video</Typography>
 
               <Grid container sx={{ mt: 1 }}>
@@ -229,7 +229,7 @@ const VideoPreview = () => {
                   </Button>
                 </Grid>
               </Grid>
-            </Box> */}
+            </Box>
 
             <Box sx={{ p: 2, mt: 2, border: '3px solid #9a9a99' }}>
               <Typography variant="h6" color="#fff">Video options</Typography>
@@ -244,7 +244,7 @@ const VideoPreview = () => {
                   </ListItemButton>
                 </ListItem>
 
-                {/* <ListItem disablePadding>
+                <ListItem disablePadding>
                   <ListItemButton>
                     <ListItemIcon>
                       <ContentCopyIcon sx={{ color: '#fff' }} />
@@ -260,7 +260,7 @@ const VideoPreview = () => {
                     </ListItemIcon>
                     <ListItemText primary="Create template" />
                   </ListItemButton>
-                </ListItem> */}
+                </ListItem>
 
                 <ListItem disablePadding onClick={handleDeleteVideo}>
                   <ListItemButton>
@@ -273,13 +273,13 @@ const VideoPreview = () => {
               </List>
             </Box>
 
-            {/* <Box sx={{ mt: 3 }}>
+            <Box sx={{ mt: 3 }}>
               <Link color="#df678c" onClick={() => {}}>Issues with pronunciation or pause?</Link>
-            </Box> */}
+            </Box>
           </Grid>
         </Grid>
 
-        {/* <Dialog
+        <Dialog
           maxWidth="md"
           open={openScriptDialog}
           aria-labelledby="generate-video-dialog-title"
@@ -300,7 +300,7 @@ const VideoPreview = () => {
               Close
             </Button>
           </DialogActions>
-        </Dialog> */}
+        </Dialog>
       </Container>
     );
 }

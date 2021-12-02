@@ -1,3 +1,5 @@
+import { scaling } from '../components/canvas/constants';
+
 export const createAvatarObject = (avatar) => {
   return {
     "name": avatar.avatar_name,
@@ -6,12 +8,13 @@ export const createAvatarObject = (avatar) => {
     "option": {
       "type": "image",
       "name": avatar.avatar_name,
+      "cloneable": false,
       "subtype": "avatar",
       "version": "3.6.6",
       "originX": "center",
       "originY": "center",
-      "scaleX": 0.28,
-      "scaleY": 0.28,
+      "scaleX": scaling.AVATAR,
+      "scaleY": scaling.AVATAR,
       "crossOrigin": "Anonymous",
       "src": avatar.avatar_dir,
       "src_thumbnail": avatar.avatar_thumbnail_dir
@@ -31,8 +34,8 @@ export const createImageObject = (image) => {
       "crossOrigin": "Anonymous",
       "originX": "center",
       "originY": "center",
-      "scaleX": 0.5,
-      "scaleY": 0.5
+      "scaleX": scaling.IMAGE,
+      "scaleY": scaling.IMAGE
     }
   }
 }
@@ -88,8 +91,8 @@ export const createShapeObject = (shape) => {
       "name": shape.shape_name,
       "src": shape.shape_dir,
       "crossOrigin": "Anonymous",
-      "scaleX": 0.1,
-      "scaleY": 0.1,
+      "scaleX": scaling.SHAPE,
+      "scaleY": scaling.SHAPE,
       "originX": "center",
       "originY": "center"
     }
