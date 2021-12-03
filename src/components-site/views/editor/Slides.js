@@ -22,7 +22,8 @@ const ITEM_HEIGHT = 48;
 
 const slideContainerStyle = {
   width: '100%',
-  height: '192px',
+  height: '150px',
+  // height: '192px',
   padding: '0',
   display: 'flex',
   flexDirection: 'column',
@@ -311,14 +312,14 @@ const Slides = (props) => {
               </Grid>
             </Grid>
 
-            <Grid container /*sx={isActive ? { borderLeft: '4px solid #e8e9e9'} : null}*/>
+            {/* <Grid container>
               <Grid item xs={1} md={1} xl={1.5}></Grid>
               <Grid item xs={10} md={9} xl={10.5}>
                 <Button variant="contained" variant="secondary" sx={btnAddTransitionStyle}>
                   Add transitions
                 </Button>
               </Grid>
-            </Grid>
+            </Grid> */}
           </ListItem>
         )
       })}
