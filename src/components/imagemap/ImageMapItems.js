@@ -44,6 +44,7 @@ class ImageMapItems extends Component {
 			optionValue: null,
 			indexTab: 0,
 			avatarSearch: '',
+			backgroundColorSearch: '',
 			backgroundImageSearch: '',
 			imageSearch: ''
 		};
@@ -115,6 +116,8 @@ class ImageMapItems extends Component {
 		} else if (this.state.svgModalVisible !== nextState.svgModalVisible) {
 			return true;
 		} else if (this.state.avatarSearch !== nextState.avatarSearch) {
+			return true;
+		} else if (this.state.backgroundColorSearch !== nextState.backgroundColorSearch) {
 			return true;
 		} else if (this.state.backgroundImageSearch !== nextState.backgroundImageSearch) {
 			return true;
@@ -199,7 +202,7 @@ class ImageMapItems extends Component {
 		document.addEventListener('keydown', e => {
 			if (e.code === code.DELETE) {
 				this.props.setSelectedAvatar(null);
-				this.props.onSaveSlide();
+				setTimeout(() => this.props.onSaveSlide(), 100);
 			}
 		});
 	}
@@ -453,6 +456,15 @@ class ImageMapItems extends Component {
 			/>
 		}
 
+		if (type === 'background-color') {
+			searchField = <SearchInput
+				id="input-with-icon-textfield"
+				placeholder="Search colors"
+				fullWidth
+				onChange={(event) => this.handleBackgroundColorChange(event.target.value)}
+			/>
+		}
+
 		if (type === 'background-image') {
 			searchField = <SearchInput
 				id="input-with-icon-textfield"
@@ -475,10 +487,13 @@ class ImageMapItems extends Component {
 	}
 
 	shouldRenderItem = (item, type) => {
-		const { avatarSearch, backgroundImageSearch, imageSearch } = this.state;
+		const { avatarSearch, backgroundColorSearch, backgroundImageSearch, imageSearch } = this.state;
 
 		if (type === 'avatar' && avatarSearch !== '') {
 			return item.name.toLowerCase().includes(avatarSearch.toLowerCase()) ? true : false;
+		}
+		if (type === 'background-color' && backgroundColorSearch !== '') {
+			return item.name.toLowerCase().includes(backgroundColorSearch.toLowerCase()) ? true : false;
 		}
 		if (type === 'background-image' && backgroundImageSearch !== '') {
 			return item.name.toLowerCase().includes(backgroundImageSearch.toLowerCase()) ? true : false;
@@ -573,6 +588,10 @@ class ImageMapItems extends Component {
 
 	handleAvatarNameChange = (value) => {
 		this.setState({ avatarSearch: value });
+	}
+
+	handleBackgroundColorChange = (value) => {
+		this.setState({ backgroundColorSearch: value });
 	}
 
 	handleBackgroundImageNameChange = (value) => {
