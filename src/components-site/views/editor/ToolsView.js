@@ -14,12 +14,14 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Stack, Slider, InputLabel } from '@mui/material';
 
 import CustomInput from '../../inputs/CustomInput';
+import SelectInput from '../../inputs/SelectInput';
 
 import { setActiveObject } from '../../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
 import { setHeight, setLeft, setTop, setWidth, setIsFront, setIsBack } from '../../../redux/object/objectSlice';
 
 import { scaling } from '../../../components/canvas/constants';
+import { avatarPoseEnum, avatarPoseValues } from '../../../enums/AvatarPose';
 
 const propertiesNames = {
   position: 'position',
@@ -78,6 +80,7 @@ const ToolsView = (props) => {
   const [imageTab, setImageTab] = useState(0);
   const [avatarSize, setAvatarSize] = useState(100);
   const [avatarPosition, setAvatarPosition] = useState('center');
+  const [avatarPose, setAvatarPose] = useState(avatarPoseEnum.all_around);
 
   useEffect(() => {
     dispatch(setActiveTab(0));
@@ -108,6 +111,10 @@ const ToolsView = (props) => {
     setAvatarSize(newValue);
     updateAvatarSize(newValue);
   };
+
+  const handleChangeAvatarPose = (newValue) => {
+    setAvatarPose(newValue);
+  }
 
   const updateAvatarSize = (size) => {
     const { canvasRef } = props;
@@ -313,8 +320,25 @@ const ToolsView = (props) => {
     }
   }
 
+  const renderAvatarPose = () => {
+    return (
+      <Box>
+        <InputLabel sx={{ mt: '20px' }}>Pose</InputLabel>
+        <SelectInput 
+          items={avatarPoseValues}
+          id="avatar-pose"
+          name="avatar-pose"
+          value={avatarPose}
+          noEmptyValue
+          onChange={(event) => handleChangeAvatarPose(event.target.value)}
+        />
+      </Box>
+    );
+  }
+
   const renderFormat = () => {
-    let title = '';
+    let title = 'Format';
+    let type = null;
     if (activeObject) {
       switch (activeObject.type) {
         case 'textbox':
@@ -323,6 +347,10 @@ const ToolsView = (props) => {
         case 'shape':
           title = 'Shape format';
           break;
+        case 'avatar':
+          title = 'Avatar format';
+          type = 'avatar';
+          break;
         default:
           break;
       }
@@ -330,8 +358,7 @@ const ToolsView = (props) => {
     return (
       <Box>
         <Typography variant="h5" sx={{ mb: 2 }}>
-          Format
-          {/* {title} */}
+          {title}
         </Typography>
 
         <hr />
@@ -339,7 +366,7 @@ const ToolsView = (props) => {
         {renderMoveButtons()}
 
         <hr />
-        
+        {type === 'avatar' && renderAvatarPose()}
         {renderLayout()}
       </Box>
     );
