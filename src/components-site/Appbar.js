@@ -55,7 +55,11 @@ const Appbar = (props) => {
     /**
      * Canvas reference
      */
-    canvasRef, 
+    canvasRef,
+    /**
+     * Save slide
+     */
+    onSaveSlide,
     /**
      * Open generate video dialog
      */
@@ -164,10 +168,12 @@ const Appbar = (props) => {
 
   const onUndo = () => {
     canvasRef.handler?.transactionHandler.undo();
+    setTimeout(() => onSaveSlide(), 100);
   }
   
   const onRedo = () => {
     canvasRef.handler?.transactionHandler.redo();
+    setTimeout(() => onSaveSlide(), 100);
   }
 
   const saveUser = async () => {
