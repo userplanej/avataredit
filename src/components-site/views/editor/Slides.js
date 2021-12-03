@@ -106,7 +106,8 @@ const Slides = (props) => {
     const imageClip = {
       package_id: packageId,
       background_type: null,
-      html5_script: JSON.stringify(objects)
+      html5_script: JSON.stringify(objects),
+      text_script: ''
     }
     
     await postImageClip(imageClip).then((res) => {
@@ -176,7 +177,8 @@ const Slides = (props) => {
         package_id: packageId,
         background_type: selectedSlide.background_type,
         html5_script: selectedSlide.html5_script,
-        html5_dir: selectedSlide.html5_dir
+        html5_dir: selectedSlide.html5_dir,
+        text_script: selectedSlide.text_script
       }
 
       await postImageClip(imageClip).then((res) => {
@@ -327,13 +329,12 @@ const Slides = (props) => {
 
       <ListItem 
         sx={{ ...slideContainerStyle, mt: 0 }}
-        onClick={() => addSlide()}
       >
         <Grid container>
           <Grid item xs={1} md={1} xl={1.5}></Grid>
 
           <Grid item xs={10} md={9} xl={10.5}>
-            <Box sx={addSlideContainerStyle}>
+            <Box sx={addSlideContainerStyle} onClick={() => addSlide()}>
               <AddIcon sx={{ color: '#fff', mb: '10px', fontSize: '2rem' }} />
               <Typography sx={{ fontSize: '14px'}}>Add slides</Typography>
             </Box>
