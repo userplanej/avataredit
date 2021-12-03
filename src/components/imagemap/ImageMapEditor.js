@@ -978,7 +978,7 @@ class ImageMapEditor extends Component {
 								/>
 							</Box>
 
-							<Script />
+							<Script onSaveSlide={onSaveSlide} />
 						</Grid>
 
 						{this.canvasRef && 

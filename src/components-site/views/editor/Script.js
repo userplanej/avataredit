@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
+import ReactHowler from 'react-howler';
 
-import { Button, Grid, Tab, Tabs, Typography, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Button, Grid, Tab, Tabs, Typography, Dialog, DialogTitle, DialogContent, CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
 import CloseIcon from '@mui/icons-material/Close';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
 
 import MultilineInput from '../../inputs/MultilineInput';
 
 import { getImageClip, updateImageClip } from '../../../api/image/clip';
+import { requestTts } from '../../../api/mindslab';
 
 import { setActiveSlide, setIsSaving } from '../../../redux/video/videoSlice';
 
@@ -60,6 +63,12 @@ const Script = (props) => {
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
   // Store current selected voice
   const [selectedVoice, setSelectedVoice] = useState(null);
+  // Related to playing script sound
+  const [playSound, setPlaySound] = useState(false);
+  const [hasScriptChanged, setHasScriptChanged] = useState(true);
+  const [soundSrc, setSoundSrc] = useState(null);
+  const [isSoundLoading, setIsSoundLoading] = useState(false);
+  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
 
   useEffect(() => {
     const script = activeSlide && activeSlide.text_script !== null ? activeSlide.text_script : '';
@@ -85,6 +94,7 @@ const Script = (props) => {
     const value = event.target.value;
     setTextScript(value);
     updateNbCharLeft(value);
+    setHasScriptChanged(true);
   }
 
   const updateNbCharLeft = (script) => {
@@ -111,6 +121,8 @@ const Script = (props) => {
         dispatch(setActiveSlide(clip));
 
         dispatch(setIsSaving(false));
+
+        props.onSaveSlide();
       });
     });
   }
@@ -127,47 +139,35 @@ const Script = (props) => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('lifecycleName', 'TTS-only-Lifecycle');
-    formData.append('catalogInstanceName', 'TTS-only-Catalog');
-    formData.append('target', 'SoftwareCatalogInstance');
-    formData.append('async', false);
-
-    let payload = {
-      'text': textScript,
-      'voiceName': 'kor_female1',
-      'apiId': 'ryu',
-      'apiKey': 'd0cad9547b9c4a65a5cdfe50072b1588'
-    };
-
-    formData.append('payload', JSON.stringify(payload));
-
-    const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
-    const headers = {
-      AccessKey: 'SerengetiAdministrationAccessKey',
-      SecretKey: 'SerengetiAdministrationSecretKey',
-      LoginId: 'maum-orchestra-com'
+    if (!hasScriptChanged) {
+      setPlaySound(true);
+      setIsSoundPlaying(true);
+      return;
     }
 
-    await axios({
-      method: 'post',
-      url: url, 
-      data: formData,
-      headers: headers
-    }).then(async (res) => {
-      const blob = new Blob([res.data], { type: 'audio/mp3' });
-      // const file = new File(blob, "test.wav", { type: "audio/wav" });
-      const url = URL.createObjectURL(blob);
-      console.log(url)
-      const audio = new Audio(url)
-      audio.load()
-      await audio.play();
+    setIsSoundLoading(true);
 
-      // var a = document.createElement("a");
-      // a.href = url;
-      // a.download = "test.wav";
-      // a.click();
+    requestTts(textScript, 'kor_female1').then(async (res) => {
+      var reader = new FileReader();
+      reader.readAsDataURL(res.data);
+      reader.onloadend = function () {
+        var b64 = reader.result.replace(/^data:.+;base64,/, '');
+        var src = "data:audio/mp3;base64," + b64;
+        setSoundSrc(src);
+        setPlaySound(true);
+      }
+      setHasScriptChanged(false);
     });
+  }
+
+  const handleSoundLoaded = () => {
+    setIsSoundLoading(false);
+    setIsSoundPlaying(true);
+  }
+
+  const handleSoundEnded = () => {
+    setIsSoundPlaying(false);
+    setPlaySound(false);
   }
 
   return (
@@ -242,7 +242,9 @@ const Script = (props) => {
 
           <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
             <Button variant="contained" sx={{ width: '100%'}} onClick={handlePlayScript}>
-              Play script
+              {!isSoundPlaying && !isSoundLoading && 'Play script'}
+              {!isSoundPlaying && isSoundLoading && <CircularProgress size={20} />}
+              {!isSoundLoading && isSoundPlaying && <PauseIcon />}
             </Button>
           </Grid>
         </Grid>
@@ -329,6 +331,14 @@ const Script = (props) => {
           <Typography variant="subtitle1">Other voices</Typography>
         </DialogContent>
       </Dialog>
+
+      {soundSrc !== null && <ReactHowler
+        src={soundSrc}
+        playing={playSound}
+        volume={0.6}
+        onLoad={handleSoundLoaded}
+        onEnd={handleSoundEnded}
+      />}
     </Box>
   );
 }

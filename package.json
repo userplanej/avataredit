@@ -75,6 +75,7 @@
 		"react-dom-factories": "^1.0.2",
 		"react-helmet": "^5.2.0",
 		"react-hot-loader": "^4.12.20",
+		"react-howler": "^5.2.0",
 		"react-json-view": "^1.19.1",
 		"react-query": "^3.23.2",
 		"react-redux": "^7.2.6",

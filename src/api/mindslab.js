@@ -1,5 +1,15 @@
 import axios from "axios";
 
+const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
+
+const getHeaders = () => {
+  return {
+    AccessKey: 'SerengetiAdministrationAccessKey',
+    SecretKey: 'SerengetiAdministrationSecretKey',
+    LoginId: 'maum-orchestra-com'
+  };
+}
+
 export const requestVideo = async (file, script) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -23,12 +33,7 @@ export const requestVideo = async (file, script) => {
 
   formData.append('payload', JSON.stringify(payload));
 
-  const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
-  const headers = {
-    AccessKey: 'SerengetiAdministrationAccessKey',
-    SecretKey: 'SerengetiAdministrationSecretKey',
-    LoginId: 'maum-orchestra-com'
-  }
+  const headers = getHeaders();
 
   return await axios({
     method: 'post',
@@ -36,5 +41,32 @@ export const requestVideo = async (file, script) => {
     data: formData,
     headers: headers,
     responseType: 'blob'
-  })
+  });
+}
+
+export const requestTts = async (script, voiceName) => {
+  const formData = new FormData();
+  formData.append('lifecycleName', 'TTS-only-Lifecycle');
+  formData.append('catalogInstanceName', 'TTS-only-Catalog');
+  formData.append('target', 'SoftwareCatalogInstance');
+  formData.append('async', false);
+
+  let payload = {
+    'text': script,
+    'voiceName': voiceName,
+    'apiId': 'ryu',
+    'apiKey': 'd0cad9547b9c4a65a5cdfe50072b1588'
+  };
+
+  formData.append('payload', JSON.stringify(payload));
+
+  const headers = getHeaders();
+
+  return await axios({
+    method: 'post',
+    url: url, 
+    data: formData,
+    headers: headers,
+    responseType: 'blob'
+  });
 }
