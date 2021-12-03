@@ -26,7 +26,7 @@ import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 import { setActiveSlide, setActiveSlideId, setSelectedAvatar } from '../../redux/video/videoSlice';
-import { setLeft, setTop, setWidth, setHeight } from '../../redux/object/objectSlice';
+import { setLeft, setTop, setWidth, setHeight, setIsBack, setIsFront } from '../../redux/object/objectSlice';
 
 import { getImagePackage } from '../../api/image/package';
 import { getAllUserImages, getAllDefaultImages } from '../../api/image/image';
@@ -330,6 +330,9 @@ class ImageMapEditor extends Component {
 
 				// Update format values
 				this.setFormatValues(target);
+
+				// Update object stack values
+				this.setBackAndFrontValues(target);
 				return;
 			}
 			this.canvasRef.handler.getObjects().forEach(obj => {
@@ -865,6 +868,12 @@ class ImageMapEditor extends Component {
 		this.props.setHeight(Math.round(height));
 	}
 
+	setBackAndFrontValues = (target) => {
+    const objects = this.canvasRef.handler.getObjects();
+    this.props.setIsBack(objects[0] === target);
+    this.props.setIsFront(objects[objects.length - 1] === target);
+	}
+
 	render() {
 		const {
 			avatars,
@@ -908,7 +917,6 @@ class ImageMapEditor extends Component {
 						slides={slides}
 						open={openGenerateVideo}
 						close={() => this.handleCloseGenerateVideo()}
-						textScript={this.state.textScript}
 					/>
 				}
 				<DiscardDraft open={openDiscardDraft} close={() => this.handleCloseDiscardDraft()} />
@@ -920,6 +928,7 @@ class ImageMapEditor extends Component {
 						setVideo={(video) => this.setVideo(video)}
 						handleDrawerToggle={() => this.handleDrawerToggle()}
 						canvasRef={this.canvasRef}
+						onSaveSlide={onSaveSlide}
 						openGenerateVideo={() => this.handleOpenGenerateVideo()}
 						openDiscardDraft={() => this.handleOpenDiscardDraft()}
 						openPlayVideo={() => this.handleOpenPlayVideo()}
@@ -1014,7 +1023,9 @@ const mapDispatchToProps  = {
 	setLeft,
 	setTop,
 	setWidth,
-	setHeight
+	setHeight,
+	setIsFront,
+	setIsBack
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ImageMapEditor));

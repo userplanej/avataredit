@@ -17,7 +17,7 @@ import CustomInput from '../../inputs/CustomInput';
 
 import { setActiveObject } from '../../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
-import { setHeight, setLeft, setTop, setWidth } from '../../../redux/object/objectSlice';
+import { setHeight, setLeft, setTop, setWidth, setIsFront, setIsBack } from '../../../redux/object/objectSlice';
 
 import { scaling } from '../../../components/canvas/constants';
 
@@ -70,6 +70,8 @@ const ToolsView = (props) => {
   const activeObjectWidth = useSelector(state => state.object.width);
   const activeObjectHeight = useSelector(state => state.object.height);
   const avatarPositionSaved = useSelector(state => state.object.avatarPosition);
+  const isActiveObjectFront = useSelector(state => state.object.isFront);
+  const isActiveObjectBack = useSelector(state => state.object.isBack);
 
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
@@ -114,20 +116,11 @@ const ToolsView = (props) => {
 
     const defaultScale = scaling.AVATAR - 0.01;
     let newScale = (parseInt(size) * defaultScale) / 100;
-    // if (newScale === 0) {
-    //   newScale = 0.05;
-    // }
     canvasRef.handler.setByObject(avatar, 'scaleX', newScale);
     canvasRef.handler.setByObject(avatar, 'scaleY', newScale);
   }
 
   const renderMoveButtons = () => {
-    const { canvasRef } = props;
-    const objects = canvasRef.handler.getObjects();
-    const activeObject = canvasRef.handler.getActiveObject();
-    const isBack = objects[0] === activeObject;
-    const isForward = objects[objects.length - 1] === activeObject;
-
     return (
       <Box sx={{ mt: 1, mb: 2 }}>
         <Typography variant="h6">Move</Typography>
@@ -139,7 +132,7 @@ const ToolsView = (props) => {
               fullWidth
               startIcon={<FlipToBackIcon />} 
               onClick={sendToBack}
-              disabled={isBack}
+              disabled={isActiveObjectBack}
               sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
             >
               Back
@@ -153,7 +146,7 @@ const ToolsView = (props) => {
               fullWidth
               startIcon={<FlipToBackIcon />} 
               onClick={sendBackwards}
-              disabled={isBack}
+              disabled={isActiveObjectBack}
               sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
             >
               Backward
@@ -167,7 +160,7 @@ const ToolsView = (props) => {
               fullWidth
               startIcon={<FlipToFrontIcon />} 
               onClick={bringForward}
-              disabled={isForward}
+              disabled={isActiveObjectFront}
               sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427', mr: 1 }}
             >
               Forward
@@ -181,7 +174,7 @@ const ToolsView = (props) => {
               fullWidth
               startIcon={<FlipToFrontIcon />} 
               onClick={bringToFront}
-              disabled={isForward}
+              disabled={isActiveObjectFront}
               sx={{ backgroundColor: '#e8e9e9', border: 'none', color: '#202427' }}
             >
               Front
@@ -193,23 +186,42 @@ const ToolsView = (props) => {
   }
 
   const sendToBack = () => {
-    props.canvasRef.handler.sendToBack();
-    setTimeout(() => props.onSaveSlide(), 100);
+    const { canvasRef, onSaveSlide } = props;
+    canvasRef.handler.sendToBack();
+    updateBackFrontValues();
+    setTimeout(() => onSaveSlide(), 100);
   }
 
   const sendBackwards = () => {
-    props.canvasRef.handler.sendBackwards();
-    setTimeout(() => props.onSaveSlide(), 100);
+    const { canvasRef, onSaveSlide } = props;
+    canvasRef.handler.sendBackwards();
+    updateBackFrontValues();
+    setTimeout(() => onSaveSlide(), 100);
   }
 
   const bringForward = () => {
-    props.canvasRef.handler.bringForward();
-    setTimeout(() => props.onSaveSlide(), 100);
+    const { canvasRef, onSaveSlide } = props;
+    canvasRef.handler.bringForward();
+    updateBackFrontValues();
+    setTimeout(() => onSaveSlide(), 100);
   }
 
   const bringToFront = () => {
-    props.canvasRef.handler.bringToFront();
-    setTimeout(() => props.onSaveSlide(), 100);
+    const { canvasRef, onSaveSlide } = props;
+    canvasRef.handler.bringToFront();
+    updateBackFrontValues();
+    setTimeout(() => onSaveSlide(), 100);
+  }
+
+  /**
+   * Update boolean values if active object is the first or last object (at the front or back)
+   */
+  const updateBackFrontValues = () => {
+    const { canvasRef } = props;
+    const objects = canvasRef.handler.getObjects();
+    const activeObject = canvasRef.handler.getActiveObject();
+    dispatch(setIsBack(objects[0] === activeObject));
+    dispatch(setIsFront(objects[objects.length - 1] === activeObject));
   }
 
   const renderLayout = () => {
@@ -385,8 +397,8 @@ const ToolsView = (props) => {
                 aria-label="avatars-tabs"
               >
                 <Tab label="Full body" />
-                <Tab label="Circle" />
-                <Tab label="Voice only" />
+                {/* <Tab label="Circle" />
+                <Tab label="Voice only" /> */}
               </Tabs>
             </Box>
             <TabPanel name="avatar" value={avatarTab} index={0}>
