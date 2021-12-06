@@ -35,8 +35,16 @@ import { getAllShapes } from '../../api/shape/shape';
 import { getAllImageClipByPackageId, updateImageClip } from '../../api/image/clip';
 import { getAllVideos } from '../../api/video/video';
 import { uploadFile, deleteFile } from '../../api/s3';
+import { getAllBackgrounds } from '../../api/background/background';
 
-import { createAvatarObject, createImageObject, createBackgroundImageObject, createShapeObject, createBackgroundVideoObject } from '../../utils/CanvasObjectUtils';
+import {
+	createAvatarObject,
+	createImageObject,
+	createBackgroundImageObject,
+	createShapeObject,
+	createBackgroundVideoObject,
+	createBackgroundColorObject
+} from '../../utils/CanvasObjectUtils';
 
 const propertiesToInclude = [
 	'id',
@@ -122,8 +130,8 @@ class ImageMapEditor extends Component {
 		descriptors: {},
 		avatars: {},
 		shapes: {},
-		backgrounds: {},
 		uploadedBackgroundImages: {},
+		defaultBackgroundColors: {},
 		defaultBackgroundImages: {},
 		defaultBackgroundVideos: {},
 		uploadedImages: {},
@@ -140,15 +148,12 @@ class ImageMapEditor extends Component {
 			import('./Descriptors.json').then(descriptors => {
 				this.setState({ descriptors });
 			}),
-			// Import background colors
-			import('./Backgrounds.json').then(backgrounds => {
-				this.setState({ backgrounds });
-			}),
 			this.loadImagePackage(),
 			this.loadImageClips(),
 			this.loadAvatars(),
 			this.loadImages(),
 			this.loadShapes(),
+			this.loadBackgrounds(),
 			// this.loadVideos()
 		]).then(() => {
 			this.props.setShowBackdrop(false);
@@ -182,17 +187,19 @@ class ImageMapEditor extends Component {
 		await getAllAvatars().then(res => {
 			const avatars = res.data.body.rows;
 
-			const avatarArray = [];
-			avatars.forEach(avatar => {
-				const avatarObject = createAvatarObject(avatar);
-				avatarArray.push(avatarObject);
-			});
-
-			const avatarList = {
-				"AVATAR": avatarArray
+			if (avatars && avatars.length > 0) {
+				const avatarArray = [];
+				avatars.forEach(avatar => {
+					const avatarObject = createAvatarObject(avatar);
+					avatarArray.push(avatarObject);
+				});
+	
+				const avatarList = {
+					"AVATAR": avatarArray
+				}
+	
+				this.setState({ avatars: avatarList });
 			}
-
-			this.setState({ avatars: avatarList })
 		});
 	}
 
@@ -202,45 +209,37 @@ class ImageMapEditor extends Component {
 		await getAllUserImages(user.user_id).then(res => {
 			const images = res.data.body;
 
-			const imageArray = [];
-			const backgroundImageArray = [];
-			images.forEach(image => {
-				const imageObject = createImageObject(image);
-				imageArray.push(imageObject);
-				const backgroundImageObject = createBackgroundImageObject(image);
-				backgroundImageArray.push(backgroundImageObject);
-			});
-			
-			const imageList = {
-				"IMAGE": imageArray
-			}
-			const backgroundImageList = {
-				"IMAGE": backgroundImageArray
-			}
+			if (images && images.length > 0) {
+				const imageArray = [];
+				images.forEach(image => {
+					const imageObject = createImageObject(image);
+					imageArray.push(imageObject);
+				});
+				
+				const imageList = {
+					"IMAGE": imageArray
+				}
 
-			this.setState({ uploadedImages: imageList, uploadedBackgroundImages: backgroundImageList })
+				this.setState({ uploadedImages: imageList });
+			}
 		});
 
 		await getAllDefaultImages().then(res => {
 			const images = res.data.body;
 
-			const imageArray = [];
-			const backgroundImageArray = [];
-			images.forEach(image => {
-				const imageObject = createImageObject(image);
-				imageArray.push(imageObject);
-				const backgroundImageObject = createBackgroundImageObject(image);
-				backgroundImageArray.push(backgroundImageObject);
-			});
-			
-			const imageList = {
-				"IMAGE": imageArray
-			}
-			const backgroundImageList = {
-				"IMAGE": backgroundImageArray
-			}
+			if (images && images.length > 0) {
+				const imageArray = [];
+				images.forEach(image => {
+					const imageObject = createImageObject(image);
+					imageArray.push(imageObject);
+				});
+				
+				const imageList = {
+					"IMAGE": imageArray
+				}
 
-			this.setState({ defaultImages: imageList, defaultBackgroundImages: backgroundImageList })
+				this.setState({ defaultImages: imageList });
+			}
 		});
 	}
 
@@ -248,37 +247,72 @@ class ImageMapEditor extends Component {
 		await getAllShapes().then(res => {
 			const shapes = res.data.body;
 
-			const shapeArray = [];
-			shapes.forEach(shape => {
-				const shapeObject = createShapeObject(shape);
-				shapeArray.push(shapeObject);
-			});
+			if (shapes && shapes.length > 0) {
+				const shapeArray = [];
+				shapes.forEach(shape => {
+					const shapeObject = createShapeObject(shape);
+					shapeArray.push(shapeObject);
+				});
 
-			const shapeList = {
-				"SHAPE": shapeArray
+				const shapeList = {
+					"SHAPE": shapeArray
+				}
+
+				this.setState({ shapes: shapeList });
 			}
-
-			this.setState({ shapes: shapeList })
 		});
 	}
 
-	// loadVideos = async () => {
-	// 	await getAllVideos().then(res => {
-	// 		const videos = res.data.body;
+	loadBackgrounds = async () => {
+		await getAllBackgrounds().then(res => {
+			const backgrounds = res.data.body;
 
-	// 		const backgroundVideoArray = [];
-	// 		videos.forEach(video => {
-	// 			const backgroundImageObject = createBackgroundVideoObject(video);
-	// 			backgroundVideoArray.push(backgroundImageObject);
-	// 		});
-			
-	// 		const backgroundVideoList = {
-	// 			"VIDEO": backgroundVideoArray
-	// 		}
+			if (backgrounds && backgrounds.length > 0) {
+				const backgroundImageArray = [];
+				const backgroundColorArray = [];
+				backgrounds.forEach(background => {
+					if (background.color_hex !== null) {
+						const backgroundObject = createBackgroundColorObject(background);
+						backgroundColorArray.push(backgroundObject);
+					}
+					if (background.background_src !== null) {
+						const backgroundImageObject = createBackgroundImageObject(image);
+						backgroundImageArray.push(backgroundImageObject);
+					}
+				});
+				
+				const backgroundColorList = {
+					"COLOR": backgroundColorArray
+				}
 
-	// 		this.setState({ defaultBackgroundVideos: backgroundVideoList })
-	// 	});
-	// }
+				const backgroundImageList = {
+					"IMAGE": backgroundImageArray
+				}
+
+				this.setState({ defaultBackgroundColors: backgroundColorList, defaultBackgroundImages: backgroundImageList });
+			}
+		});
+	}
+
+	loadVideos = async () => {
+		await getAllVideos().then(res => {
+			const videos = res.data.body;
+
+			if (videos && videos.length > 0) {
+				const backgroundVideoArray = [];
+				videos.forEach(video => {
+					const backgroundImageObject = createBackgroundVideoObject(video);
+					backgroundVideoArray.push(backgroundImageObject);
+				});
+				
+				const backgroundVideoList = {
+					"VIDEO": backgroundVideoArray
+				}
+
+				this.setState({ defaultBackgroundVideos: backgroundVideoList });
+			}
+		});
+	}
 
 	canvasHandlers = {
 		onAdd: target => {
@@ -881,8 +915,8 @@ class ImageMapEditor extends Component {
 			uploadedImages,
 			defaultImages,
 			shapes,
-			backgrounds,
 			uploadedBackgroundImages,
+			defaultBackgroundColors,
 			defaultBackgroundImages,
 			defaultBackgroundVideos,
 			mobileOpen,
@@ -986,8 +1020,8 @@ class ImageMapEditor extends Component {
 							<ImageMapItems
 								canvasRef={this.canvasRef}
 								descriptors={descriptors}
-								backgrounds={backgrounds}
 								uploadedBackgroundImages={uploadedBackgroundImages}
+								defaultBackgroundColors={defaultBackgroundColors}
 								defaultBackgroundImages={defaultBackgroundImages}
 								defaultBackgroundVideos={defaultBackgroundVideos}
 								uploadedImages={uploadedImages}

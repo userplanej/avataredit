@@ -3,7 +3,6 @@ import { scaling } from '../components/canvas/constants';
 export const createAvatarObject = (avatar) => {
   return {
     "name": avatar.avatar_name,
-    "description": "",
     "type": "avatar",
     "option": {
       "type": "image",
@@ -25,7 +24,6 @@ export const createAvatarObject = (avatar) => {
 export const createImageObject = (image) => {
   return {
     "name": image.image_name,
-    "description": "",
     "type": "image",
     "option": {
       "type": "image",
@@ -40,15 +38,31 @@ export const createImageObject = (image) => {
   }
 }
 
-export const createBackgroundImageObject = (image) => {
+export const createBackgroundColorObject = (background) => {
   return {
-    "name": image.image_name,
-    "description": "",
+    "name": background.background_name,
+    "type": "background",
+    "option": {
+      "type": "background",
+      "subtype": "color",
+      "backgroundColor": background.color_hex,
+      "originX": "left",
+      "originY": "top",
+      "layout": "fixed",
+      "width": 550,
+      "height": 310
+    }
+  }
+}
+
+export const createBackgroundImageObject = (background) => {
+  return {
+    "name": background.background_name,
     "type": "background",
     "option": {
       "type": "background",
       "subtype": "image",
-      "src": image.image_dir,
+      "src": background.background_src,
       "originX": "left",
       "originY": "top",
       "crossOrigin": "Anonymous",
@@ -62,7 +76,6 @@ export const createBackgroundImageObject = (image) => {
 export const createBackgroundVideoObject = (video) => {
   return {
     "name": video.video_name,
-    "description": "",
     "type": "background",
     "option": {
       "type": "background",
@@ -81,7 +94,6 @@ export const createBackgroundVideoObject = (video) => {
 export const createShapeObject = (shape) => {
   return {
     "name": shape.shape_name,
-    "description": "",
     "type": "shape",
     "option": {
       "type": "image",

@@ -314,8 +314,13 @@ class ImageMapItems extends Component {
 		},
 		onChangeWorkareaBackgroundImage: (src) => {
 			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor('#e8e9e9');
-			this.props.canvasRef.handler.workareaHandler.setImage(src, true);
+			this.props.canvasRef.handler.workareaHandler.setImage(src, false);
 			this.props.onSaveSlide();
+		},
+		onChangeWorkareaBackgroundVideo: (src) => {
+			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor('#e8e9e9');
+			this.props.canvasRef.handler.workareaHandler.setImage(null, true);
+			this.props.canvasRef.handler.workareaHandler.setVideo(src);
 		}
 	};
 
@@ -509,6 +514,7 @@ class ImageMapItems extends Component {
 		const isBackground = item.type === 'background';
 		const isBackgroundColor = isBackground && item.option.subtype === 'color';
 		const isBackgroundImage = isBackground && item.option.subtype === 'image';
+		const isBackgroundVideo = isBackground && item.option.subtype === 'video';
 		const isAvatar = item.type === 'avatar';
 		const isImage = item.type === 'image';
 		const isShape = item.type === 'shape';
@@ -545,7 +551,7 @@ class ImageMapItems extends Component {
 							this.handlers.onChangeWorkareaBackgroundColor(item.option.backgroundColor);
 							return;
 						}
-						if (isBackgroundImage) {
+						if (isBackgroundImage || isBackgroundVideo) {
 							this.handlers.onChangeWorkareaBackgroundImage(item.option.src);
 							return;
 						}
@@ -637,13 +643,13 @@ class ImageMapItems extends Component {
 
 	render() {
 		const { 
-			canvasRef, descriptors, backgrounds, uploadedBackgroundImages, defaultBackgroundImages, 
+			canvasRef, descriptors, uploadedBackgroundImages, defaultBackgroundColors, defaultBackgroundImages, 
 			defaultBackgroundVideos, avatars, uploadedImages, defaultImages, shapes, onSaveSlide
 		} = this.props;
 
 		const textsItems = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
 		const shapesItems = Object.keys(shapes).map(key => this.renderItems(shapes[key], key, 'shape'));
-		const backgroundsColorsItems = Object.keys(backgrounds).map(key => this.renderItems(backgrounds[key], key, 'background-color'));
+		const backgroundsColorsItems = Object.keys(defaultBackgroundColors).map(key => this.renderItems(defaultBackgroundColors[key], key, 'background-color'));
 		const backgroundsImagesDefaultItems = Object.keys(defaultBackgroundImages).map(key => this.renderItems(defaultBackgroundImages[key], key, 'background-image'));
 		const backgroundsImagesUploadedItems = Object.keys(uploadedBackgroundImages).map(key => this.renderItems(uploadedBackgroundImages[key], key, 'background-image', true));
 		const backgroundsVideosDefaultItems = Object.keys(defaultBackgroundVideos).map(key => this.renderItems(defaultBackgroundVideos[key], key, 'background-image'));
