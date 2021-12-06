@@ -33,7 +33,7 @@ const gridStyle = {
 const ITEM_HEIGHT = 48;
 
 const VideoCard = (props) => {
-  const { video, output, onDeleteVideo } = props;
+  const { video, output, onDeleteVideo, onDuplicateVideo } = props;
 
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -68,10 +68,25 @@ const VideoCard = (props) => {
     history.push(path);
   }
 
-  const handleDeleteVideo = (event, id) => {
+  const handleDeleteVideo = (event) => {
     event.stopPropagation();
+    
+    const id = video.package_id;
     onDeleteVideo(id);
     handleCloseMenu(event);
+  }
+
+  const handleDuplicateVideo = async (event) => {
+    event.stopPropagation();
+
+    onDuplicateVideo(video);
+    handleCloseMenu(event);
+  }
+
+  const handleCreateTemplate = (event) => {
+    event.stopPropagation();
+
+    const id = video.package_id;
   }
 
   const options = [
@@ -81,15 +96,15 @@ const VideoCard = (props) => {
     },
     {
       name: 'Duplicate',
-      action: (event) => handleCloseMenu(event)
+      action: (event) => handleDuplicateVideo(event)
     },
     {
       name: 'Create template',
-      action: (event) => handleCloseMenu(event)
+      action: (event) => handleCreateTemplate(event)
     },
     {
       name: 'Delete',
-      action: (event, id) => handleDeleteVideo(event, id)
+      action: (event) => handleDeleteVideo(event)
     }
   ];
   
@@ -199,7 +214,7 @@ const VideoCard = (props) => {
         <IconButton
           aria-label="delete"
           id="delete-button"
-          onClick={(event) => handleDeleteVideo(event, video.package_id)}
+          onClick={(event) => handleDeleteVideo(event)}
         >
           <DeleteForeverIcon sx={{ color: '#fff' }} />
         </IconButton>}
@@ -235,7 +250,7 @@ const VideoCard = (props) => {
             {options.map((option) => (
               <MenuItem 
                 key={option.name}  
-                onClick={(event) => option.action(event, video.package_id)} 
+                onClick={(event) => option.action(event)} 
                 sx={{ ':hover': { backgroundColor: '#f5f0fa' } }}
               >
                 {option.name}
