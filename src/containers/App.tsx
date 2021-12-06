@@ -65,10 +65,10 @@ class App extends Component<any> {
 					<Dialog
 						maxWidth="sm"
 						open={this.props.dialogAlertOpen}
-						aria-labelledby="password-dialog-title"
-						aria-describedby="password-dialog-description"
+						aria-labelledby="alert-dialog-title"
+						aria-describedby="alert-dialog-description"
 					>
-						<DialogTitle id="password-dialog-title" sx={{ textAlign: 'right' }}>
+						<DialogTitle id="alert-dialog-title" sx={{ textAlign: 'right' }}>
 							<CloseIcon fontSize="large" onClick={() => this.props.setDialogAlertOpen(false)} sx={{ cursor: 'pointer', color: '#fff' }} />
 						</DialogTitle>
 
