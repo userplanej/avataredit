@@ -1,188 +1,333 @@
 {
-	"imagemap": {
-		"imagemap": "Image Map",
-		"imagemap-editing-confirm": "The image map contents have been modified. Do you want to do that anyway?",
-		"imagemap-editor": "Image Map Editor",
-		"marker": {
-			"choose-icon": "Choose icon from Fontawesome",
-			"search-icon": "Search {{length}} icons for..."
+	"appbar": {
+		"home": {
+			"title": "Create new video"
 		},
-		"link": {
-			"link-enabled": "Link Enabled"
+		"videos": {
+			"title": "All videos",
+			"backToVideos": "Back to videos"
 		},
-		"tooltip": {
-			"tooltip-enabled": "Tooltip Enabled"
+		"editor": {
+			"saved": "All changes saved",
+			"saving": "Saving...",
+			"discard": "Discard draft",
+			"generate": "Generate video"
 		},
-		"style": {
-			"fill-color": "Fill Color",
-			"stroke-color": "Stroke Color",
-			"stroke-width": "Stroke Width",
-			"rx": "Radius x",
-			"ry": "Radius y"
-		},
-		"shadow": {
-			"shadow-enabled": "Shadow Enabled",
-			"offset-x": "Offset X",
-			"offset-y": "Offset Y"
-		},
-		"animation": {
-			"animation-type": "Animation Type",
-			"none": "None",
-			"fade": "Fade",
-			"bounce": "Bounce",
-			"shake": "Shake",
-			"scaling": "Scaling",
-			"rotation": "Rotation",
-			"flash": "Flash",
-			"auto-play": "Auto Play",
-			"playback": "Playback",
-			"bounce-type": "Bounce Type",
-			"shake-type": "Shake Type"
-		},
-		"trigger": {
-			"trigger-enabled": "Trigger Enabled"
-		},
-		"image": {
-			"image-load-type": "Image Load Type",
-			"file-upload": "File Upload",
-			"image-url": "Image URL"
-		},
-		"svg": {
-			"add-svg": "Add SVG"
-		},
-		"filter": {
-			"grayscale": "Grayscale",
-			"invert": "Invert",
-			"sepia": "Sepia",
-			"brownie": "Brownie",
-			"vintage": "Vintage",
-			"blackwhite": "Black/White",
-			"technicolor": "Technicolor",
-			"polaroid": "Polaroid",
-			"gamma": "Gamma",
-			"gamma-color": "Gamma Color",
-			"brightness": "Brightness",
-			"contrast": "Contrast",
-			"saturation": "Saturation",
-			"sharpen": "Sharpen",
-			"emboss": "Emboss",
-			"hue": "Hue",
-			"noise": "Noise",
-			"pixelate": "Pixelate",
-			"blur": "Blur"
-		},
-		"element": {
-			"mouse-hover-enabled": "Hover enabled"
+		"settings": {
+			"title": "Account settings",
+			"billing": "Billing information"
 		}
 	},
-	"workflow": {
-		"workflow": "Workflow",
-		"workflow-list": "Workflow List",
-		"workflow-editor": "Workflow Editor",
-		"workflow-info": "Workflow Info",
-		"workflow-editing-confirm": "Workflow content has been modified. Do you want to do that anyway?",
-		"node-configuration": "Node Configuration",
-		"variables": "Global Parameters",
-		"variables-add": "Add Global Parameters",
-		"variables-modify": "Modify Global Parameters",
-		"virtual-button-execute-failed": "{{name}} execute failed",
-		"virtual-button-execute-success": "{{name}} execute success",
-		"validate-fields-error": "A node with the wrong setting exists.",
-		"node-name-required": "Please input node name",
-		"node-description-required": "Please input node description"
+	"sidebar": {
+		"home": "Home",
+		"videos": "Videos",
+		"templates": "Templates",
+		"whatNew": "What's new",
+		"makeVideos": "How to make videos",
+		"help": "Help",
+		"settings": "Settings",
+		"logout": "Logout"
 	},
-	"videoStudio": {
-		"videoStudio": "Video Studio",
-		"videoStudio-editor": "Video Studio Editor"
+	"form": {
+		"login": {
+			"title": "Welcome back",
+			"forgotPassword": "Forgot your password?",
+			"login": "Login",
+			"notMember": "Not a member?",
+			"joinHere": "Join here"
+		},
+		"forgotPassword": {
+			"email": {
+				"title": "Can't log in?",
+				"content": "Type your email so we can send you a password recovery email",
+				"havingTrouble": "Still having trouble?",
+				"contactUs": "Contact us at"
+			},
+			"reset": {
+				"title": "Reset password",
+				"content": "Enter the code sent to your email",
+				"code": "Verification code",
+				"codePlaceholder": "Type your verification code",
+				"resend": "Resend code",
+				"verify": "Verify"
+			},
+			"newPassword": {
+				"title": "New password",
+				"content": "Please enter a new password",
+				"passwordPlaceholder": "Type your new password"
+			},
+			"success": "Password reset successfully."
+		},
+		"signup": {
+			"title": "Create an account",
+			"personal": {
+				"alreadyMember": "Already a member?",
+				"loginHere": "Login here"
+			},
+			"company": {
+				"title": "Company information (optional)",
+				"name": "Company name",
+				"namePlaceholder": "Type your company name",
+				"billingAddress": "Billing address",
+				"billingAddressPlaceholder": "Type your billing address",
+				"vat": "Vat number",
+				"vatPlaceholder": "Type your vat number (eg - GB2803414523)",
+				"tc": "Lorem Ipsum Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Lorem IpsumLorem IpsumLorem IpsumIpsumLorem IpsumLorem Ipsum",
+				"tcAgreement": "Agree to T&C"
+			},
+			"questions": {
+				"title": "Optional questions",
+				"hearAbout": "How did you hear about M Studio?",
+				"hearAboutPlaceholder": "Type your answer",
+				"useCase": "Use case",
+				"useCasePlaceholder": "Type your use case",
+				"companySize": {
+					"title": "Company size",
+					"value1": "1-10 employees",
+					"value2": "11-50 employees",
+					"value3": "51-200 employees",
+					"value4": "201-500 employees",
+					"value5": "501-1000 employees",
+					"value6": "1001-5000 employees",
+					"value7": "5001-10,000 employees",
+					"value8": "10,001+ employees"
+				},
+				"interested": "Are you interested in our API?"
+			},
+			"payment": {
+				"title": "Payment",
+				"cardInfo": "Card Information",
+				"cardInfoPlaceholder1": "Eg - 876492329384",
+				"cardInfoPlaceholder2": "MM/YY",
+				"cardInfoPlaceholder3": "CVV",
+				"cardName": "Name on card",
+				"cardNamePlaceholder": "Your name on card",
+				"countryRegion": "Country or region",
+				"countryRegionPlaceholder": "Your country or region",
+				"saveCard": "Save card info for next billing",
+				"terms": "By confirming your subscription, you allow M Studio to charge your card for this payment and future payments in accordance with their terms",
+				"suscribe": "Suscribe"
+			}
+		}
 	},
-	"action": {
-		"selection": "Selection mode(Q)",
-		"grab": "Grab mode(W or Alt + Drag)",
-		"zoom-in": "Zoom in",
-		"zoom-out": "Zoom out",
-		"one-to-one": "1:1",
-		"fit": "Scale to fit",
-		"preview": "Preview",
-		"canvas-list": "Canvas list",
-		"bring-forward": "Bring forward",
-		"send-backwards": "Send backwards",
-		"bring-to-front": "Bring to front",
-		"send-to-back": "Send to back",
-		"align-left": "Align left",
-		"align-center": "Align center",
-		"align-right": "Align right",
-		"object-group": "Group",
-		"object-ungroup": "Ungroup",
-		"crop": "Crop image",
-		"crop-save": "Save crop image",
-		"crop-cancel": "Cancel crop image",
-		"image-save": "Save Image",
-		"clone": "Clone",
-		"delete": "Delete",
-		"save": "Save",
-		"back": "Back",
-		"upload": "Upload",
-		"download": "Download",
-		"ok": "Ok",
-		"cancel": "Cancel",
-		"search-list": "Search list",
-		"add": "Add",
-		"modify": "Modify",
-		"all-delete": "All delete",
-		"clear": "Clear",
-		"start": "Start",
-		"pause": "Pause",
-		"stop": "Stop",
-		"execute": "Execute",
-		"go-github": "Go Github!!",
-		"go-docs": "Go Documents!!"
+	"views": {
+		"home": {
+			"templates": "Templates",
+			"recentVideos": "Recent videos"
+		},
+		"videos": {
+			"script": {
+				"view": "View scripts",
+				"title": "Scripts"
+			},
+			"videoSharing": "Enable video sharing",
+			"videoSharingHelper": "Anyone with the link will be able to see this video",
+			"duplicates": "Allow duplicates",
+			"share": "Share your video",
+			"copyLink": "Copy shareable link",
+			"options": "Video options",
+			"issues": "Issues with pronunciation or pause?"
+		},
+		"editor": {
+			"addSlide": "Add slide",
+			"script": {
+				"title": "Type your script",
+				"issues": "Issues with pronunciation or pause? Click here",
+				"characters": "characters left",
+				"play": "Play script"
+			},
+			"uploadVoice": {
+				"title": "Upload your voice",
+				"text1": "To get the greatest results, make sure your audio is clean and free of background noise, music, and other distractions.",
+				"text2" : "The duration of the audio is limited to 5 minutes. Please select the language of the audio recording before submitting.",
+				"drag": "Drag and drop your own voice file",
+				"formats": "You can upload in mp3, mp4, m4a, FLAC, and WAV formats",
+				"browse": "Browse file"
+			},
+			"tools": {
+				"template": {
+					"title": "Template",
+					"select": "Select template"
+				},
+				"avatar": {
+					"title": "Avatar",
+					"select": "Select avatar, size and alignment",
+					"search": "Search avatars",
+					"fullBody": "Full body",
+					"left": "Left",
+					"center": "Center",
+					"right": "Right"
+				},
+				"background": {
+					"title": "background",
+					"select": "Select background",
+					"colors": "Colors",
+					"images": "Images",
+					"videos": "Videos",
+					"uploads": "Uploads",
+					"searchColors": "Search colors",
+					"searchVideos": "Search videos",
+					"searchImages": "Search images"
+				},
+				"text": {
+					"title": "Text",
+					"addTitle": "Add title",
+					"addSubtitle": "Add subtitle",
+					"addBody": "Add body"
+				},
+				"shape": {
+					"title": "Shapes",
+					"select": "Select shape"
+				},
+				"image": {
+					"title": "Images",
+					"uploads": "Uploads",
+					"select": "Select image",
+					"search": "Search images"
+				},
+				"music": {
+					"title": "Music",
+					"select": "Select music"
+				},
+				"format": {
+					"move": "Move",
+					"back": "Back",
+					"backward": "Backward",
+					"forward": "Forward",
+					"front": "Front",
+					"pose": {
+						"title": "Pose",					
+						"greeting": "Greeting",
+						"wait": "Wait",
+						"sorry": "Sorry",
+						"left": "Point to left (center)",
+						"left_up": "Point to left up",
+						"left_down": "Point to left down",
+						"point_down": "Point down (center)",
+						"right": "Point to right (center)",
+						"right_up": "Point to right up",
+						"right_down": "Point to right down",
+						"all_around": "Combination of many natural movements"
+					},
+					"layout": "Layout",
+					"width": "Width",
+					"height": "Height"
+				}
+			}
+		},
+		"settings": {
+			"common": {
+				"clickHere": "please click here."
+			},
+			"account": {
+				"title": "Account information",
+				"cancelAccount": "To cancel your account, "
+			},
+			"personal": {
+				"shortBio": "Short bio"
+			},
+			"notification": {
+				"title": "Notifications",
+				"processing": "Video proccessing complete",
+				"updates": "Product updates"
+			},
+			"billing": {
+				"title": "Billing information",
+				"invoices": "To see invoices change credit card, VAT or address, ",
+				"plan": {
+					"currentPlan": "Current plan",
+					"basicPlan": "Basic plan",
+					"planRenewal": "Your plan renews on",
+					"changePlan": "Change plan",
+					"cancelPlan": "Cancel plan"
+				},
+				"payment": {
+					"title": "Payment method",
+					"expiration": "Expires on",
+					"add": "Add payment method"
+				},
+				"history": {
+					"title": "Billing history"
+				}
+			},
+			"dialog": {
+				"changePassword": {
+					"currentPassword": "Current password",
+					"currentPasswordPlaceholder": "Type your current password",
+					"newPassword": "New password",
+					"newPasswordPlaceholder": "Type your new password",
+					"confirmNewPassword": "Confirm new password",
+					"confirmNewPasswordPlaceholder": "Confirm your new password",
+					"save": "Save and proceeed",
+					"success": "Password changed successfully"
+				},
+				"cancelAccount": {
+					"title": "We're sorry to see you go!",
+					"content": "Enter the email associated with your account",
+					"reasons": {
+						"title": "Would you mind telling us why would you like to cancel?",
+						"reason1": "I am waiting for the API",
+						"reason2": "I don't need to create more videos right now",
+						"reason3": "Pricing",
+						"reason4": "I would like a wider selection of actors",
+						"reason5": "I need more features for my use case",
+						"reason6": "I am not satisfied with the video/voice quality and options"
+					},
+					"success": {
+						"title": "Thank you for helping us make the product better",
+						"content": "Our team will now process your request and you’ll receive an email",
+						"seeyou": "We hope to see you soon"
+					}
+				}
+			},
+			"success": "Account information changed successfully"
+		}
+	},
+	"components": {
+		"videoList": {
+			"draft": "Draft",
+			"slide": "Slide",
+			"ready": "Ready",
+			"hours": "hours ago"
+		}
 	},
 	"common": {
-		"name": "Name",
-		"description": "Description",
-		"width": "Width",
-		"height": "Height",
-		"icon": "Icon",
-		"locked": "Lock",
-		"visible": "Visible",
-		"left": "Left",
-		"top": "Top",
-		"key": "Key",
-		"type": "Type",
-		"value": "Value",
-		"title": "Title",
-		"file": "File",
-		"image": "Image",
-		"enabled": "Enabled",
-		"angle": "Angle",
-		"state": "State",
-		"url": "URL",
-		"current": "Current",
-		"new": "New",
-		"color": "Color",
-		"blur": "Blur",
-		"loop": "Loop",
-		"delay": "Delay",
-		"duration": "Duration",
-		"offset": "Offset",
-		"horizontal": "Horizontal",
-		"vertical": "Vertical",
-		"opacity": "Opacity",
-		"code": "Code",
-		"layout": "Layout",
-		"fixed": "Fixed",
-		"responsive": "Responsive",
-		"fullscreen": "Fullscreen",
-		"src": "Src",
-		"svg": "SVG"
-	},
-	"color": {
-		"red": "Red",
-		"green": "Green",
-		"blue": "Blue"
-	},
-	"validation": {
-		"enter-property": "Please enter {{arg}}.",
-		"already-property": "Already exist {{arg}}."
+		"input": {
+			"email": "Email",
+			"emailPlaceholder": "Type your email",
+			"password": "Password",
+			"passwordPlaceholder": "Type your password",
+			"passwordRules": "Password must be at least 8 characters long. Must include at least one number, one special character and one uppercase letter.",
+			"name": "Name",
+			"namePlaceholder": "Type your name",
+			"confirmPassword": "Confirm password",
+			"confirmPasswordPlaceholder": "Confirm your password",
+			"confirmPasswordHelper": "Both passwords must match",
+			"confirmPasswordHelperOk": "Both password match",
+			"search": "Search",
+			"date": "Date",
+			"title": "Title",
+			"sort": "Sort",
+			"description": "Description"
+		},
+		"button": {
+			"back": "Back",
+			"next": "Next",
+			"submit": "Submit",
+			"continue": "Continue",
+			"createNewVideo": "Create new video",
+			"play": "Play",
+			"delete": "Delete",
+			"createTemplate": "Create template",
+			"duplicate": "Duplicate",
+			"download": "Download",
+			"cancel": "Cancel",
+			"save": "Save",
+			"change": "Change",
+			"done": "Done",
+			"upload": "Upload"
+		},
+		"yes": "Yes",
+		"no": "No"
 	}
 }
