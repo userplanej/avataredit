@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
-import { Grid, Container } from '@mui/material';
+import { Grid, Container, Typography } from '@mui/material';
 
 import SearchInput from '../../inputs/SearchInput';
 import SortInput from '../../inputs/SortInput';
 import VideoCard from './VideoCard';
+import ConfirmDialog from '../../dialog/ConfirmDialog';
 
-import { getAllImagePackage } from '../../../api/image/package';
+import { getAllImagePackage, deleteImagePackage } from '../../../api/image/package';
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
 const sortItems = [
@@ -24,11 +25,14 @@ const sortItems = [
 
 const Videos = () => {
   const dispatch = useDispatch();
+  const showBackdrop = useSelector(state => state.backdrop.showBackdrop);
 
   const [videosList, setVideosList] = useState([]);
   const [videosListToDisplay, setVideosListToDisplay] = useState([]);
   const [sortType, setSortType] = useState(1);
   const [isSortAsc, setIsSortAsc] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [videoIdSelected, setVideoIdSelected] = useState(null);
 
   useEffect(() => {
     loadVideos();
@@ -84,6 +88,20 @@ const Videos = () => {
     });
     setVideosListToDisplay(newVideosList);
   }
+
+  const handleOpenConfirmDialog = (id) => {
+    setVideoIdSelected(id);
+    setOpenConfirmDialog(true);
+  }
+
+  const handleCloseConfirmDialog = () => setOpenConfirmDialog(false);
+
+  const handleDeleteVideo = async () => {
+    await deleteImagePackage(videoIdSelected).then(() => {
+      loadVideos();
+      handleCloseConfirmDialog();
+    });
+  }
   
   return (
     <Container maxWidth={false}>
@@ -107,11 +125,27 @@ const Videos = () => {
         </Grid>
 
         <Box sx={{ mt: 2, '& .MuiGrid-root': { m: '0px' }, maxHeight: '730px', overflowY: 'auto' }}>        
-          {videosListToDisplay && videosListToDisplay.map(video => {
-            return <VideoCard key={video.package_id} video={video} reloadVideosList={() => loadVideos()} />
-          })}
+          {!showBackdrop && videosListToDisplay && videosListToDisplay.length > 0 && videosListToDisplay.map(video => (
+            <VideoCard
+              key={video.package_id}
+              video={video}
+              output={video.output}
+              onDeleteVideo={(id) => handleOpenConfirmDialog(id)}
+            />
+          ))}
+          {!showBackdrop && videosListToDisplay && videosListToDisplay.length === 0 && 
+            <Typography variant="h6">You have no videos, please create a new one.</Typography>
+          }
         </Box>
       </Box>
+
+      <ConfirmDialog 
+        open={openConfirmDialog}
+        close={handleCloseConfirmDialog}
+        title="Delete video"
+        text="Are you sure you want to delete this video?"
+        onConfirm={handleDeleteVideo}
+      />
     </Container>
   );
 }

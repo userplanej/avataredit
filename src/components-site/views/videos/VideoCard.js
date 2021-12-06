@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -15,8 +14,6 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 import { getTimeElapsedSinceDate } from '../../../utils/DateUtils';
 import { getStringShortcut } from '../../../utils/StringUtils';
-
-import { deleteImagePackage } from '../../../api/image/package';
 
 import { pathnameEnum } from '../../constants/Pathname';
 
@@ -36,9 +33,8 @@ const gridStyle = {
 const ITEM_HEIGHT = 48;
 
 const VideoCard = (props) => {
-  const { video, reloadVideosList } = props;
+  const { video, output, onDeleteVideo } = props;
 
-  const dispatch = useDispatch();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -57,12 +53,13 @@ const VideoCard = (props) => {
     event.stopPropagation();
   }
 
-  const handleDeleteVideo = async (event, id) => {
+  const handleDownloadVideo = (event) => {
     event.stopPropagation();
-
-    await deleteImagePackage(id).then(() => {
-      reloadVideosList()
-    });
+    const a = document.createElement("a");
+    a.href = output.video_dir;
+    a.download = `${video.package_name}.mp4`;
+    a.click();
+    handleCloseMenu(event);
   }
 
   const handleClickVideo = () => {
@@ -71,10 +68,16 @@ const VideoCard = (props) => {
     history.push(path);
   }
 
+  const handleDeleteVideo = (event, id) => {
+    event.stopPropagation();
+    onDeleteVideo(id);
+    handleCloseMenu(event);
+  }
+
   const options = [
     {
       name: 'Download',
-      action: (event) => handleCloseMenu(event)
+      action: (event) => handleDownloadVideo(event)
     },
     {
       name: 'Duplicate',
@@ -90,6 +93,8 @@ const VideoCard = (props) => {
     }
   ];
   
+  const hasSlideImage = video.image_clips && video.image_clips.length > 0 && video.image_clips[0].html5_dir;
+
   return (
     <Grid 
       key={video.package_id}
@@ -115,7 +120,21 @@ const VideoCard = (props) => {
       </Grid>
 
       <Grid item xs={16} sm={13} md={9} lg={10} xl={7} sx={gridStyle}>
-        <Box sx={{ minWidth: '80px', height: '80px', borderRadius: '5px', backgroundColor: '#fff', mr: 2 }}></Box>
+        <Box>
+          <Box
+            sx={{
+              minWidth: '80px',
+              height: '80px',
+              borderRadius: '5px',
+              mr: 2,
+              backgroundColor: hasSlideImage ? '' : '#fff',
+              backgroundImage: hasSlideImage ? `url(${video.image_clips[0].html5_dir})` : '',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              backgroundSize: 'cover'
+            }}
+          />
+        </Box>
 
         <Box>
           <Box sx={gridStyle}>
@@ -149,7 +168,7 @@ const VideoCard = (props) => {
 
       <Grid item xs={10} sm={7} md={2} lg={2} xl={4} sx={{ textAlign: 'center' }}>
         {!video.is_draft && 
-        <Typography variant="h6" sx={{ color: '#fff' }}>{video.slides ? video.slides : '1'} Slide{video.slides && video.slides > 1 ? 's' : ''}</Typography>
+        <Typography variant="h6" sx={{ color: '#fff' }}>{video.image_clips.length} Slide{video.image_clips.length > 1 ? 's' : ''}</Typography>
         }
       </Grid>
 

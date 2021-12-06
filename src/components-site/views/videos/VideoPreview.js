@@ -53,7 +53,7 @@ const VideoPreview = () => {
     
     Promise.all([
       loadVideo(id),
-      loadOutput(id)
+      // loadOutput(id)
     ]).then(() => {
       dispatch(setShowBackdrop(false));
       setIsLoading(false);
@@ -65,16 +65,17 @@ const VideoPreview = () => {
       const video = res.data.body;
       setVideo(video);
       setTitle(video.package_name);
+      setOutput(video.output);
     });
   }
 
-  const loadOutput = async (id) => {
-    await getOutputByVideoId(id).then((res) => {
-      const output = res.data.body.rows[0];
-      setOutput(output);
-      setDescription(output.description);
-    });
-  }
+  // const loadOutput = async (id) => {
+  //   await getOutputByVideoId(id).then((res) => {
+  //     const output = res.data.body.rows[0];
+  //     setOutput(output);
+  //     setDescription(output.description);
+  //   });
+  // }
 
   const handleEditTitle = () => {
     setIsEditTitle(true);
@@ -280,7 +281,8 @@ const VideoPreview = () => {
         </Grid>
 
         <Dialog
-          maxWidth="md"
+          fullWidth
+          maxWidth="sm"
           open={openScriptDialog}
           aria-labelledby="generate-video-dialog-title"
           aria-describedby="generate-video-dialog-description"
@@ -290,16 +292,20 @@ const VideoPreview = () => {
           </DialogTitle>
 
           <DialogContent sx={{ pl: 5, pr: 15 }}>
+            <Typography variant="h5" color="#fff" sx={{ mb: 2 }}>
+              Scripts
+            </Typography>
             <Box>
-              
+              {video.image_clips.map((clip, index) => (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="body2" sx={{ mr: 2 }}>{index + 1}</Typography>
+                  <Typography color="#fff" variant="body1">{clip.text_script}</Typography>
+                </Box>
+              ))}
             </Box>
           </DialogContent>
           
-          <DialogActions>
-            <Button variant="contained" color="secondary" fullWidth onClick={handleCloseScriptDialog}>
-              Close
-            </Button>
-          </DialogActions>
+          <DialogActions></DialogActions>
         </Dialog>
       </Container>
     );
