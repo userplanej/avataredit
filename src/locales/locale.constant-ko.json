@@ -1,226 +1,333 @@
 {
-	"imagemap": {
-		"imagemap": "이미지맵",
-		"imagemap-editing-confirm": "이미지맵 내용이 수정되었습니다. 그래도 하시겠습니까?",
-		"imagemap-editor": "이미지맵 편집기",
-		"marker": {
-			"choose-icon": "Fontawesome 아이콘 선택",
-			"search-icon": "{{length}} 개의 아이콘을 검색할 수 있습니다."
+	"appbar": {
+		"home": {
+			"title": "영상 제작"
 		},
-		"link": {
-			"link-enabled": "Link Enabled"
+		"videos": {
+			"title": "내 영상 목록",
+			"backToVideos": "목록으로 돌아가기"
 		},
-		"tooltip": {
-			"tooltip-enabled": "Tooltip Enabled"
+		"editor": {
+			"saved": "모든 작업 내용이 저장되었습니다.",
+			"saving": "저장 중...",
+			"discard": "영상 버리기",
+			"generate": "영상 생성"
 		},
-		"style": {
-			"fill-color": "Fill Color",
-			"stroke-color": "Stroke Color",
-			"stroke-width": "Stroke Width",
-			"rx": "Radius x",
-			"ry": "Radius y"
-		},
-		"shadow": {
-			"shadow-enabled": "Shadow Enabled",
-			"offset-x": "Offset X",
-			"offset-y": "Offset Y"
-		},
-		"animation": {
-			"animation-type": "Animation Type",
-			"none": "None",
-			"fade": "Fade",
-			"bounce": "Bounce",
-			"shake": "Shake",
-			"scaling": "Scaling",
-			"rotation": "Rotation",
-			"flash": "Flash",
-			"auto-play": "Auto Play",
-			"playback": "Playback",
-			"bounce-type": "Bounce Type",
-			"shake-type": "Shake Type"
-		},
-		"trigger": {
-			"trigger-enabled": "Trigger Enabled"
-		},
-		"image": {
-			"image-load-type": "Image Load Type",
-			"file-upload": "File Upload",
-			"image-url": "Image URL"
-		},
-		"svg": {
-			"add-svg": "SVG 추가"
-		},
-		"filter": {
-			"grayscale": "Grayscale",
-			"invert": "Invert",
-			"sepia": "Sepia",
-			"brownie": "Brownie",
-			"vintage": "Vintage",
-			"blackwhite": "Black/White",
-			"technicolor": "Technicolor",
-			"polaroid": "Polaroid",
-			"gamma": "Gamma",
-			"gamma-color": "Gamma Color",
-			"brightness": "Brightness",
-			"contrast": "Contrast",
-			"saturation": "Saturation",
-			"sharpen": "Sharpen",
-			"emboss": "Emboss",
-			"hue": "Hue",
-			"noise": "Noise",
-			"pixelate": "Pixelate",
-			"blur": "Blur"
-		},
-		"element": {
-			"mouse-hover-enabled": "Hover enabled"
+		"settings": {
+			"title": "마이페이지",
+			"billing": "결제 관리"
 		}
 	},
-	"workflow": {
-		"workflow": "LuxPM - Pangyo",
-		"workflow-list": "워크 플로우 목록",
-		"workflow-editor": "워크 플로우 편집기",
-		"workflow-info": "워크 플로우 정보",
-		"workflow-editing-confirm": "워크 플로우 내용이 수정되었습니다. 그래도 하시겠습니까?",
-		"node-configuration": "노드 설정",
-		"variables": "전역 변수",
-		"variables-add": "전역 변수 추가",
-		"variables-modify": "전역 변수 수정",
-		"virtual-button-execute-failed": "{{name}} 실행 실패",
-		"virtual-button-execute-success": "{{name}} 실행 성공",
-		"validate-fields-error": "설정이 잘못된 노드가 존재합니다.",
-		"node-name-required": "노드 이름을 입력하세요",
-		"node-description-required": "노드 설명을 입력하세요"
+	"sidebar": {
+		"home": "홈",
+		"videos": "영상",
+		"templates": "템플릿",
+		"whatNew": "새로운 소식",
+		"makeVideos": "사용 방법",
+		"help": "고객센터",
+		"settings": "계정 설정",
+		"logout": "로그아웃"
 	},
-	"videoStudio": {
-		"videoStudio": "Video Studio",
-		"videoStudio-editor": "Video Studio Editor"
+	"form": {
+		"login": {
+			"title": "로그인",
+			"forgotPassword": "비밀번호 찾기",
+			"login": "로그인",
+			"notMember": "아직 회원이 아니신가요?",
+			"joinHere": "가입하기"
+		},
+		"forgotPassword": {
+			"email": {
+				"title": "비밀번호를 잊으셨나요?",
+				"content": "계정과 연결된 이메일 주소로 비밀번호 재설정 코드를 보내드립니다.",
+				"havingTrouble": "도움이 필요하신가요?",
+				"contactUs": "고객센터에 문의하세요."
+			},
+			"reset": {
+				"title": "비밀번호 재설정",
+				"content": "이메일로 전송된 코드를 입력하세요.",
+				"code": "인증 코드",
+				"codePlaceholder": "코드 입력",
+				"resend": "코드 재전송",
+				"verify": "계속"
+			},
+			"newPassword": {
+				"title": "비밀번호 재설정",
+				"content": "새 비밀번호",
+				"passwordPlaceholder": "새 비밀번호 입력"
+			},
+			"success": "비밀번호가 재설정되었습니다."
+		},
+		"signup": {
+			"title": "회원가입",
+			"personal": {
+				"alreadyMember": "이미 회원이신가요?",
+				"loginHere": "로그인"
+			},
+			"company": {
+				"title": "회사 이름 (선택)",
+				"name": "회사명",
+				"namePlaceholder": "회사명 입력",
+				"billingAddress": "청구 주소",
+				"billingAddressPlaceholder": "청구 주소 입력",
+				"vat": "VAT 등록 번호",
+				"vatPlaceholder": "VAT 등록 번호 입력 (예 - GB2803414523)",
+				"tc": "Lorem Ipsum Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Lorem IpsumLorem IpsumLorem IpsumIpsumLorem IpsumLorem Ipsum",
+				"tcAgreement": "위 약관에 동의합니다."
+			},
+			"questions": {
+				"title": "선택 질문 항목",
+				"hearAbout": "M 스튜디오에 대해서 어떻게 알게 되었나요?",
+				"hearAboutPlaceholder": "답변 입력",
+				"useCase": "활용 용도",
+				"useCasePlaceholder": "답변 입력",
+				"companySize": {
+					"title": "회사 규모 (직원 수)",
+					"value1": "1-10명",
+					"value2": "11-50명",
+					"value3": "51-200명",
+					"value4": "201-500명",
+					"value5": "501-1000명",
+					"value6": "1001-5000명",
+					"value7": "5001-10,000명",
+					"value8": "10,000명 이상"
+				},
+				"interested": "저희 API에 관심이 있으신가요?"
+			},
+			"payment": {
+				"title": "결제 정보",
+				"cardInfo": "카드 정보",
+				"cardInfoPlaceholder1": "예 - 876492329384",
+				"cardInfoPlaceholder2": "MM/YY",
+				"cardInfoPlaceholder3": "CVV",
+				"cardName": "카드상 영문 이름",
+				"cardNamePlaceholder": "영문 이름 입력",
+				"countryRegion": "나라 또는 지역",
+				"countryRegionPlaceholder": "나라 또는 지역 입력",
+				"saveCard": "카드 정보를 저장합니다.",
+				"terms": "상기 결제내역과 개인정보 수집·이용 및 환불정책에 관한 유의사항 내용을 확인하였으며 결제에 동의합니다.",
+				"suscribe": "구독"
+			}
+		}
 	},
-	"flow": {
-		"flow": "플로우",
-		"list": "플로우 목록",
-		"editor": "플로우 에디터",
-		"info": "플로우 정보"
+	"views": {
+		"home": {
+			"templates": "템플릿",
+			"recentVideos": "최근 영상"
+		},
+		"videos": {
+			"script": {
+				"view": "텍스트 보기",
+				"title": "텍스트"
+			},
+			"videoSharing": "영상 공유하기",
+			"videoSharingHelper": "내가 만든 영상을 링크로 공유합니다.",
+			"duplicates": "영상 복사 가능",
+			"share": "영상 공유하기",
+			"copyLink": "공유 링크 복사",
+			"options": "영상 옵션",
+			"issues": "발음 또는 멈춤에 문제가 있습니까?"
+		},
+		"editor": {
+			"addSlide": "슬라이드 추가",
+			"script": {
+				"title": "발화할 텍스트를 입력하세요.",
+				"issues": "발음 또는 멈춤에 문제가 있습니까? 여기를 클릭하세요.",
+				"characters": "자 남음",
+				"play": "텍스트 읽기"
+			},
+			"uploadVoice": {
+				"title": "목소리 업로드",
+				"text1": "최적의 결과를 위해 오디오가 깨끗하고 배경 소음, 음악 및 기타 방해 요소가 없는지 확인하세요.",
+				"text2" : "오디오 시간은 5분으로 제한됩니다. 업로드 전 오디오의 언어를 선택하세요.",
+				"drag": "마우스로 오디오 파일을 끌어오세요.",
+				"formats": "업로드 가능한 파일 형식은 mp3, mp4, m4a, FLAC, WAV 입니다.",
+				"browse": "파일찾기"
+			},
+			"tools": {
+				"template": {
+					"title": "템플릿",
+					"select": "템플릿 선택하기"
+				},
+				"avatar": {
+					"title": "아바타",
+					"select": "아바타 선택 후 크기와 위치를 조절할 수 있습니다.",
+					"search": "아바타 검색",
+					"fullBody": "전신",
+					"left": "왼쪽",
+					"center": "중앙",
+					"right": "오른쪽"
+				},
+				"background": {
+					"title": "배경",
+					"select": "배경 선택",
+					"colors": "단색",
+					"images": "이미지",
+					"videos": "영상",
+					"uploads": "업로드",
+					"searchColors": "단색 검색",
+					"searchVideos": "영상 검색",
+					"searchImages": "이미지 검색"
+				},
+				"text": {
+					"title": "텍스트",
+					"addTitle": "제목",
+					"addSubtitle": "자막",
+					"addBody": "내용"
+				},
+				"shape": {
+					"title": "도형",
+					"select": "도형 선택"
+				},
+				"image": {
+					"title": "이미지",
+					"uploads": "업로드한 이미지",
+					"select": "이미지 선택",
+					"search": "이미지 검색"
+				},
+				"music": {
+					"title": "음악",
+					"select": "음악 선택"
+				},
+				"format": {
+					"move": "정렬",
+					"back": "뒤",
+					"backward": "맨뒤",
+					"forward": "앞",
+					"front": "맨앞",
+					"pose": {
+						"title": "포즈",					
+						"greeting": "인사",
+						"wait": "대기",
+						"sorry": "죄송",
+						"left": "왼쪽 중간 가르키기",
+						"left_up": "왼쪽 상단 가르키기",
+						"left_down": "왼쪽 하단 가르키기",
+						"point_down": "중앙 하단 가르키기",
+						"right": "오른쪽 중간 가르키기",
+						"right_up": "오른쪽 상단 가르키기",
+						"right_down": "오른쪽 하단 가르키기",
+						"all_around": "자유로운 행동 연결"
+					},
+					"layout": "크기",
+					"width": "가로",
+					"height": "세로"
+				}
+			}
+		},
+		"settings": {
+			"common": {
+				"clickHere": "여기를 클릭하세요."
+			},
+			"account": {
+				"title": "계정 정보",
+				"cancelAccount": "계정을 탈퇴하려면, "
+			},
+			"personal": {
+				"shortBio": "짧은 소개글"
+			},
+			"notification": {
+				"title": "알림",
+				"processing": "영상 생성 완료",
+				"updates": "신규 업데이트"
+			},
+			"billing": {
+				"title": "청구 정보",
+				"invoices": "청구서 보기 및 카드 정보/VAT 등록 번호/주소 수정은 ",
+				"plan": {
+					"currentPlan": "이용중인 요금제",
+					"basicPlan": "베이직",
+					"planRenewal": "요금제 갱신일",
+					"changePlan": "요금제 변경",
+					"cancelPlan": "요금제 해지"
+				},
+				"payment": {
+					"title": "결제 방법",
+					"expiration": "만료일",
+					"add": "결제 방법 추가"
+				},
+				"history": {
+					"title": "청구 내역"
+				}
+			},
+			"dialog": {
+				"changePassword": {
+					"currentPassword": "현재 비밀번호",
+					"currentPasswordPlaceholder": "비밀번호 입력",
+					"newPassword": "새 비밀번호",
+					"newPasswordPlaceholder": "새 비밀번호 입력",
+					"confirmNewPassword": "새 비밀번호 확인",
+					"confirmNewPasswordPlaceholder": "새 비밀번호 다시 입력",
+					"save": "저장 후 계속",
+					"success": "비밀번호가 재설정되었습니다."
+				},
+				"cancelAccount": {
+					"title": "We're sorry to see you go!",
+					"content": "Enter the email associated with your account",
+					"reasons": {
+						"title": "Would you mind telling us why would you like to cancel?",
+						"reason1": "I am waiting for the API",
+						"reason2": "I don't need to create more videos right now",
+						"reason3": "Pricing",
+						"reason4": "I would like a wider selection of actors",
+						"reason5": "I need more features for my use case",
+						"reason6": "I am not satisfied with the video/voice quality and options"
+					},
+					"success": {
+						"title": "Thank you for helping us make the product better",
+						"content": "Our team will now process your request and you’ll receive an email",
+						"seeyou": "We hope to see you soon"
+					}
+				}
+			},
+			"success": "계정 정보가 변경되었습니다."
+		}
 	},
-	"hexgrid": {
-		"hexgrid": "헥사그리드"
-	},
-	"action": {
-		"selection": "선택 모드(Q)",
-		"grab": "그랩 모드(W 혹은 Alt + 드래그)",
-		"zoom-in": "확대",
-		"zoom-out": "축소",
-		"one-to-one": "1:1",
-		"fit": "비율에 맞추기",
-		"preview": "미리 보기",
-		"canvas-list": "캔버스 목록",
-		"bring-forward": "앞으로 가져오기",
-		"send-backwards": "뒤로 보내기",
-		"bring-to-front": "맨 앞으로 가져오기",
-		"send-to-back": "맨 뒤로 보내기",
-		"align-left": "왼쪽으로 정렬",
-		"align-center": "가운데로 정렬",
-		"align-right": "오른쪽으로 정렬",
-		"object-group": "그룹",
-		"object-ungroup": "그룹 해제",
-		"crop": "이미지 자르기",
-		"crop-save": "이미지 자르기 저장",
-		"crop-cancel": "이미지 자르기 취소",
-		"image-save": "이미지 저장",
-		"clone": "복사",
-		"delete": "삭제",
-		"save": "저장",
-		"back": "뒤로",
-		"upload": "업로드",
-		"download": "다운로드",
-		"ok": "확인",
-		"cancel": "취소",
-		"search-list": "목록 검색",
-		"add": "추가",
-		"modify": "수정",
-		"all-delete": "전체 삭제",
-		"clear": "초기화",
-		"start": "시작",
-		"pause": "일시 정지",
-		"stop": "중지",
-		"execute": "실행",
-		"go-github": "Github로 이동!!",
-		"go-docs": "Documents로 이동!!",
-		"shortcut-help": "단축키"
+	"components": {
+		"videoList": {
+			"draft": "제작 중",
+			"slide": "슬라이드",
+			"ready": "생성 완료",
+			"hours": "시간 전"
+		}
 	},
 	"common": {
-		"name": "Name",
-		"description": "Description",
-		"width": "Width",
-		"height": "Height",
-		"icon": "Icon",
-		"locked": "Lock",
-		"visible": "Visible",
-		"left": "Left",
-		"top": "Top",
-		"key": "Key",
-		"type": "Type",
-		"value": "Value",
-		"title": "Title",
-		"file": "File",
-		"image": "Image",
-		"enabled": "Enabled",
-		"angle": "Angle",
-		"state": "State",
-		"url": "URL",
-		"current": "Current",
-		"new": "New",
-		"color": "Color",
-		"blur": "Blur",
-		"loop": "Loop",
-		"delay": "Delay",
-		"duration": "Duration",
-		"offset": "Offset",
-		"horizontal": "Horizontal",
-		"vertical": "Vertical",
-		"opacity": "Opacity",
-		"code": "Code",
-		"layout": "Layout",
-		"fixed": "Fixed",
-		"responsive": "Responsive",
-		"fullscreen": "Fullscreen",
-		"src": "Src",
-		"svg": "SVG"
-	},
-	"color": {
-		"red": "Red",
-		"green": "Green",
-		"blue": "Blue"
-	},
-	"validation": {
-		"enter-property": "{{arg}}을(를) 입력하세요.",
-		"already-property": "{{arg}}가(이) 이미 존재합니다."
-	},
-	"shortcut": {
-		"q": "Selection",
-		"w": "Grab",
-		"plus": "Zoom In",
-		"minus": "Zoom Out",
-		"h": "Shortcut Help",
-		"escape": "Deselect",
-		"arrow-up": "Move Up",
-		"arrow-down": "Move Down",
-		"arrow-left": "Move Left",
-		"arrow-right": "Move Right",
-		"delete": "Delete",
-		"ctrl-a": "Select All",
-		"ctrl-c": "Copy",
-		"ctrl-v": "Paste",
-		"ctrl-x": "Cut",
-		"ctrl-z": "Undo",
-		"ctrl-y": "Redo",
-		"alt-mouse-left": "Grab",
-		"shfit-mouse-left": "Multi Selection",
-		"mouse-left": "Select",
-		"mouse-right": "Context Memu",
-		"o": "Zoom 1:1",
-		"p": "Zoom Fit"
-	},
-	"placeholder": {
-		"search-node": "Search a node"
+		"input": {
+			"email": "이메일",
+			"emailPlaceholder": "이메일 입력",
+			"password": "비밀번호",
+			"passwordPlaceholder": "비밀번호 입력",
+			"passwordRules": "최소 8자 이상으로 1개의 숫자, 대문자 및 특수 문자를 포함",
+			"name": "이름",
+			"namePlaceholder": "이름 입력",
+			"confirmPassword": "비밀번호 확인",
+			"confirmPasswordPlaceholder": "비밀번호 확인",
+			"confirmPasswordHelper": "비밀번호가 일치해야 합니다.",
+			"confirmPasswordHelperOk": "비밀번호가 일치합니다",
+			"search": "검색",
+			"date": "날짜",
+			"title": "제목",
+			"sort": "분류",
+			"description": "설명"
+		},
+		"button": {
+			"back": "뒤로가기",
+			"next": "다음",
+			"submit": "확인",
+			"continue": "계속",
+			"createNewVideo": "새로운 영상 제작",
+			"play": "재생",
+			"delete": "삭제",
+			"createTemplate": "템플릿 만들기",
+			"duplicate": "복사",
+			"download": "다운로드",
+			"cancel": "취소",
+			"save": "저장",
+			"change": "변경",
+			"done": "완성",
+			"upload": "업로드"
+		},
+		"yes": "네",
+		"no": "아니요"
 	}
 }
