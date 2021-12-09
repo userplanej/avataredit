@@ -30,4 +30,4 @@ export const sendResetCode = async (data) => await API.post(`${userPath}sendrese
 
 export const checkResetCode = async (data) => await API.post(`${userPath}checkresetcode`, data);
 
-export const setNewPassword = async (data) => await API.post(`${userPath}newpassword`, data);
+export const defineNewPassword = async (data) => await API.post(`${userPath}newpassword`, data);

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
+import i18n from 'i18next';
 
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import { InputLabel } from '@mui/material';
 
 import CustomInput from '../../inputs/CustomInput';
 
-import { sendResetCode, checkResetCode, setNewPassword } from '../../../api/user/user';
+import { sendResetCode, checkResetCode, defineNewPassword } from '../../../api/user/user';
 
 import { showAlert } from '../../../utils/AlertUtils';
 
@@ -58,9 +58,11 @@ const ForgotPassword = (props) => {
   const onChangeNewPassword = (event) => {
     const letterRegex = /[a-zA-Z]/; 
     const numberRegex = /[0-9]/;
+    const specialCharRegex = /[*@!#%&()^~{}]+/;
     const newPassword = event.target.value;
     setNewPassword(newPassword);
-    const passwordValidation = newPassword && newPassword !== '' && newPassword.length > 7 && letterRegex.test(newPassword) && numberRegex.test(newPassword);
+    const passwordValidation = newPassword && newPassword !== '' && newPassword.length > 7 
+      && letterRegex.test(newPassword) && numberRegex.test(newPassword) && specialCharRegex.test(newPassword);
     setCanSubmitPassword(passwordValidation);
   }
 
@@ -109,14 +111,15 @@ const ForgotPassword = (props) => {
       newPassword: newPassword
     }
 
-    await setNewPassword(dataToSend).then(() => {
-      showAlert('Password reset successfully.', 'success');
+    await defineNewPassword(dataToSend).then(() => {
+      const success = i18n.t('form.forgotPassword.success');
+      showAlert(success, 'success');
       setLogin();
     });
   }
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Box maxWidth="sm">
       <Box
         sx={{
           padding: 5,
@@ -129,27 +132,27 @@ const ForgotPassword = (props) => {
         <Box><img src="/images/img_mstudio.png" /></Box>
 
         <Typography component="h1" variant="h4" sx={{ mt: 3, fontWeight: 'normal' }}>
-            {page === pageNames.email && 'Can\'t log in?'}
-            {page === pageNames.code && 'Reset password'}
-            {page === pageNames.newpassword && 'New password'}
+            {page === pageNames.email && i18n.t('form.forgotPassword.email.title')}
+            {page === pageNames.code && i18n.t('form.forgotPassword.reset.title')}
+            {page === pageNames.newpassword && i18n.t('form.forgotPassword.newPassword.title')}
         </Typography>
 
         <Typography component="h1" variant="subtitle1" sx={{ mt: 1 }}>
-            {page === pageNames.email && 'Type your email so we can send you a password recovery email'}
-            {page === pageNames.code && 'Enter the code sent to your email'}
-            {page === pageNames.newpassword && 'Please enter a new password'}
+            {page === pageNames.email && i18n.t('form.forgotPassword.email.content')}
+            {page === pageNames.code && i18n.t('form.forgotPassword.reset.content')}
+            {page === pageNames.newpassword && i18n.t('form.forgotPassword.newPassword.content')}
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 5 }} width="100%">          
           <InputLabel required>
-            {page === pageNames.email && 'Email'}
-            {page === pageNames.code && 'Verification code'}
-            {page === pageNames.newpassword && 'Password'}
+            {page === pageNames.email && i18n.t('common.input.email')}
+            {page === pageNames.code && i18n.t('form.forgotPassword.reset.code')}
+            {page === pageNames.newpassword && i18n.t('common.input.password')}
           </InputLabel>
           
           {page === pageNames.email &&
             <CustomInput 
-              placeholder="Type your email" 
+              placeholder={i18n.t('common.input.emailPlaceholder')}
               fullWidth 
               required 
               id="email"
@@ -163,7 +166,7 @@ const ForgotPassword = (props) => {
 
           {page === pageNames.code &&
             <CustomInput 
-              placeholder="Type your verification code" 
+              placeholder={i18n.t('form.forgotPassword.reset.codePlaceholder')}
               fullWidth 
               required 
               id="verification-code"
@@ -177,7 +180,7 @@ const ForgotPassword = (props) => {
           {page === pageNames.newpassword &&
             <Box>
               <CustomInput 
-                placeholder="Type your new password" 
+                placeholder={i18n.t('form.forgotPassword.newPassword.passwordPlaceholder')}
                 fullWidth 
                 required 
                 id="new-password"
@@ -189,13 +192,13 @@ const ForgotPassword = (props) => {
               />
 
               <Typography variant="caption">
-                Password must be at least 8 characters long. Must include at least one letter and one number.
+                {i18n.t('common.input.passwordRules')}
               </Typography>
             </Box>
           }
 
           {page === pageNames.code && <Link onClick={handleSubmitCode} variant="body2" underline="hover" color="#9a9a9a">
-            {"Resend code"}
+            {i18n.t('form.forgotPassword.reset.resend')}
           </Link>}
 
           <Box sx={{ display: 'flex', mt: 5 }}>
@@ -205,7 +208,7 @@ const ForgotPassword = (props) => {
               sx={{ mr: 3, px: 7 }}
               onClick={handleBack}
             >
-              Back
+              {i18n.t('common.button.back')}
             </Button>
             <Button
               type="submit"
@@ -214,21 +217,21 @@ const ForgotPassword = (props) => {
               disabled={(page === pageNames.email && !canSubmitEmail) || (page === pageNames.code && !canSubmitCode) || (page === pageNames.newpassword && !canSubmitPassword)}
               onClick={handleSubmit}
             >
-              {page === pageNames.email && 'Next'}
-              {page === pageNames.code && 'Verify'}
-              {page === pageNames.newpassword && 'Submit'}
+              {page === pageNames.email && i18n.t('common.button.next')}
+              {page === pageNames.code && i18n.t('form.forgotPassword.reset.verify')}
+              {page === pageNames.newpassword && i18n.t('common.button.submit')}
             </Button>
           </Box>
           
-          {page === pageNames.email && <Box sx={{ textAlign: 'center', mt: 2, color: '#fff' }}>
-            Still having trouble? {" "}
+          {/* {page === pageNames.email && <Box sx={{ textAlign: 'center', mt: 2, color: '#fff' }}>
+            {i18n.t('form.forgotPassword.email.havingTrouble')} {" "}
             <Link color="#df678c">
-              Contact us at
+              {i18n.t('form.forgotPassword.email.contactUs')}
             </Link>
-          </Box>}
+          </Box>} */}
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 }
  
