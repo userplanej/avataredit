@@ -87,7 +87,7 @@ const ToolsView = (props) => {
   const [avatarPose, setAvatarPose] = useState(avatarPoseEnum.all_around);
 
   useEffect(() => {
-    dispatch(setActiveTab(0));
+    dispatch(setActiveTab(1));
     dispatch(setActiveObject(null));
   }, []);
 
@@ -419,7 +419,7 @@ const ToolsView = (props) => {
 
   return (
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
-      <Grid item xs={9} md={10} lg={9} xl={10} sx={{ backgroundColor: '#3c4045' }}>
+      <Grid item xs={8.5} md={10} lg={9} xl={10} sx={{ backgroundColor: '#3c4045' }}>
         <TabPanel name="main" value={activeTab} index={0}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
         </TabPanel>
@@ -493,7 +493,7 @@ const ToolsView = (props) => {
           <Typography variant="h6" sx={{ mb: '10px' }}>Select background</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
-              <Tabs value={backgroundTab} variant="fullWidth" scrollButtons="auto" onChange={handleChangeBackgroundTab} aria-label="backgrounds-tabs">
+              <Tabs value={backgroundTab} variant="scrollable" scrollButtons={false} onChange={handleChangeBackgroundTab} aria-label="backgrounds-tabs">
                 <Tab label="Colors" />
                 <Tab label="Images" />
                 <Tab label="Videos" />
@@ -521,7 +521,7 @@ const ToolsView = (props) => {
           <Typography variant="h6" sx={{ mb: '10px' }}>Select images</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
-              <Tabs value={imageTab} onChange={handleChangeImageTab} aria-label="images-tabs">
+              <Tabs value={imageTab} variant="scrollable" scrollButtons={false} onChange={handleChangeImageTab} aria-label="images-tabs">
                 <Tab label="Images" />
                 <Tab label="Uploads" />
               </Tabs>
@@ -540,7 +540,7 @@ const ToolsView = (props) => {
         </TabPanel>
       </Grid>
 
-      <Grid item xs={3} md={2} lg={3} xl={2} sx={{ backgroundColor: '#30353a', height: '100%' }}>
+      <Grid item xs={3.5} md={2} lg={3} xl={2} sx={{ backgroundColor: '#30353a', height: '100%' }}>
         <Tabs
           orientation="vertical"
           indicatorColor="secondary"
