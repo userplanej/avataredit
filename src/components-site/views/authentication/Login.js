@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import i18n from 'i18next';
+
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import { InputLabel } from '@mui/material';
 
 import CustomInput from '../../inputs/CustomInput';
@@ -72,11 +73,13 @@ const Login = (props) => {
 
   const validateInputs = (email, password) => {
     const emailRegex = /.+@.+\..+/;
-    const letterRegex = /[a-zA-Z]/; 
+    const letterRegex = /[A-Z]/;
     const numberRegex = /[0-9]/;
+    const specialCharRegex = /[*@!#%&()^~{}]+/;
 
     const emailValidation = email && email !== '' && emailRegex.test(email);
-    const passwordValidation = password && password !== '' && password.length > 7 && letterRegex.test(password) && numberRegex.test(password);
+    const passwordValidation = password && password !== '' && password.length > 7 
+      && letterRegex.test(password) && numberRegex.test(password) && specialCharRegex.test(password);
     setCanSubmit(emailValidation && passwordValidation);
   }
 
@@ -108,7 +111,7 @@ const Login = (props) => {
   }
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Box maxWidth="sm">
       <Box
         sx={{
           padding: 5,
@@ -121,13 +124,13 @@ const Login = (props) => {
         <Box><img src="/images/img_mstudio.png" /></Box>
 
         <Typography component="h1" variant="h4" sx={{ mt: 2, fontWeight: 'normal' }}>
-          Welcome back
+          {i18n.t('form.login.title')}
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 5 }} width="100%">          
-          <InputLabel required>Email</InputLabel>
+          <InputLabel required>{i18n.t('common.input.email')}</InputLabel>
           <CustomInput 
-            placeholder="Type your email" 
+            placeholder={i18n.t('common.input.emailPlaceholder')}
             fullWidth 
             required 
             id="email"
@@ -137,9 +140,9 @@ const Login = (props) => {
             onChange={onChangeEmail}
           />
          
-          <InputLabel required sx={{ mt: '20px' }}>Password</InputLabel>
+          <InputLabel required sx={{ mt: '20px' }}>{i18n.t('common.input.password')}</InputLabel>
           <CustomInput 
-            placeholder="Type your password" 
+            placeholder={i18n.t('common.input.passwordPlaceholder')}
             fullWidth 
             required 
             id="password"
@@ -150,12 +153,12 @@ const Login = (props) => {
           />
 
           <Typography variant="caption">
-            Password must be at least 8 characters long. Must include at least one letter and one number.
+            {i18n.t('common.input.passwordRules')}
           </Typography>
 
           <Box sx={{ mt: 1 }}>
             <Link onClick={setForgot} variant="body1" underline="hover" color="#fff">
-              Forgot your password?
+              {i18n.t('form.login.forgotPassword')}
             </Link>
           </Box>
           
@@ -166,20 +169,20 @@ const Login = (props) => {
             disabled={!canSubmit}
             sx={{ mt: 5, mb: 2 }}
           >
-            Login
+            {i18n.t('form.login.login')}
           </Button>
           
           <Box sx={{ textAlign: 'center' }} color="#fff">
-            Not a member? {" "}
+            {i18n.t('form.login.notMember')} {" "}
             <Link onClick={setSignup} color="#df678c">
-              Join here
+              {i18n.t('form.login.joinHere')}
             </Link>
           </Box>
 
           {/* <Button href="https://sso.maum.ai/maum/loginMain?response_type=code&client_id=dataEditTool&redirect_uri=http://localhost:4000/login">Maum SSO</Button> */}
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 }
 

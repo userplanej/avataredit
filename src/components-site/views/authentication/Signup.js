@@ -2,7 +2,6 @@ import React, { useLayoutEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 
 import Personal from './signup/Personal';
 import Company from './signup/Company';
@@ -81,7 +80,7 @@ const Signup = (props) => {
   }
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Box maxWidth="sm">
       <Box
         sx={{
           padding: 5,
@@ -104,7 +103,7 @@ const Signup = (props) => {
           {toDisplay === componentName.payment && <Payment setQuestions={setQuestions} handleSubmit={handleSubmit} />}
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 }
  

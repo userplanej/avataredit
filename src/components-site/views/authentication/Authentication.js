@@ -27,7 +27,7 @@ const Authentication = () => {
   }
 
   return (
-    <Box height="100%" sx={{ backgroundColor: '#3c4045', display: 'flex', alignItems: 'center' }}>
+    <Box height="100%" sx={{ backgroundColor: '#3c4045', display: 'grid', justifyContent: 'center', alignItems: 'center' }}>
       {toDisplay === componentName.signup && <Signup setLogin={setLogin} />}
       {toDisplay === componentName.login && <Login setSignup={setSignup} setForgot={setForgot} />}
       {toDisplay === componentName.forgot && <ForgotPassword setLogin={setLogin} />}

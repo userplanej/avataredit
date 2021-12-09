@@ -122,12 +122,13 @@ const Account = () => {
    * Validate password inputs
    */
   const validatePasswordInputs = (currentPassword, newPassword, confirmNewPassword) => {
-    let letter = /[a-zA-Z]/; 
-    let number = /[0-9]/;
+    const letter = /[a-zA-Z]/; 
+    const number = /[0-9]/;
+    const specialChar = /[*@!#%&()^~{}]+/;
 
     const passwordValidation = currentPassword && currentPassword !== '';
     const newPasswordValidation = newPassword && newPassword !== '' && newPassword.length > 7 
-      && letter.test(newPassword) && number.test(newPassword);
+      && letter.test(newPassword) && number.test(newPassword) && specialChar.test(newPassword);
     let passwordMatch  = false;
     if (confirmNewPassword && confirmNewPassword !== '') {
       passwordMatch = confirmNewPassword === newPassword;

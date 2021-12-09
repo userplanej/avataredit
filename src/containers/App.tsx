@@ -19,7 +19,7 @@ import { setDialogAlertOpen } from '../redux/dialog-alert/dialogAlertSlice';
 class App extends Component<any> {
 	render() {
 		return (
-			<div style={{height: '100%'}}>
+			<div style={{ height: '100%' }}>
 				<Helmet>
 					<meta charSet="utf-8" />
 					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
