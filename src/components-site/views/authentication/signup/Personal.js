@@ -39,12 +39,14 @@ const Personal = (props) => {
    */
   const validateInputs = (name, email, password, confirmPassword) => {
     const emailRegex = /.+@.+\..+/;
-    const letterRegex = /[a-zA-Z]/; 
+    const letterRegex = /[a-zA-Z]/;
     const numberRegex = /[0-9]/;
+    const specialCharRegex = /[*@!#%&()^~{}]+/;
 
     const nameValidation = name && name !== '';
     const emailValidation = email && email !== '' && emailRegex.test(email);
-    const passwordValidation = password && password !== '' && password.length > 7 && letterRegex.test(password) && numberRegex.test(password);
+    const passwordValidation = password && password !== '' && password.length > 7
+      && letterRegex.test(password) && numberRegex.test(password) && specialCharRegex.test(password);
     let passwordMatch  = false;
     if (confirmPassword && confirmPassword !== '') {
       passwordMatch = confirmPassword === password;
