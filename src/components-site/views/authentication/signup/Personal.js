@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import i18n from 'i18next';
+
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
@@ -136,7 +138,7 @@ const Personal = (props) => {
       />
 
       <Typography variant="caption">
-        Password must be at least 8 characters long. Must include at least one letter and one number.
+        {i18n.t('common.input.passwordRules')}
       </Typography>
       
       <InputLabel required sx={{ mt: '20px' }}>Confirm password</InputLabel>
