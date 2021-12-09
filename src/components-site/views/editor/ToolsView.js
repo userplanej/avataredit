@@ -16,9 +16,11 @@ import { Stack, Slider, InputLabel } from '@mui/material';
 import CustomInput from '../../inputs/CustomInput';
 import SelectInput from '../../inputs/SelectInput';
 
+import { updateImageClip } from '../../../api/image/clip';
+
 import { setActiveObject } from '../../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
-import { setHeight, setLeft, setTop, setWidth, setIsFront, setIsBack } from '../../../redux/object/objectSlice';
+import { setHeight, setLeft, setTop, setWidth, setIsFront, setIsBack, setAvatarPose as setCurrentAvatarPose } from '../../../redux/object/objectSlice';
 
 import { scaling } from '../../../components/canvas/constants';
 import { avatarPoseEnum, avatarPoseValues } from '../../../enums/AvatarPose';
@@ -74,6 +76,8 @@ const ToolsView = (props) => {
   const avatarPositionSaved = useSelector(state => state.object.avatarPosition);
   const isActiveObjectFront = useSelector(state => state.object.isFront);
   const isActiveObjectBack = useSelector(state => state.object.isBack);
+  const currentAvatarPose = useSelector(state => state.object.avatarPose);
+  const activeSlide = useSelector(state => state.video.activeSlide);
 
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
@@ -90,6 +94,10 @@ const ToolsView = (props) => {
   useEffect(() => {
     setAvatarPosition(avatarPositionSaved);
   }, [avatarPositionSaved]);
+
+  useEffect(() => {
+    setAvatarPose(currentAvatarPose);
+  }, [currentAvatarPose]);
 
   const handleChange = (event, newValue) => {
     dispatch(setActiveTab(newValue));
@@ -114,6 +122,7 @@ const ToolsView = (props) => {
 
   const handleChangeAvatarPose = (newValue) => {
     setAvatarPose(newValue);
+    updateAvatarPose(newValue);
   }
 
   const updateAvatarSize = (size) => {
@@ -125,6 +134,11 @@ const ToolsView = (props) => {
     let newScale = (parseInt(size) * defaultScale) / 100;
     canvasRef.handler.setByObject(avatar, 'scaleX', newScale);
     canvasRef.handler.setByObject(avatar, 'scaleY', newScale);
+  }
+
+  const updateAvatarPose = async (pose) => {
+    const id = activeSlide.clip_id;
+    await updateImageClip(id, { avatar_pose: pose }).then(() => dispatch(setCurrentAvatarPose(pose)));
   }
 
   const renderMoveButtons = () => {

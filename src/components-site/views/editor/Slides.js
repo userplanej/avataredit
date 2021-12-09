@@ -14,7 +14,7 @@ import { postImageClip, deleteImageClip } from '../../../api/image/clip';
 import { updateImagePackage } from '../../../api/image/package';
 
 import { setActiveSlideId, setActiveSlide, setIsSaving, setSelectedAvatar } from '../../../redux/video/videoSlice';
-import { setAvatarPosition } from '../../../redux/object/objectSlice';
+import { setAvatarPosition, setAvatarPose } from '../../../redux/object/objectSlice';
 
 import { showAlert } from '../../../utils/AlertUtils';
 
@@ -144,6 +144,8 @@ const Slides = (props) => {
           }
           dispatch(setSelectedAvatar(avatar));
         }
+
+        dispatch(setAvatarPose(slideToLoad.avatar_pose));
       }
       dispatch(setActiveSlide(slideToLoad));
       dispatch(setActiveSlideId(id));

@@ -31,6 +31,7 @@ import { pathnameEnum } from './constants/Pathname';
 import { drawerWidth } from './constants/Drawer';
 
 import { showAlert } from '../utils/AlertUtils';
+import { avatarPoseEnum } from '../enums/AvatarPose';
 
 const boxStyle = {
   display: 'flex', 
@@ -123,7 +124,8 @@ const Appbar = (props) => {
     const imageClip = {
       package_id: null,
       background_type: null,
-      text_script: ''
+      text_script: '',
+      avatar_pose: avatarPoseEnum.all_around
     }
 
     let packageId = null;

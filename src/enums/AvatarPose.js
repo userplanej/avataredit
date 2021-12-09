@@ -1,15 +1,15 @@
 export const avatarPoseEnum = {
-  greeting: 'Greeting',
-  wait: 'Wait',
-  sorry: 'Sorry',
-  left: 'Point to left (center)',
-  left_up: 'Point to left up',
-  left_down: 'Point to left down',
-  point_down: 'Point down (center)',
-  right: 'Point to right (center)',
-  right_up: 'Point to right up',
-  right_down: 'Point to right down',
-  all_around: 'Combination of many natural movements'
+  greeting: 'greeting',
+  wait: 'wait',
+  sorry: 'sorry',
+  left: 'left',
+  left_up: 'left_up',
+  left_down: 'left_down',
+  point_down: 'point_down',
+  right: 'right',
+  right_up: 'right_up',
+  right_down: 'right_down',
+  all_around: 'all_around'
 };
 
 export const avatarPoseValues = [
