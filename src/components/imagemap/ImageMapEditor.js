@@ -265,7 +265,7 @@ class ImageMapEditor extends Component {
 
 	loadBackgrounds = async () => {
 		await getAllBackgrounds().then(res => {
-			const backgrounds = res.data.body;
+			const backgrounds = res.data.body.rows;
 
 			if (backgrounds && backgrounds.length > 0) {
 				const backgroundImageArray = [];
@@ -276,11 +276,11 @@ class ImageMapEditor extends Component {
 						backgroundColorArray.push(backgroundObject);
 					}
 					if (background.background_src !== null) {
-						const backgroundImageObject = createBackgroundImageObject(image);
+						const backgroundImageObject = createBackgroundImageObject(background);
 						backgroundImageArray.push(backgroundImageObject);
 					}
 				});
-				
+
 				const backgroundColorList = {
 					"COLOR": backgroundColorArray
 				}
