@@ -25,6 +25,11 @@ const Payment = (props) => {
   const cardCode = useSelector(state => state.signup.cardCode);
   const cardName = useSelector(state => state.signup.cardName);
   const paymentCountry = useSelector(state => state.signup.paymentCountry);
+
+  // Errors
+  const [cardNumberError, setCardNumberError] = useState('');
+  const [cardDateError, setCardDateError] = useState('');
+  const [cardCodeError, setCardCodeError] = useState('');
   // Boolean to save card informations or not
   const [saveCardInfo, setSaveCardInfo] = useState(false);
   // Boolean to disable or enable confirm button
@@ -39,14 +44,82 @@ const Payment = (props) => {
    * Validate all inputs of this page
    */
   const validateInputs = (paymentEmail, cardNumber, cardDate, cardCode, cardName, paymentCountry) => {
-    const paymentEmailValidation = paymentEmail && paymentEmail !== '';
-    const cardNumberValidation = cardNumber && cardNumber !== '';
-    const cardDateValidation = cardDate && cardDate !== '';
-    const cardCodeValidation = cardCode && cardCode !== '';
+    const emailRegex = /.+@.+\..+/;
+
+    const paymentEmailValidation = paymentEmail && paymentEmail !== '' && emailRegex.test(paymentEmail);
+    const cardNumberValidation = cardNumber && cardNumber !== '' && validateCardNumber(cardNumber);
+    const cardDateValidation = cardDate && cardDate !== '' && validateCardDate(cardDate);
+    const cardCodeValidation = cardCode && cardCode !== '' && validateCardCode(cardCode);
     const cardNameValidation = cardName && cardName !== '';
     const paymentCountryValidation = paymentCountry && paymentCountry !== '';
-    
+
     setCanSubmit(paymentEmailValidation && cardNumberValidation && cardDateValidation && cardCodeValidation && cardNameValidation && paymentCountryValidation);
+  }
+
+  const validateCardNumber = (cardNumber) => {
+    const isValid = (cardNumber && checkLuhn(cardNumber) &&
+      cardNumber.length == 16 && (cardNumber[0] == 4 || cardNumber[0] == 5 && cardNumber[1] >= 1 && cardNumber[1] <= 5 ||
+      (cardNumber.indexOf("6011") == 0 || cardNumber.indexOf("65") == 0)) ||
+      cardNumber.length == 15 && (cardNumber.indexOf("34") == 0 || cardNumber.indexOf("37") == 0) ||
+      cardNumber.length == 13 && cardNumber[0] == 4);
+
+    if (!isValid) {
+      setCardNumberError("The card number format is not correct.");
+    } else {
+      setCardNumberError("");
+    }
+
+    return isValid;
+  }
+
+  const validateCardDate = (cardDate) => {
+    if (!cardDate.match(/(0[1-9]|1[0-2])[/][0-9]{2}/)) {
+      setCardDateError("Card date format is not correct.");
+      return false;
+    }
+
+    var d = new Date();
+    var currentYear = d.getFullYear();
+    var currentMonth = d.getMonth() + 1;
+
+    var cardDateSplit = cardDate.split('/');
+    var year = parseInt(cardDateSplit[1], 10) + 2000;
+    var month = parseInt(cardDateSplit[0], 10);
+
+    const isExpired = year < currentYear || (year == currentYear && month < currentMonth);
+    if (isExpired) {
+      setCardDateError("The expiry date has passed.");
+    } else {
+      setCardDateError("");
+    }
+
+    return !isExpired;
+  }
+
+  const validateCardCode = (cardCode) => {
+    const isValid = cardCode.match(/^[0-9]{3}$/);
+    if (isValid) {
+      setCardCodeError("");
+    } else {
+      setCardCodeError("The card code format is not correct.");
+    }
+    return isValid;
+  }
+
+  const checkLuhn = (cardNo) => {
+    var s = 0;
+    var doubleDigit = false;
+    for (var i = cardNo.length - 1; i >= 0; i--) {
+        var digit = +cardNo[i];
+        if (doubleDigit) {
+            digit *= 2;
+            if (digit > 9)
+                digit -= 9;
+        }
+        s += digit;
+        doubleDigit = !doubleDigit;
+    }
+    return s % 10 == 0;
   }
 
   const onChangeValue = (inputName, value) => {
@@ -108,7 +181,7 @@ const Payment = (props) => {
       <CustomInput 
         placeholder="Eg - 876492329384" 
         fullWidth  
-        id="cardNumber"
+        id="cardNumber" 
         name="cardNumber"
         value={cardNumber}
         onChange={(event) => onChangeValue('cardNumber', event.target.value)}
@@ -131,6 +204,11 @@ const Payment = (props) => {
           onChange={(event) => onChangeValue('cardCode', event.target.value)}
         />
       </Box>
+      <Typography variant="caption" color="red">
+        <Box>{cardNumberError}</Box>
+        <Box>{cardDateError}</Box>
+        <Box>{cardCodeError}</Box>
+      </Typography>
       
       <InputLabel sx={{ mt: 2 }}>Name on card</InputLabel>
       <CustomInput 
