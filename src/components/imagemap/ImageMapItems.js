@@ -9,6 +9,7 @@ import { code, scaling } from '../canvas/constants';
 
 import { Box } from '@mui/system';
 import UploadIcon from '@mui/icons-material/Upload';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import ToolsView from '../../components-site/views/editor/ToolsView';
 import SearchInput from '../../components-site/inputs/SearchInput';
@@ -16,11 +17,14 @@ import SearchInput from '../../components-site/inputs/SearchInput';
 import { getStringShortcut } from '../../utils/StringUtils';
 
 import { uploadFile } from '../../api/s3';
-import { postImage } from '../../api/image/image';
+import { postImage, deleteImage } from '../../api/image/image';
+import { postBackground, deleteBackground } from '../../api/background/background';
 
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 import { setLeft, setTop, setWidth, setHeight, setAvatarPosition } from '../../redux/object/objectSlice';
 import { setSelectedAvatar } from '../../redux/video/videoSlice';
+
+import { showAlert } from '../../utils/AlertUtils';
 
 notification.config({
 	top: 80,
@@ -124,6 +128,16 @@ class ImageMapItems extends Component {
 		} else if (this.state.imageSearch !== nextState.imageSearch) {
 			return true;
 		} else if (JSON.stringify(this.state.images) !== JSON.stringify(nextState.images)) {
+			return true;
+		} else if (this.props.uploadedBackgroundImages !== nextProps.uploadedBackgroundImages) {
+			return true;
+		} else if (this.props.defaultBackgroundColors !== nextProps.defaultBackgroundColors) {
+			return true;
+		} else if (this.props.defaultBackgroundImages !== nextProps.defaultBackgroundImages) {
+			return true;
+		} else if (this.props.defaultBackgroundVideos !== nextProps.defaultBackgroundVideos) {
+			return true;
+		} else if (this.props.avatars !== nextProps.avatars) {
 			return true;
 		} else if (this.props.uploadedImages !== nextProps.uploadedImages) {
 			return true;
@@ -395,9 +409,9 @@ class ImageMapItems extends Component {
 				{this.renderSearchField(type)}
 				{!isText && <Flex flexWrap="wrap" flexDirection="row" style={{ width: '100%' }} key={key}>
 					{isUpload && this.renderUploadItem(type)}
-					{items.map(item => {
+					{items && items.map(item => {
 						if (this.shouldRenderItem(item, type)) {
-							return this.renderItem(item);
+							return this.renderItem(item, isUpload);
 						}
 					})}
 				</Flex>}
@@ -412,7 +426,7 @@ class ImageMapItems extends Component {
 			</div>
 	};
 
-	renderUploadItem = () => {
+	renderUploadItem = (type) => {
 		return (
 			<Box sx={{ marginRight: '12px' }} key={'upload'}>
 				<Box
@@ -425,7 +439,7 @@ class ImageMapItems extends Component {
 						cursor: 'pointer'
 					}}
 				>
-          <input id="input-upload" type="file" hidden onChange={this.uploadImage} accept="image/*" />
+          <input id="input-upload" type="file" hidden onChange={(event) => this.uploadImage(event, type)} accept="image/png,image/jpeg,image/bmp,image/gif" />
 					<Box 
 						className="rde-editor-items-item-icon" 
 						sx={{ 
@@ -510,7 +524,7 @@ class ImageMapItems extends Component {
 		return true;
 	}
 
-	renderItem = (item, centered) => {
+	renderItem = (item, isUpload, centered) => {
 		const isBackground = item.type === 'background';
 		const isBackgroundColor = isBackground && item.option.subtype === 'color';
 		const isBackgroundImage = isBackground && item.option.subtype === 'image';
@@ -561,7 +575,10 @@ class ImageMapItems extends Component {
 						justifyContent: this.state.collapse ? 'center' : null, 
 						display: 'flex', 
 						flexDirection: 'column', 
-						cursor: 'pointer'
+						cursor: 'pointer',
+						':hover .delete-upload-image': {
+							display: 'block'
+						}
 					}}
 				>
 					<Box 
@@ -574,12 +591,28 @@ class ImageMapItems extends Component {
 							backgroundPosition: 'center', /* Center the image */
 							backgroundRepeat: 'no-repeat', /* Do not repeat the image */
 							backgroundSize: isShape ? 'contain' : 'cover', /* Resize the background image to cover the entire container */
-							display: 'flex', 
-							flexDirection: 'column', 
-							textAlign: 'center',
-							borderRadius: '10px'
+							display: 'flex',
+							borderRadius: '10px',
+							justifyContent: 'right'
 						}}
-					/>
+					>
+						{isUpload &&
+							<DeleteIcon
+								id={`upload-image-btn-${item.name}`}
+								className="delete-upload-image"
+								onClick={(event) => this.handleDeleteImage(event, item.id, isImage)} 
+								sx={{
+									mt: 1,
+									display: 'none',
+									cursor: 'pointer',
+									color: '#30353a',
+									':hover': {
+										color: '#df678c'
+									}
+								}}
+							/>
+						}
+					</Box>
 				</Box>
 				{this.state.collapse ? null : <div className="rde-editor-items-item-text" key={`name-${item.name}`}>{getStringShortcut(item.name, 13)}</div>}
 			</Box>
@@ -608,31 +641,50 @@ class ImageMapItems extends Component {
 		this.setState({ imageSearch: value });
 	}
 
-	uploadImage = (event) => {
+	uploadImage = async (event, type) => {
 		const user = JSON.parse(sessionStorage.getItem('user'));
     const filePath = event.target.value;
     const files = event.target.files;
+		const isImage = type === 'image';
 
     if (files && files.length > 0) {
+			const file = files[0];
+			if (!['image/png', 'image/bmp', 'image/jpeg', 'image/gif'].includes(file.type)) {
+				showAlert('You can only upload image file.', 'error');
+				return;
+			}
+
       this.props.setShowBackdrop(true);
 
       const fileName = filePath.replace(/^.*?([^\\\/]*)$/, '$1');
       const formData = new FormData();
       formData.append('adminId', 'admin1018');
-      formData.append('images', files[0]);
+      formData.append('images', file);
 
-      uploadFile(formData, 'image').then((res) => {
+      await uploadFile(formData, isImage ? 'image' : 'background').then(async (res) => {
         const location = res.data.body.location;
-        const dataToSend = {
-          image_name: fileName,
-          image_dir: location,
+        let dataToSend = {
 					is_upload: true,
 					user_id: user.user_id
-        }
-        postImage(dataToSend).then(() => {
-					this.props.reloadImages();
-          this.props.setShowBackdrop(false);
-        });
+				};
+
+				if (isImage) {
+					dataToSend.image_name = fileName;
+					dataToSend.image_dir = location;
+
+					await postImage(dataToSend).then(() => {
+						this.props.reloadImages();
+						this.props.setShowBackdrop(false);
+					});
+				} else {
+					dataToSend.background_name = fileName;
+					dataToSend.background_src = location;
+
+					await postBackground(dataToSend).then(() => {
+						this.props.reloadBackgrounds();
+						this.props.setShowBackdrop(false);
+					});
+				}
       });
     }
   }
@@ -641,20 +693,45 @@ class ImageMapItems extends Component {
 		document.getElementById('input-upload').click();
 	}
 
+	handleDeleteImage = async (event, id, isImage) => {
+		event.stopPropagation();
+
+		const { reloadImages, reloadBackgrounds } = this.props;
+
+		if (isImage) {
+			await deleteImage(id).then(() => reloadImages());
+		} else {
+			await deleteBackground(id).then(() => reloadBackgrounds());
+		}
+	}
+
 	render() {
 		const { 
 			canvasRef, descriptors, uploadedBackgroundImages, defaultBackgroundColors, defaultBackgroundImages, 
 			defaultBackgroundVideos, avatars, uploadedImages, defaultImages, shapes, onSaveSlide
 		} = this.props;
 
+		// Texts
 		const textsItems = Object.keys(descriptors).filter(key => key === 'TEXT').map(key => this.renderItems(descriptors[key], key, 'text'));
+		// Shapes
 		const shapesItems = Object.keys(shapes).map(key => this.renderItems(shapes[key], key, 'shape'));
+		// Backgrounds
 		const backgroundsColorsItems = Object.keys(defaultBackgroundColors).map(key => this.renderItems(defaultBackgroundColors[key], key, 'background-color'));
 		const backgroundsImagesDefaultItems = Object.keys(defaultBackgroundImages).map(key => this.renderItems(defaultBackgroundImages[key], key, 'background-image'));
-		const backgroundsImagesUploadedItems = Object.keys(uploadedBackgroundImages).map(key => this.renderItems(uploadedBackgroundImages[key], key, 'background-image', true));
+		const backgroundsImagesUploadedKeys = Object.keys(uploadedBackgroundImages);
+		const backgroundsImagesUploadedItems = backgroundsImagesUploadedKeys.filter(key => key === 'IMAGE').length > 0 ?
+			backgroundsImagesUploadedKeys.map(key => this.renderItems(uploadedBackgroundImages[key], key, 'background-image', true))
+			:
+			this.renderItems([], 0, 'background-image', true);
 		const backgroundsVideosDefaultItems = Object.keys(defaultBackgroundVideos).map(key => this.renderItems(defaultBackgroundVideos[key], key, 'background-image'));
+		// Avatars
 		const avatarsItems = Object.keys(avatars).map(key => this.renderItems(avatars[key], key, 'avatar'));
-		const imagesUploadedItems = Object.keys(uploadedImages).map(key => this.renderItems(uploadedImages[key], key, 'image', true));
+		// Images
+		const imagesUploadedKeys = Object.keys(uploadedImages);
+		const imagesUploadedItems = imagesUploadedKeys.filter(key => key === 'IMAGE').length > 0 ? 
+			imagesUploadedKeys.map(key => this.renderItems(uploadedImages[key], key, 'image', true)) 
+			: 
+			this.renderItems([], 0, 'image', true);
 		const imagesDefaultItems = Object.keys(defaultImages).map(key => this.renderItems(defaultImages[key], key, 'image'));
 
 		return (

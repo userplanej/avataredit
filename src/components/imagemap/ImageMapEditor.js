@@ -270,6 +270,8 @@ class ImageMapEditor extends Component {
 			if (backgrounds && backgrounds.length > 0) {
 				const backgroundImageArray = [];
 				const backgroundColorArray = [];
+				const uploadedBackgroundImageArray = [];
+
 				backgrounds.forEach(background => {
 					if (background.color_hex !== null) {
 						const backgroundObject = createBackgroundColorObject(background);
@@ -277,7 +279,11 @@ class ImageMapEditor extends Component {
 					}
 					if (background.background_src !== null) {
 						const backgroundImageObject = createBackgroundImageObject(background);
-						backgroundImageArray.push(backgroundImageObject);
+						if (background.is_upload) {
+							uploadedBackgroundImageArray.push(backgroundImageObject);
+						} else {
+							backgroundImageArray.push(backgroundImageObject);
+						}
 					}
 				});
 
@@ -289,7 +295,15 @@ class ImageMapEditor extends Component {
 					"IMAGE": backgroundImageArray
 				}
 
-				this.setState({ defaultBackgroundColors: backgroundColorList, defaultBackgroundImages: backgroundImageList });
+				const uploadedBackgroundImagesList = {
+					"IMAGE": uploadedBackgroundImageArray
+				}
+
+				this.setState({
+					defaultBackgroundColors: backgroundColorList,
+					defaultBackgroundImages: backgroundImageList,
+					uploadedBackgroundImages: uploadedBackgroundImagesList
+				});
 			}
 		});
 	}
@@ -674,7 +688,7 @@ class ImageMapEditor extends Component {
 				const { packageId } = this.state;
 				const { activeSlideId, activeSlide } = this.props;
 
-				const canvasBlob = this.canvasRef.handler?.getCanvasImageAsBlob();
+				const canvasBlob = this.canvasRef?.handler?.getCanvasImageAsBlob();
 				const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
 				const file = new File([canvasBlob], fileName, { type: "image/png" });
 		
@@ -1029,6 +1043,7 @@ class ImageMapEditor extends Component {
 								avatars={avatars}
 								shapes={shapes}
 								reloadImages={() => this.loadImages()}
+								reloadBackgrounds={() => this.loadBackgrounds()}
 								onSaveSlide={onSaveSlide}
 							/>
 						</Grid>}
