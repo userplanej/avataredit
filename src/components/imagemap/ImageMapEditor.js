@@ -675,7 +675,7 @@ class ImageMapEditor extends Component {
 								this.canvasRef.handler.remove();
 							}}
 						>
-							{i18n.t('action.delete')}
+							Delete
 						</Menu.Item>
 					</Menu>
 				);
@@ -688,7 +688,7 @@ class ImageMapEditor extends Component {
 								this.canvasRef.handler.remove();
 							}}
 						>
-							{i18n.t('action.delete')}
+							Delete
 						</Menu.Item>
 					</Menu>
 				);
@@ -702,7 +702,7 @@ class ImageMapEditor extends Component {
 							this.canvasHandlers.onSaveSlide();
 						}}
 					>
-						{i18n.t('action.delete')}
+						Delete
 					</Menu.Item>
 				</Menu>
 			);
