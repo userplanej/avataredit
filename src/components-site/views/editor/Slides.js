@@ -125,6 +125,7 @@ const Slides = (props) => {
   const changeSlide = async (id) => {
     if (id !== activeSlideId) {
       loadSlide(id);
+      canvasRef.handler?.transactionHandler.initialize();
     }
   }
 
@@ -135,7 +136,9 @@ const Slides = (props) => {
       canvasRef.handler.workareaHandler.initialize();
       if (slideToLoad.html5_script !== null) {
         const objects = JSON.parse(slideToLoad.html5_script);
-        await canvasRef.handler.importJSON(objects);
+        await canvasRef.handler.importJSON(objects).then(() => {
+          canvasRef.handler.transactionHandler.state = objects;
+        });
 
         const avatar = objects.find(obj => obj.subtype === 'avatar');
         if (avatar) {

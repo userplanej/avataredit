@@ -590,9 +590,10 @@ class Handler implements HandlerOptions {
 	 * Set the image
 	 * @param {FabricImage} obj
 	 * @param {(File | string)} [source]
+	 * @param {any} [onSaveSlide=null]
 	 * @returns
 	 */
-	public setImage = (obj: FabricImage, source?: File | string) => {
+	public setImage = (obj: FabricImage, source?: File | string, onSaveSlide: any = null) => {
 		if (!source) {
 			this.loadImage(obj, null);
 			obj.set('file', null);
@@ -608,7 +609,7 @@ class Handler implements HandlerOptions {
 			};
 			reader.readAsDataURL(source);
 		} else {
-			this.loadImage(obj, source);
+			this.loadImage(obj, source, onSaveSlide);
 			obj.set('file', null);
 			obj.set('src', source);
 		}
@@ -676,9 +677,10 @@ class Handler implements HandlerOptions {
 	 * @param {FabricObjectOption} obj
 	 * @param {boolean} [centered=true]
 	 * @param {boolean} [loaded=false]
+	 * @param {any} [onSaveSlide=null]
 	 * @returns
 	 */
-	public add = (obj: FabricObjectOption, centered = true, loaded = false) => {
+	public add = (obj: FabricObjectOption, centered = true, loaded = false, onSaveSlide: any = null) => {
 		const { editable, onAdd, gridOption, objectOption } = this;
 		const option: any = {
 			hasControls: editable,
@@ -710,7 +712,7 @@ class Handler implements HandlerOptions {
 		let createdObj;
 		// Create canvas object
 		if (obj.type === 'image') {
-			createdObj = this.addImage(newOption);
+			createdObj = this.addImage(newOption, onSaveSlide);
 		} else if (obj.type === 'group') {
 			// TODO...
 			// Group add function needs to be fixed
@@ -779,9 +781,10 @@ class Handler implements HandlerOptions {
 	/**
 	 * Add iamge object
 	 * @param {FabricImage} obj
+	 * @param {any} [onSaveSlide=null]
 	 * @returns
 	 */
-	public addImage = (obj: FabricImage) => {
+	public addImage = (obj: FabricImage, onSaveSlide: any = null) => {
 		const { objectOption } = this;
 		const { filters = [], ...otherOption } = obj;
 		const image = new Image();
@@ -795,7 +798,7 @@ class Handler implements HandlerOptions {
 		createdObj.set({
 			filters: this.imageHandler.createFilters(filters),
 		});
-		this.setImage(createdObj, obj.src || obj.file);
+		this.setImage(createdObj, obj.src || obj.file, onSaveSlide);
 		return createdObj;
 	};
 
@@ -804,11 +807,11 @@ class Handler implements HandlerOptions {
 	 * @param {FabricObject} target
 	 * @returns {any}
 	 */
-	public remove = (target?: FabricObject) => {
+	public remove = (target?: FabricObject, isManual = false) => {
 		const activeObject = target || (this.canvas.getActiveObject() as any);
 		if (this.prevTarget && this.prevTarget.superType === 'link') {
 			this.linkHandler.remove(this.prevTarget as LinkObject);
-			if (!this.transactionHandler.active) {
+			if (!this.transactionHandler.active && !isManual) {
 				this.transactionHandler.save('remove');
 			}
 			return;
@@ -882,7 +885,7 @@ class Handler implements HandlerOptions {
 				this.canvas.remove(obj);
 			});
 		}
-		if (!this.transactionHandler.active) {
+		if (!this.transactionHandler.active && !isManual) {
 			this.transactionHandler.save('remove');
 		}
 		this.objects = this.getObjects();
@@ -1294,7 +1297,7 @@ class Handler implements HandlerOptions {
 	 * @param {FabricImage} obj
 	 * @param {string} src
 	 */
-	public loadImage = (obj: FabricImage, src: string) => {
+	public loadImage = (obj: FabricImage, src: string, onSaveSlide: any = null) => {
 		let url = src;
 		if (!url) {
 			url = './images/sample/transparentBg.png';
@@ -1315,7 +1318,10 @@ class Handler implements HandlerOptions {
 			obj.setElement(source);
 			obj.setCoords();
 			this.canvas.renderAll();
-		}, this.canvas.getContext(), 'Anonymous');
+			if (onSaveSlide !== null) {
+				onSaveSlide();
+			}
+		}, this.canvas.getContext(), 'anonymous');
 	};
 
 	/**

@@ -216,7 +216,6 @@ class ImageMapItems extends Component {
 		document.addEventListener('keydown', e => {
 			if (e.code === code.DELETE) {
 				const activeObject = this.props.canvasRef.handler.getActiveObject();
-				console.log(activeObject);
 				if (activeObject) {
 					this.props.setSelectedAvatar(null);
 					setTimeout(() => this.props.onSaveSlide(), 100);
@@ -263,19 +262,15 @@ class ImageMapItems extends Component {
 					if (obj.subtype !== 'avatar') {
 						return;
 					}
-					canvasRef.handler.remove(obj);
+					canvasRef.handler.remove(obj, true);
 				});
 				this.props.setSelectedAvatar(item);
 			}
-			const target = canvasRef.handler.add(option, centered);
+			const target = canvasRef.handler.add(option, centered, false, onSaveSlide);
 
-			setTimeout(() => {
-				// Update format values
-				updateObjectPosition(target);
-				updateObjectSize(target);
-				// Save slide thumbnail
-				onSaveSlide();
-			}, 1200);
+			// Update format values
+			updateObjectPosition(target);
+			updateObjectSize(target);
 		},
 		onAddSVG: (option, centered) => {
 			const { canvasRef } = this.props;
