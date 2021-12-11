@@ -13,7 +13,7 @@ import { pathnameEnum } from '../../constants/Pathname';
 const DiscardDraft = (props) => {
   const { open, close } = props;
   const history = useHistory();
-  const routeMatch = useRouteMatch(`${pathnameEnum.editor}/:id`);
+  const routeMatch = useRouteMatch([`${pathnameEnum.editor}/:id`, `${pathnameEnum.editorTemplate}/:id`]);
   
   const doDiscardDraft = async () => {
     const id = routeMatch.params.id;

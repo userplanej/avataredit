@@ -81,8 +81,8 @@ const Appbar = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const routeMatchEditor = useRouteMatch(`${pathnameEnum.editor}/:id`);
-  const routeMatchPreview = useRouteMatch(`${pathnameEnum.videos}/:id`);
+  const routeMatchEditor = useRouteMatch([`${pathnameEnum.editor}/:id`, `${pathnameEnum.editorTemplate}/:id`]);
+  const routeMatchPreview = useRouteMatch([`${pathnameEnum.videos}/:id`, `${pathnameEnum.templates}/:id`]);
 
   const pathName = useSelector(state => state.navigation.pathName);
   // User settings page
@@ -101,6 +101,8 @@ const Appbar = (props) => {
   const hasCanvasObjects = canvasRef && canvasRef.handler?.getObjects().length > 0;
   const isEditorPage = routeMatchEditor !== null;
   const isPreviewVideoPage = routeMatchPreview !== null;
+  const isEditTemplate = isEditorPage && routeMatchEditor.url.includes("template");
+  const isPreviewTemplate = isPreviewVideoPage && routeMatchPreview.url.includes("template");
 
   useEffect(() => {
     const pathname = history.location.pathname;
@@ -112,14 +114,16 @@ const Appbar = (props) => {
     }
   }, []);
 
-  const createNewVideo = async () => {
+  const createNewImagePackage = async (isTemplate) => {
     dispatch(setShowBackdrop(true));
 
     const user = JSON.parse(sessionStorage.getItem('user'));
+    const packageName = isTemplate ? 'New template' : 'New video';
     const imagePackage = {
       user_id: user.user_id,
-      package_name: 'New video',
-      is_draft: true
+      package_name: packageName,
+      is_draft: true,
+      is_template: isTemplate
     }
     const imageClip = {
       package_id: null,
@@ -142,7 +146,8 @@ const Appbar = (props) => {
     // Update image package current clip_id
     await updateImagePackage(packageId, { clip_id: clipId }).then(() => {
       dispatch(setShowBackdrop(false));
-      history.push(pathnameEnum.editor + `/${packageId}`);
+      const path = `${isTemplate ? pathnameEnum.editorTemplate : pathnameEnum.editor}/${packageId}`;
+      history.push(path);
     });
   }
 
@@ -213,6 +218,10 @@ const Appbar = (props) => {
     history.push(pathnameEnum.videos);
   }
 
+  const handleBackToTemplates = () => {
+    history.push(pathnameEnum.templates);
+  }
+
   const handleBackToAccount = () => {
     history.push(pathnameEnum.account);
   }
@@ -250,7 +259,8 @@ const Appbar = (props) => {
           file = new File([canvasBlob], "canvas", { type: "image/png" });
 
           if (avatar) {
-            canvasRef.handler?.add(avatar);
+            canvasRef.handler.importJSON(objects);
+            canvasRef.handler.transactionHandler.state = objects;
           }
 
           resolve();
@@ -261,17 +271,10 @@ const Appbar = (props) => {
       });
       
       canvasImagePromise.then(async () => {
-        requestVideo(file, script).then((res) => {
+        await requestVideo(file, script).then((res) => {
           dispatch(setShowBackdrop(false));
 
           const blob = res.data;
-
-          // const url = URL.createObjectURL(blob);
-          // const a = document.createElement("a");
-          // a.href = url;
-          // a.download = 'test.mp4';
-          // a.click();
-
           var reader = new FileReader();
           reader.readAsDataURL(blob);
           reader.onloadend = function () {
@@ -317,112 +320,137 @@ const Appbar = (props) => {
           </IconButton>
 
           {pathName === pathnameEnum.home &&
-          <Box sx={boxStyle}>
-            <Typography variant="h5" sx={{ color: '#fff' }}>Create new video</Typography>
-          </Box>}
+            <Box sx={boxStyle}>
+              <Typography variant="h5" sx={{ color: '#fff' }}>Create new video</Typography>
+            </Box>
+          }
 
           {pathName === pathnameEnum.videos &&
-          <Box sx={boxStyle}>
-            <Typography variant="h5" sx={{ color: '#fff' }}>All videos</Typography>
-          </Box>}
+            <Box sx={boxStyle}>
+              <Typography variant="h5" sx={{ color: '#fff' }}>All videos</Typography>
+            </Box>
+          }
+
+          {pathName === pathnameEnum.templates &&
+            <Box sx={boxStyle}>
+              <Typography variant="h5" sx={{ color: '#fff' }}>Templates</Typography>
+            </Box>
+          }
 
           {isPreviewVideoPage &&
-          <Box sx={boxStyle}>
-            <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={handleBackToVideos} />
-            <Typography variant="h5" sx={{ color: '#fff' }}>Back to videos</Typography>
-          </Box>}
+            <Box sx={boxStyle}>
+              <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={isPreviewTemplate ? handleBackToTemplates : handleBackToVideos} />
+              <Typography variant="h5" sx={{ color: '#fff' }}>Back to {isPreviewTemplate ? 'templates' : 'videos'}</Typography>
+            </Box>
+          }
 
           {isEditorPage &&
-          <CustomInput 
-            value={title}
-            onChange={handleChangeTitle}
-            onBlur={saveTitle}
-            startAdornment={
-              <InputAdornment position="start">
-                <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", cursor: 'pointer' }} onClick={handleBackToVideos} />
-              </InputAdornment>
-            }
-            sx={{ backgroundColor: '#3c4045' }}
-          />
+            <CustomInput 
+              value={title}
+              onChange={handleChangeTitle}
+              onBlur={saveTitle}
+              startAdornment={
+                <InputAdornment position="start">
+                  <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", cursor: 'pointer' }} onClick={isEditTemplate ? handleBackToTemplates : handleBackToVideos} />
+                </InputAdornment>
+              }
+              sx={{ backgroundColor: '#3c4045' }}
+            />
           }
 
           {pathName === pathnameEnum.avatars &&
-          <Box sx={boxStyle}>
-            <Typography variant="h5" sx={{ color: '#fff' }}>Avatars</Typography>
-          </Box>}
+            <Box sx={boxStyle}>
+              <Typography variant="h5" sx={{ color: '#fff' }}>Avatars</Typography>
+            </Box>
+          }
 
           {pathName === pathnameEnum.account &&
-          <Box sx={boxStyle}>
-            <Typography variant="h5" sx={{ color: '#fff' }}>Account Settings</Typography>
-          </Box>}
+            <Box sx={boxStyle}>
+              <Typography variant="h5" sx={{ color: '#fff' }}>Account Settings</Typography>
+            </Box>
+          }
 
           {pathName === pathnameEnum.billing &&
-          <Box sx={boxStyle}>
-            <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={handleBackToAccount} />
-            <Typography variant="h5" sx={{ color: '#fff' }}>Billing information</Typography>
-          </Box>}
+            <Box sx={boxStyle}>
+              <ArrowBackIosNewIcon fontSize="small" sx={{ color: "#fff", mr: 2, cursor: 'pointer' }} onClick={handleBackToAccount} />
+              <Typography variant="h5" sx={{ color: '#fff' }}>Billing information</Typography>
+            </Box>
+          }
         </Box>
 
         {/* Right part */}
         {pathName === pathnameEnum.home &&
-        <Box sx={boxStyle}>
-          {/* <Button variant="contained" color="secondary" sx={{ maxWidth: 'none', mr: 1, color: '#fff' }}>Import powerpoint</Button> */}
-          <Button variant="contained" onClick={createNewVideo}>Create new video</Button>
-        </Box>}
+          <Box sx={boxStyle}>
+            {/* <Button variant="contained" color="secondary" sx={{ maxWidth: 'none', mr: 1, color: '#fff' }}>Import powerpoint</Button> */}
+            <Button variant="contained" onClick={() => createNewImagePackage(false)}>Create new video</Button>
+          </Box>
+        }
 
         {pathName === pathnameEnum.videos &&
-        <Box sx={boxStyle}>
-          <Button variant="contained" onClick={createNewVideo}>Create new video</Button>
-        </Box>}
+          <Box sx={boxStyle}>
+            <Button variant="contained" onClick={() => createNewImagePackage(false)}>Create new video</Button>
+          </Box>
+        }
+
+        {pathName === pathnameEnum.templates &&
+          <Box sx={boxStyle}>
+            <Button variant="contained" onClick={() => createNewImagePackage(true)}>Create new template</Button>
+          </Box>
+        }
 
         {isEditorPage && 
-        <Box sx={boxStyle}>
-          <Typography sx={{ mr: 1 }}>{isSaving ? 'Saving...' : 'All changes saved'}</Typography>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            startIcon={<KeyboardArrowLeftIcon />} 
-            disabled={cannotUndo}
-            sx={{ minWidth: '0px', p: 1.5, backgroundColor: '#3c4045', border: 'none', mr: 1, '& .MuiButton-startIcon': { m: 0, color: cannotUndo ? '#3c4045' : '#fff' } }} 
-            onClick={() => onUndo()}
-          />
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            disabled={cannotRedo}
-            startIcon={<KeyboardArrowRightIcon />} 
-            sx={{ minWidth: '0px', p: 1.5, backgroundColor: '#3c4045', border: 'none', '& .MuiButton-startIcon': { m: 0, color: cannotRedo ? '#3c4045' : '#fff' } }} 
-            onClick={() => onRedo()}
-          />
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            sx={{ maxWidth: '100%', px: { xs: 1, lg: 2 }, mx: 2, backgroundColor: '#3c4045', border: 'none' }}
-            onClick={openDiscardDraft}
-          >
-            {hasCanvasObjects ? "Discard draft" : "Cancel"}
-          </Button>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            sx={{ px: { xs: 1, lg: 7 }, mr: 2, backgroundColor: '#3c4045', border: 'none' }}
-            onClick={playVideo}
-          >
-            Play
-          </Button>
-          <Button variant="contained" sx={{ px: { xs: 1, lg: 5 } }} onClick={openGenerateVideo}>Generate video</Button>
-        </Box>}
+          <Box sx={boxStyle}>
+            <Typography sx={{ mr: 1 }}>{isSaving ? 'Saving...' : 'All changes saved'}</Typography>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              startIcon={<KeyboardArrowLeftIcon />} 
+              disabled={cannotUndo}
+              sx={{ minWidth: '0px', p: 1.5, backgroundColor: '#3c4045', border: 'none', mr: 1, '& .MuiButton-startIcon': { m: 0, color: cannotUndo ? '#3c4045' : '#fff' } }} 
+              onClick={() => onUndo()}
+            />
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              disabled={cannotRedo}
+              startIcon={<KeyboardArrowRightIcon />} 
+              sx={{ minWidth: '0px', p: 1.5, backgroundColor: '#3c4045', border: 'none', '& .MuiButton-startIcon': { m: 0, color: cannotRedo ? '#3c4045' : '#fff' } }} 
+              onClick={() => onRedo()}
+            />
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              sx={{ maxWidth: '100%', px: { xs: 1, lg: 2 }, mx: 2, backgroundColor: '#3c4045', border: 'none' }}
+              onClick={openDiscardDraft}
+            >
+              {hasCanvasObjects ? "Discard draft" : "Cancel"}
+            </Button>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              sx={{ px: { xs: 1, lg: 7 }, mr: 2, backgroundColor: '#3c4045', border: 'none' }}
+              onClick={playVideo}
+            >
+              Play
+            </Button>
+            <Button variant="contained" sx={{ px: { xs: 1, lg: 5 } }} onClick={openGenerateVideo}>
+              {isEditTemplate ? 'Publish template' : 'Generate video'}
+            </Button>
+          </Box>
+        }
 
         {pathName === pathnameEnum.avatars &&
-        <Box sx={boxStyle}>
-          <Button variant="contained">Request your own avatar</Button>
-        </Box>}
+          <Box sx={boxStyle}>
+            <Button variant="contained">Request your own avatar</Button>
+          </Box>
+        }
 
         {pathName === pathnameEnum.account &&
-        <Box sx={boxStyle}>
-          <Button variant="contained" onClick={cancelUserChanges} disabled={!canSaveUser} color="secondary" sx={{ mr: 2, px: { xs: 1, sm: 7 } }}>Cancel</Button>
-          <Button variant="contained" onClick={saveUser} disabled={!canSaveUser} sx={{ px: { xs: 1, sm: 8 } }}>Save</Button>
-        </Box>}
+          <Box sx={boxStyle}>
+            <Button variant="contained" onClick={cancelUserChanges} disabled={!canSaveUser} color="secondary" sx={{ mr: 2, px: { xs: 1, sm: 7 } }}>Cancel</Button>
+            <Button variant="contained" onClick={saveUser} disabled={!canSaveUser} sx={{ px: { xs: 1, sm: 8 } }}>Save</Button>
+          </Box>
+        }
       </Toolbar>
     </AppBar>
   );

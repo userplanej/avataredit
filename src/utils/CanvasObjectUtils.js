@@ -23,6 +23,7 @@ export const createAvatarObject = (avatar) => {
 
 export const createImageObject = (image) => {
   return {
+    "id": image.image_id,
     "name": image.image_name,
     "type": "image",
     "option": {
@@ -57,6 +58,7 @@ export const createBackgroundColorObject = (background) => {
 
 export const createBackgroundImageObject = (background) => {
   return {
+    "id": background.background_id,
     "name": background.background_name,
     "type": "background",
     "option": {

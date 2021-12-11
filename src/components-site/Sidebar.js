@@ -154,7 +154,7 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
 
 const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   const history = useHistory();
-  const routeMatch = useRouteMatch(`${pathnameEnum.editor}/:id`);
+  const routeMatch = useRouteMatch([`${pathnameEnum.editor}/:id`, `${pathnameEnum.editorTemplate}/:id`]);
 
   const [activeKey, setActiveKey] = useState('home');
   const [anchorEl, setAnchorEl] = useState(null);

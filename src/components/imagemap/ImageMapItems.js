@@ -706,7 +706,8 @@ class ImageMapItems extends Component {
 	render() {
 		const { 
 			canvasRef, descriptors, uploadedBackgroundImages, defaultBackgroundColors, defaultBackgroundImages, 
-			defaultBackgroundVideos, avatars, uploadedImages, defaultImages, shapes, onSaveSlide
+			defaultBackgroundVideos, avatars, uploadedImages, defaultImages, shapes, onSaveSlide, userTemplates,
+			reloadSlides, video
 		} = this.props;
 
 		// Texts
@@ -746,6 +747,9 @@ class ImageMapItems extends Component {
 					backgroundsImagesUploaded={backgroundsImagesUploadedItems}
 					backgroundsVideosDefault={backgroundsVideosDefaultItems}
 					avatars={avatarsItems}
+					userTemplates={userTemplates}
+					reloadSlides={reloadSlides}
+					video={video}
 				/>
 			</Box>
 		);

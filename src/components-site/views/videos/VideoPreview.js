@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import axios from 'axios';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -18,13 +19,17 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 import CustomInput from '../../inputs/CustomInput';
+import ConfirmDialog from '../../dialog/ConfirmDialog';
 
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
 import { deleteOutput, getOutputByVideoId, updateOutput } from '../../../api/output/output';
-import { deleteImagePackage, getImagePackage, updateImagePackage } from '../../../api/image/package';
+import { deleteImagePackage, getImagePackage, postImagePackage, updateImagePackage } from '../../../api/image/package';
+import { postImageClip } from '../../../api/image/clip';
+import { uploadFile } from '../../../api/s3';
 
 import { pathnameEnum } from '../../constants/Pathname';
 
@@ -36,7 +41,7 @@ const labelStyle = {
 const VideoPreview = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const routeMatchPreview = useRouteMatch(`${pathnameEnum.videos}/:id`);
+  const routeMatchPreview = useRouteMatch([`${pathnameEnum.videos}/:id`, `${pathnameEnum.templates}/:id`]);
   const id = routeMatchPreview.params.id;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -47,13 +52,14 @@ const VideoPreview = () => {
   const [description, setDescription] = useState('test');
   const [isEditDescription, setIsEditDescription] = useState(false);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   useEffect(() => {
     dispatch(setShowBackdrop(true));
     
     Promise.all([
       loadVideo(id),
-      // loadOutput(id)
+      loadOutput(id)
     ]).then(() => {
       dispatch(setShowBackdrop(false));
       setIsLoading(false);
@@ -69,13 +75,13 @@ const VideoPreview = () => {
     });
   }
 
-  // const loadOutput = async (id) => {
-  //   await getOutputByVideoId(id).then((res) => {
-  //     const output = res.data.body.rows[0];
-  //     setOutput(output);
-  //     setDescription(output.description);
-  //   });
-  // }
+  const loadOutput = async (id) => {
+    await getOutputByVideoId(id).then((res) => {
+      const output = res.data.body.rows[0];
+      setOutput(output);
+      setDescription(output.description);
+    });
+  }
 
   const handleEditTitle = () => {
     setIsEditTitle(true);
@@ -114,7 +120,7 @@ const VideoPreview = () => {
   const handleDownloadVideo = () => {
     const a = document.createElement("a");
     a.href = output.video_dir;
-    a.download = `${video.package_name}.mp4`;
+    a.download = `${title}.mp4`;
     a.click();
   }
 
@@ -123,7 +129,8 @@ const VideoPreview = () => {
       deleteImagePackage(id),
       deleteOutput(output.output_id)
     ]).then(() => {
-      history.push(pathnameEnum.videos);
+      const path = video.is_template ? pathnameEnum.templates : pathnameEnum.videos;
+      history.push(path);
     });
   }
 
@@ -134,6 +141,117 @@ const VideoPreview = () => {
   const handleCloseScriptDialog = () => {
     setOpenScriptDialog(false);
   }
+  
+  const handleOpenConfirmDialog = () => setOpenConfirmDialog(true);
+
+  const handleCloseConfirmDialog = () => setOpenConfirmDialog(false);
+
+  const handleCreateVideoFromTemplate = async () => {
+    dispatch(setShowBackdrop(true));
+
+    let packageId = null;
+    let clipId = null;
+
+    // Create package
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const imagePackage = {
+      user_id: user.user_id,
+      package_name: 'New video',
+      is_draft: true,
+      is_template: false
+    }
+    await postImagePackage(imagePackage).then((res) => {
+      packageId = res.data.body.package_id;
+    });
+
+    // Create slides
+    const slidePromise = new Promise((resolve) => {
+      const slides = video.image_clips;
+      slides.forEach(async (slide, index) => {
+        let newLocation = null;
+
+        // Duplicate slide thumbnail
+        const slideImage = slide.html5_dir;
+        await axios.get(slideImage, { responseType: 'blob' }).then(async (res) => {
+          const blob = res.data;
+          const filename = `video-${packageId}-slide-${index}-${new Date().getTime()}`;
+          const file = new File([blob], filename, { type: "image/png" });
+
+          const formData = new FormData();
+          formData.append('files', file);
+          await uploadFile(formData, 'slide-thumbnail').then((res) => { 
+            newLocation = res.data.body[0].file_dir;
+          });
+        });
+        
+        const imageClip = {
+          package_id: packageId,
+          background_type: slide.background_type,
+          text_script: slide.text_script,
+          html5_script: slide.html5_script,
+          html5_dir: newLocation,
+          avatar_pose: slide.avatar_pose,
+          avatar_type: slide.avatar_type,
+          avatar_size: slide.avatar_size,
+          clip_order: slide.clip_order
+        }
+        await postImageClip(imageClip).then((res) => {
+          if (index === 0) {
+            clipId = res.data.body.clip_id;
+          }
+        });
+
+        if (index === (slides.length - 1)) {
+          resolve();
+        }
+      });
+    });
+
+    // Update image package current clip_id
+    slidePromise.then(async () => {
+      await updateImagePackage(packageId, { clip_id: clipId }).then(() => {
+        dispatch(setShowBackdrop(false));
+        history.push(pathnameEnum.editor + `/${packageId}`);
+      });
+    });
+  }
+
+  const handleDuplicateVideo = async () => {
+    dispatch(setShowBackdrop(true));
+    
+    // Duplicate video/template
+    let packageId = null;
+    const newVideo = {
+      package_name: video.is_template ? 'New template' : 'New video',
+      is_draft: true,
+      is_template: video.is_template,
+      user_id: video.user_id
+    }
+    await postImagePackage(newVideo).then((res) => {
+      packageId = res.data.body.package_id;
+    });
+
+    // Duplicate slides
+    let firstClipId = null;
+    video.image_clips.map(async (clip, index) => {
+      const newSlide = {
+        ...clip,
+        clip_id: null,
+        package_id: packageId
+      }
+      await postImageClip(newSlide).then((res) => {
+        if (index === 0) {
+          firstClipId = res.data.body.clip_id;
+        }
+      });
+    });
+
+    // Update video current clip_id
+    await updateImagePackage(packageId, { clip_id: firstClipId }).then(() => {
+      history.push(`${pathnameEnum.editor}/${packageId}`);
+      dispatch(setShowBackdrop(false));
+    });
+  }
 
   return isLoading ? (
       <Container></Container>
@@ -142,7 +260,7 @@ const VideoPreview = () => {
         <Grid container sx={{ pb: 3 }}>
           <Grid item xs={12} lg={8} sx={{ mb: 4 }}>
             <Box sx={{ width: { xs: '98%', xl: '95%' } }}>
-              <video controls style={{ width: '100%', height: '500px', borderRadius: '6px' }}>
+              <video controls style={{ width: '100%', borderRadius: '6px' }}>
                 <source src={output.video_dir} type="video/mp4" />
                 <source type="video/webm" src={output.video_dir} />
               </video>
@@ -193,21 +311,29 @@ const VideoPreview = () => {
           
           <Grid item xs={12} lg={4} sx={{ p: 4, color: '#fff', backgroundColor: '#3c4045', height: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              Enable video sharing
+              Enable {video.is_template ? 'template' : 'video'} sharing
               <Switch defaultChecked sx={{ mr: 1 }} />
             </Box>
 
             <Typography variant="subtitle1" sx={{ maxWidth: '300px' }}>
-              Anyone with the link will be able to see this video
+              Anyone with the link will be able to see this {video.is_template ? 'template' : 'video'}
             </Typography>
 
-            <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between' }}>
-              Allow duplicates
-              <Switch defaultChecked sx={{ mr: 1 }} />
-            </Box>
+            {video.is_template ?
+              (
+                <Box sx={{ mt: 1 }}>
+                  Shared templates can be duplicated by default.
+                </Box>
+              ) : (
+                <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between' }}>
+                  Allow duplicates
+                  <Switch defaultChecked sx={{ mr: 1 }} />
+                </Box>
+              )
+            }
 
             <Box sx={{ p: 2, mt: 2, backgroundColor: '#9a9a9a' }}>
-              <Typography variant="subtitle1" color="#3c4045">Share your video</Typography>
+              <Typography variant="subtitle1" color="#3c4045">Share your {video.is_template ? 'template' : 'video'}</Typography>
 
               <Grid container sx={{ mt: 1 }}>
                 <Grid item xs={12} sm={10} lg={8.5} xl={9.5}>
@@ -233,19 +359,43 @@ const VideoPreview = () => {
             </Box>
 
             <Box sx={{ p: 2, mt: 2, border: '3px solid #9a9a99' }}>
-              <Typography variant="h6" color="#fff">Video options</Typography>
+              <Typography variant="h6" color="#fff">{video.is_template ? 'Template' : 'Video'} options</Typography>
 
               <List>
-                <ListItem disablePadding onClick={handleDownloadVideo}>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <DownloadIcon sx={{ color: '#fff' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Download" />
-                  </ListItemButton>
-                </ListItem>
+                {!video.is_template &&
+                  <ListItem disablePadding onClick={handleDownloadVideo}>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <DownloadIcon sx={{ color: '#fff' }} />
+                      </ListItemIcon>
+                      <ListItemText primary="Download" />
+                    </ListItemButton>
+                  </ListItem>
+                }
 
-                <ListItem disablePadding>
+                {video.is_template &&
+                  <ListItem disablePadding onClick={handleCreateVideoFromTemplate}>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <AddCircleIcon sx={{ color: '#fff' }} />
+                      </ListItemIcon>
+                      <ListItemText primary="Create video" />
+                    </ListItemButton>
+                  </ListItem>
+                }
+
+                {/* {video.is_template &&
+                  <ListItem disablePadding>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <BorderColorIcon sx={{ color: '#fff' }} />
+                      </ListItemIcon>
+                      <ListItemText primary="Edit" />
+                    </ListItemButton>
+                  </ListItem>
+                } */}
+
+                <ListItem disablePadding onClick={handleDuplicateVideo}>
                   <ListItemButton>
                     <ListItemIcon>
                       <ContentCopyIcon sx={{ color: '#fff' }} />
@@ -254,16 +404,18 @@ const VideoPreview = () => {
                   </ListItemButton>
                 </ListItem>
 
-                <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <AddCircleIcon sx={{ color: '#fff' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Create template" />
-                  </ListItemButton>
-                </ListItem>
+                {!video.is_template &&
+                  <ListItem disablePadding>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <AddCircleIcon sx={{ color: '#fff' }} />
+                      </ListItemIcon>
+                      <ListItemText primary="Create template" />
+                    </ListItemButton>
+                  </ListItem>
+                }
 
-                <ListItem disablePadding onClick={handleDeleteVideo}>
+                <ListItem disablePadding onClick={handleOpenConfirmDialog}>
                   <ListItemButton>
                     <ListItemIcon>
                       <DeleteForeverIcon sx={{ color: '#fff' }} />
@@ -274,9 +426,9 @@ const VideoPreview = () => {
               </List>
             </Box>
 
-            <Box sx={{ mt: 3 }}>
+            {/* <Box sx={{ mt: 3 }}>
               <Link color="#df678c" onClick={() => {}}>Issues with pronunciation or pause?</Link>
-            </Box>
+            </Box> */}
           </Grid>
         </Grid>
 
@@ -307,6 +459,14 @@ const VideoPreview = () => {
           
           <DialogActions></DialogActions>
         </Dialog>
+
+        <ConfirmDialog 
+          open={openConfirmDialog}
+          close={handleCloseConfirmDialog}
+          title="Delete video"
+          text="Are you sure you want to delete this video?"
+          onConfirm={handleDeleteVideo}
+        />
       </Container>
     );
 }

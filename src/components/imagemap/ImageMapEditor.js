@@ -28,7 +28,7 @@ import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 import { setActiveSlide, setActiveSlideId, setSelectedAvatar } from '../../redux/video/videoSlice';
 import { setLeft, setTop, setWidth, setHeight, setIsBack, setIsFront } from '../../redux/object/objectSlice';
 
-import { getImagePackage } from '../../api/image/package';
+import { getAllImagePackage, getImagePackage } from '../../api/image/package';
 import { getAllUserImages, getAllDefaultImages } from '../../api/image/image';
 import { getAllAvatars } from '../../api/avatar/avatar';
 import { getAllShapes } from '../../api/shape/shape';
@@ -155,6 +155,7 @@ class ImageMapEditor extends Component {
 			this.loadImages(),
 			this.loadShapes(),
 			this.loadBackgrounds(),
+			this.loadTemplates()
 			// this.loadVideos()
 		]).then(() => {
 			this.props.setShowBackdrop(false);
@@ -349,7 +350,7 @@ class ImageMapEditor extends Component {
       const templates = res.data.body.rows;
       const templatesSorted = templates.sort((a, b) => (a.create_date < b.create_date) ? 1 : -1);
       const defaultTemplates = templatesSorted.filter((template) => template.user_id === null);
-      const myTemplates = templatesSorted.filter((template) => template.user_id === user.user_id);
+      const myTemplates = templatesSorted.filter((template) => template.user_id === user.user_id && !template.is_draft );
 
 			this.setState({ userTemplates: myTemplates });
     });
@@ -1075,6 +1076,8 @@ class ImageMapEditor extends Component {
 								reloadBackgrounds={() => this.loadBackgrounds()}
 								onSaveSlide={onSaveSlide}
 								userTemplates={userTemplates}
+								reloadSlides={() => this.loadImageClips()}
+								video={video}
 							/>
 						</Grid>}
 					</Grid>

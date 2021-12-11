@@ -21,7 +21,7 @@ import { pathnameEnum } from './constants/Pathname';
 export default function Main() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const routeMatch = useRouteMatch(`${pathnameEnum.editor}/:id`);
+  const routeMatch = useRouteMatch([`${pathnameEnum.editor}/:id`, `${pathnameEnum.editorTemplate}/:id`]);
   const showBackdrop = useSelector(state => state.backdrop.showBackdrop);
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -50,11 +50,13 @@ export default function Main() {
         <Route exact path={pathnameEnum.home} component={Home} />
         <Route exact path={pathnameEnum.videos} component={Videos} />
         <Route exact path={pathnameEnum.editor + '/:id'} component={Editor} />
+        <Route exact path={pathnameEnum.editorTemplate + '/:id'} component={Editor} />
         <Route exact path={pathnameEnum.templates} component={Templates} />
         <Route exact path={pathnameEnum.avatars} component={Avatars} />
         <Route exact path={pathnameEnum.account} component={Account} />
         <Route exact path={pathnameEnum.billing} component={Billing} />
         <Route exact path={pathnameEnum.videos + '/:id'} component={VideoPreview} />
+        <Route exact path={pathnameEnum.templates + '/:id'} component={VideoPreview} />
         <Redirect from="/studio/" to={pathnameEnum.home} />
       </Switch>
 

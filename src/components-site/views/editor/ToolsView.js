@@ -15,6 +15,7 @@ import { Stack, Slider, InputLabel } from '@mui/material';
 
 import CustomInput from '../../inputs/CustomInput';
 import SelectInput from '../../inputs/SelectInput';
+import TemplateDetail from './TemplateDetail';
 
 import { updateImageClip } from '../../../api/image/clip';
 
@@ -350,41 +351,41 @@ const ToolsView = (props) => {
     );
   }
 
-  const renderFormat = () => {
-    let title = 'Format';
-    let type = null;
-    if (activeObject) {
-      switch (activeObject.type) {
-        case 'textbox':
-          title = 'Text format';
-          break;
-        case 'shape':
-          title = 'Shape format';
-          break;
-        case 'avatar':
-          title = 'Avatar format';
-          type = 'avatar';
-          break;
-        default:
-          break;
-      }
-    }
-    return (
-      <Box>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          {title}
-        </Typography>
+  // const renderFormat = () => {
+  //   let title = 'Format';
+  //   let type = null;
+  //   if (activeObject) {
+  //     switch (activeObject.type) {
+  //       case 'textbox':
+  //         title = 'Text format';
+  //         break;
+  //       case 'shape':
+  //         title = 'Shape format';
+  //         break;
+  //       case 'avatar':
+  //         title = 'Avatar format';
+  //         type = 'avatar';
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   }
+  //   return (
+  //     <Box>
+  //       <Typography variant="h5" sx={{ mb: 2 }}>
+  //         {title}
+  //       </Typography>
 
-        <hr />
+  //       <hr />
         
-        {renderMoveButtons()}
+  //       {renderMoveButtons()}
 
-        <hr />
-        {type === 'avatar' && renderAvatarPose()}
-        {renderLayout()}
-      </Box>
-    );
-  }
+  //       <hr />
+  //       {type === 'avatar' && renderAvatarPose()}
+  //       {renderLayout()}
+  //     </Box>
+  //   );
+  // }
 
   /**
    * Align the avatar.
@@ -421,12 +422,12 @@ const ToolsView = (props) => {
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
       <Grid item xs={8.5} md={10} lg={9} xl={10} sx={{ backgroundColor: '#3c4045' }}>
         <TabPanel name="main" value={activeTab} index={0}>
-          <Typography variant="h6" sx={{ mb: '10px' }}>Select template</Typography>
+          <TemplateDetail userTemplates={props.userTemplates} reloadSlides={props.reloadSlides} video={props.video} />
         </TabPanel>
 
         <TabPanel name="main" value={activeTab} index={1}>
           <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar, size and alignment</Typography>
-          <Box sx={{ height: '600px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
+          <Box sx={{ height: '520px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
 
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
