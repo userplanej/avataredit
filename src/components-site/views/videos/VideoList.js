@@ -47,7 +47,7 @@ const VideoList = (props) => {
 
     const user = JSON.parse(sessionStorage.getItem('user'));
 
-    await getAllImagePackage(user.user_id).then(res => {
+    await getAllImagePackage(user.user_id, false, isHome).then(res => {
       const videos = res.data.body.rows;
       const videosSorted = videos.sort((a, b) => (a.create_date < b.create_date) ? 1 : -1);
       setVideosList(videosSorted);
@@ -196,7 +196,7 @@ const VideoList = (props) => {
         </Grid>
       }
 
-      <Box sx={{ mt: 2, '& .MuiGrid-root': { m: '0px' }, maxHeight: '730px', overflowY: 'auto' }}>        
+      <Box sx={{ mt: 2, '& .MuiGrid-root': { m: '0px' }, maxHeight: isHome ? '730px' : '', overflowY: 'auto' }}>
         {!showBackdrop && videosListToDisplay && videosListToDisplay.length > 0 && videosListToDisplay.map(video => (
           <VideoCard
             key={video.package_id}
