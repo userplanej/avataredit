@@ -697,8 +697,11 @@ class ImageMapEditor extends Component {
 				<Menu>
 					<Menu.Item
 						onClick={() => {
-							this.canvasRef.handler.removeById(target.id);
-							this.props.setSelectedAvatar(null);
+							const activeObject = this.canvasRef.handler.getActiveObject();
+							this.canvasRef.handler.remove();
+							if (activeObject.subtype === 'avatar') {
+								this.props.setSelectedAvatar(null);
+							}
 							this.canvasHandlers.onSaveSlide();
 						}}
 					>
