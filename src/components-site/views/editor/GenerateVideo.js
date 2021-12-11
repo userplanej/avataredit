@@ -104,7 +104,8 @@ const GenerateVideo = (props) => {
           file = new File([canvasBlob], "canvas", { type: "image/png" });
 
           if (avatar) {
-            canvasRef.handler?.add(avatar);
+            canvasRef.handler.importJSON(objects);
+            canvasRef.handler.transactionHandler.state = objects;
           }
 
           resolve();
