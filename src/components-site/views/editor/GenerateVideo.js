@@ -120,17 +120,16 @@ const GenerateVideo = (props) => {
           const filename = `${video.package_name}-${new Date().getTime()}.mp4`;
           const file = new File([blob], filename, { type: "video/mp4" });
           const formData = new FormData();
-          formData.append('adminId', 'admin1018');
-          formData.append('images', file);
+          formData.append('files', file);
 
           await uploadFile(formData, 'generated-video').then((res) => { 
-            const location = res.data.body.location;
+            const upload = res.data.body[0];
             const user = JSON.parse(sessionStorage.getItem('user'));
             const dataToSend = {
               video_id: video.package_id,
               user_id: user.user_id,
               video_name: title,
-              video_dir: location,
+              video_dir: upload.file_dir,
               description: description
             }
 

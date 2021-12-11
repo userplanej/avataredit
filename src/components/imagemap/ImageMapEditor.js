@@ -718,28 +718,24 @@ class ImageMapEditor extends Component {
 				const canvasBlob = this.canvasRef?.handler?.getCanvasImageAsBlob();
 				const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
 				const file = new File([canvasBlob], fileName, { type: "image/png" });
-		
-				const deleteFormData = new FormData();
-				deleteFormData.append('adminId', 'admin1018');
+
 				// Delete old thumbnail
 				const oldLocation = activeSlide.html5_dir;
 				if (oldLocation !== null) {
-					// const dataToSend = {
-					// 	location: oldLocation
-					// }
-					deleteFormData.append('location', oldLocation);
-					deleteFile(deleteFormData);
+					const dataToSend = {
+						file_dir: oldLocation
+					}
+					await deleteFile(dataToSend);
 				}
 
 				const uploadFormData = new FormData();
-				uploadFormData.append('adminId', 'admin1018');
-				uploadFormData.append('images', file);
+				uploadFormData.append('files', file);
 				await uploadFile(uploadFormData, 'slide-thumbnail').then(async (res) => {
-					const location = res.data.body.location;
+					const upload = res.data.body[0];
 					const objects = this.canvasRef.handler.exportJSON();
 					const dataToSend = {
 						html5_script: JSON.stringify(objects),
-						html5_dir: location
+						html5_dir: upload.file_dir
 					}
 		
 					await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());

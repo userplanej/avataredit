@@ -104,7 +104,7 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
           }
         }}
       >
-        <ListItem 
+        {/* <ListItem 
           button 
           key={keys.new}
         >
@@ -123,7 +123,7 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
           key={keys.help}
         >
           <ListItemText primary={'Help'} />
-        </ListItem>
+        </ListItem> */}
 
         <ListItem 
           button 

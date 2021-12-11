@@ -662,11 +662,10 @@ class ImageMapItems extends Component {
 
       const fileName = filePath.replace(/^.*?([^\\\/]*)$/, '$1');
       const formData = new FormData();
-      formData.append('adminId', 'admin1018');
-      formData.append('images', file);
+      formData.append('files', file);
 
-      await uploadFile(formData, isImage ? 'image' : 'background').then(async (res) => {
-        const location = res.data.body.location;
+      await uploadFile(formData, isImage ? 'images' : 'backgrounds').then(async (res) => {
+        const upload = res.data.body[0];
         let dataToSend = {
 					is_upload: true,
 					user_id: user.user_id
@@ -674,7 +673,7 @@ class ImageMapItems extends Component {
 
 				if (isImage) {
 					dataToSend.image_name = fileName;
-					dataToSend.image_dir = location;
+					dataToSend.image_dir = upload.file_dir;
 
 					await postImage(dataToSend).then(() => {
 						this.props.reloadImages();
@@ -682,7 +681,7 @@ class ImageMapItems extends Component {
 					});
 				} else {
 					dataToSend.background_name = fileName;
-					dataToSend.background_src = location;
+					dataToSend.background_src = upload.file_dir;
 
 					await postBackground(dataToSend).then(() => {
 						this.props.reloadBackgrounds();
