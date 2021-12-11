@@ -26,8 +26,8 @@ export const signInUser = async (user) => {
   return await API.post(`${userPath}signIn`, user);
 }
 
-export const sendResetCode = async (data) => await API.post(`${userPath}sendresetcode`, data);
+export const sendResetCode = async (data) => await API.post(`${userPath}sendcode`, data);
 
-export const checkResetCode = async (data) => await API.post(`${userPath}checkresetcode`, data);
+export const checkResetCode = async (data) => await API.post(`${userPath}checkcode`, data);
 
 export const defineNewPassword = async (data) => await API.post(`${userPath}newpassword`, data);
