@@ -150,7 +150,7 @@ const VideoCard = (props) => {
         />
       </Grid>
 
-      <Grid item xs={20} sm={video.is_draft ? 9 : 14.8} md={5.5} lg={6} xl={6}>
+      <Grid item xs={20} sm={video.is_draft ? 9 : 14.8} md={7.9} lg={8} xl={8}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, wordBreak: 'break-all', mt: { xs: 2, sm: 0 } }}>
           <Typography variant="body1" sx={{ maxWidth: '100%', color: '#fff' }}>{getStringShortcut(video.package_name, 22)}</Typography>
           {video.is_draft && 
