@@ -10,6 +10,14 @@ export const getAllBackgrounds = async () => {
   return await API.get(`${backgroundPath}list`);
 }
 
+export const getAllUserBackgrounds = async (id) => {
+  return await API.get(`${backgroundPath}list?user_id=${id}`);
+}
+
+export const getAllDefaultBackgrounds = async () => {
+  return await API.get(`${backgroundPath}list?is_upload=false`);
+}
+
 export const getBackground = async (id) => {
   return await API.get(`${backgroundPath}detail/${id}`);
 }

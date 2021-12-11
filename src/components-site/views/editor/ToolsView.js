@@ -443,7 +443,7 @@ const ToolsView = (props) => {
               </Tabs>
             </Box>
             <TabPanel name="avatar" value={avatarTab} index={0}>
-              <Box sx={{ p: 2, backgroundColor: '#262c34' }}>
+              <Box sx={{ px: 2, py: 3, backgroundColor: '#262c34', width: '100%' }}>
                 <Box sx={{ display: 'flex' }}>
                   <Button
                     variant={avatarPosition === avatarPositionValues.left ? 'contained' : 'text'}
@@ -531,13 +531,13 @@ const ToolsView = (props) => {
           </Box>
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={6}>
+        {/* <TabPanel name="main" value={activeTab} index={6}>
           <Typography variant="h6">Select music</Typography>
         </TabPanel>
 
         <TabPanel name="main" value={activeTab} index={7}>
           {renderFormat()}
-        </TabPanel>
+        </TabPanel> */}
       </Grid>
 
       <Grid item xs={3.5} md={2} lg={3} xl={2} sx={{ backgroundColor: '#30353a', height: '100%' }}>
@@ -570,8 +570,8 @@ const ToolsView = (props) => {
           <Tab label="Text" {...a11yProps(3)} />
           <Tab label="Shapes" {...a11yProps(4)} />
           <Tab label="Images" {...a11yProps(5)} />
-          <Tab label="Music" {...a11yProps(6)} />
-          {activeObject && <Tab label="Format" {...a11yProps(7)} />}
+          {/* <Tab label="Music" {...a11yProps(6)} /> */}
+          {/* {activeObject && <Tab label="Format" {...a11yProps(7)} />} */}
         </Tabs>
       </Grid>
     </Grid>

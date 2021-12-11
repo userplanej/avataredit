@@ -215,8 +215,12 @@ class ImageMapItems extends Component {
 	attachDocumentEventListener = () => {
 		document.addEventListener('keydown', e => {
 			if (e.code === code.DELETE) {
-				this.props.setSelectedAvatar(null);
-				setTimeout(() => this.props.onSaveSlide(), 100);
+				const activeObject = this.props.canvasRef.handler.getActiveObject();
+				console.log(activeObject);
+				if (activeObject) {
+					this.props.setSelectedAvatar(null);
+					setTimeout(() => this.props.onSaveSlide(), 100);
+				}
 			}
 		});
 	}
@@ -329,7 +333,7 @@ class ImageMapItems extends Component {
 		onChangeWorkareaBackgroundImage: (src) => {
 			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor('#e8e9e9');
 			this.props.canvasRef.handler.workareaHandler.setImage(src, false);
-			this.props.onSaveSlide();
+			setTimeout(() => this.props.onSaveSlide(), 100);
 		},
 		onChangeWorkareaBackgroundVideo: (src) => {
 			this.props.canvasRef.handler.workareaHandler.setWorkareaBackgroundColor('#e8e9e9');
@@ -699,9 +703,9 @@ class ImageMapItems extends Component {
 		const { reloadImages, reloadBackgrounds } = this.props;
 
 		if (isImage) {
-			await deleteImage(id).then(() => reloadImages());
+			await deleteImage(id).then(async () => await reloadImages());
 		} else {
-			await deleteBackground(id).then(() => reloadBackgrounds());
+			await deleteBackground(id).then(async () => await reloadBackgrounds());
 		}
 	}
 

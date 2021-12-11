@@ -35,7 +35,7 @@ import { getAllShapes } from '../../api/shape/shape';
 import { getAllImageClipByPackageId, updateImageClip } from '../../api/image/clip';
 import { getAllVideos } from '../../api/video/video';
 import { uploadFile, deleteFile } from '../../api/s3';
-import { getAllBackgrounds } from '../../api/background/background';
+import { getAllDefaultBackgrounds, getAllUserBackgrounds } from '../../api/background/background';
 
 import {
 	createAvatarObject,
@@ -138,7 +138,8 @@ class ImageMapEditor extends Component {
 		defaultImages: {},
 		videos: {},
 		slides: [],
-		video: null
+		video: null,
+		userTemplates: []
 	};
 
 	componentDidMount() {
@@ -206,6 +207,7 @@ class ImageMapEditor extends Component {
 	loadImages = async () => {
 		const user = JSON.parse(sessionStorage.getItem('user'));
 
+		let imageList = {};
 		await getAllUserImages(user.user_id).then(res => {
 			const images = res.data.body;
 
@@ -216,12 +218,12 @@ class ImageMapEditor extends Component {
 					imageArray.push(imageObject);
 				});
 				
-				const imageList = {
+				imageList = {
 					"IMAGE": imageArray
 				}
-
-				this.setState({ uploadedImages: imageList });
 			}
+
+			this.setState({ uploadedImages: imageList });
 		});
 
 		await getAllDefaultImages().then(res => {
@@ -264,13 +266,34 @@ class ImageMapEditor extends Component {
 	}
 
 	loadBackgrounds = async () => {
-		await getAllBackgrounds().then(res => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+
+		let uploadedBackgroundImagesList = {};
+		await getAllUserBackgrounds(user.user_id).then(res => {
+			const backgrounds = res.data.body.rows;
+
+			if (backgrounds && backgrounds.length > 0) {
+				const uploadedBackgroundImageArray = [];
+
+				backgrounds.forEach((background) => {
+					const backgroundImageObject = createBackgroundImageObject(background);
+					uploadedBackgroundImageArray.push(backgroundImageObject);
+				});
+
+				uploadedBackgroundImagesList = {
+					"IMAGE": uploadedBackgroundImageArray
+				}
+			}
+
+			this.setState({	uploadedBackgroundImages: uploadedBackgroundImagesList });
+		});
+
+		await getAllDefaultBackgrounds().then(res => {
 			const backgrounds = res.data.body.rows;
 
 			if (backgrounds && backgrounds.length > 0) {
 				const backgroundImageArray = [];
 				const backgroundColorArray = [];
-				const uploadedBackgroundImageArray = [];
 
 				backgrounds.forEach(background => {
 					if (background.color_hex !== null) {
@@ -279,11 +302,7 @@ class ImageMapEditor extends Component {
 					}
 					if (background.background_src !== null) {
 						const backgroundImageObject = createBackgroundImageObject(background);
-						if (background.is_upload) {
-							uploadedBackgroundImageArray.push(backgroundImageObject);
-						} else {
-							backgroundImageArray.push(backgroundImageObject);
-						}
+						backgroundImageArray.push(backgroundImageObject);
 					}
 				});
 
@@ -295,14 +314,9 @@ class ImageMapEditor extends Component {
 					"IMAGE": backgroundImageArray
 				}
 
-				const uploadedBackgroundImagesList = {
-					"IMAGE": uploadedBackgroundImageArray
-				}
-
 				this.setState({
 					defaultBackgroundColors: backgroundColorList,
-					defaultBackgroundImages: backgroundImageList,
-					uploadedBackgroundImages: uploadedBackgroundImagesList
+					defaultBackgroundImages: backgroundImageList
 				});
 			}
 		});
@@ -328,6 +342,19 @@ class ImageMapEditor extends Component {
 		});
 	}
 
+	loadTemplates = async () => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+
+    await getAllImagePackage(null, true).then(res => {
+      const templates = res.data.body.rows;
+      const templatesSorted = templates.sort((a, b) => (a.create_date < b.create_date) ? 1 : -1);
+      const defaultTemplates = templatesSorted.filter((template) => template.user_id === null);
+      const myTemplates = templatesSorted.filter((template) => template.user_id === user.user_id);
+
+			this.setState({ userTemplates: myTemplates });
+    });
+  }
+
 	canvasHandlers = {
 		onAdd: target => {
 			const { editing } = this.state;
@@ -342,8 +369,8 @@ class ImageMapEditor extends Component {
 			this.canvasRef.handler.select(target);
 			// Change tools tab
 			this.props.setActiveObject({ id: target.id, type: target.subtype ? target.subtype : target.type });
-			this.props.setPreviousTab(this.props.activeTab);
-			this.props.setActiveTab(indexFormatTab);
+			// this.props.setPreviousTab(this.props.activeTab);
+			// this.props.setActiveTab(indexFormatTab);
 		},
 		onSelect: target => {
 			const { selectedItem } = this.state;
@@ -352,8 +379,8 @@ class ImageMapEditor extends Component {
 					selectedItem: target,
 				});
 				// Change tools tab
-				this.props.setActiveTab(this.props.previousTab);
-				this.props.setActiveObject(null);
+				// this.props.setActiveTab(this.props.previousTab);
+				// this.props.setActiveObject(null);
 				return;
 			}
 			if (target && target.id && target.id !== 'workarea' && target.type !== 'activeSelection') {
@@ -371,10 +398,10 @@ class ImageMapEditor extends Component {
 
 				// Change tools tab
 				this.props.setActiveObject({ id: target.id, type: target.subtype ? target.subtype : target.type });
-				if (this.props.activeTab !== indexFormatTab) {
-					this.props.setPreviousTab(this.props.activeTab);
-				}
-				this.props.setActiveTab(indexFormatTab);
+				// if (this.props.activeTab !== indexFormatTab) {
+				// 	this.props.setPreviousTab(this.props.activeTab);
+				// }
+				// this.props.setActiveTab(indexFormatTab);
 
 				// Update format values
 				this.setFormatValues(target);
@@ -399,8 +426,8 @@ class ImageMapEditor extends Component {
 			}
 			// Change tools tab
 			this.canvasHandlers.onSelect(null);
-			this.props.setActiveTab(this.props.previousTab);
-			this.props.setActiveObject(null);
+			// this.props.setActiveTab(this.props.previousTab);
+			// this.props.setActiveObject(null);
 		},
 		onModified: debounce(() => {
 			const { editing } = this.state;
@@ -692,20 +719,22 @@ class ImageMapEditor extends Component {
 				const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
 				const file = new File([canvasBlob], fileName, { type: "image/png" });
 		
-				const formData = new FormData();
-				formData.append('adminId', 'admin1018');
-				formData.append('images', file);
-		
+				const deleteFormData = new FormData();
+				deleteFormData.append('adminId', 'admin1018');
 				// Delete old thumbnail
 				const oldLocation = activeSlide.html5_dir;
 				if (oldLocation !== null) {
-					const dataToSend = {
-						location: oldLocation
-					}
-					deleteFile(dataToSend);
+					// const dataToSend = {
+					// 	location: oldLocation
+					// }
+					deleteFormData.append('location', oldLocation);
+					deleteFile(deleteFormData);
 				}
 
-				await uploadFile(formData, 'slide-thumbnail').then(async (res) => {
+				const uploadFormData = new FormData();
+				uploadFormData.append('adminId', 'admin1018');
+				uploadFormData.append('images', file);
+				await uploadFile(uploadFormData, 'slide-thumbnail').then(async (res) => {
 					const location = res.data.body.location;
 					const objects = this.canvasRef.handler.exportJSON();
 					const dataToSend = {
@@ -940,7 +969,8 @@ class ImageMapEditor extends Component {
 			videoSource,
 			packageId,
 			video,
-			slides
+			slides,
+			userTemplates
 		} = this.state;
 		const {
 			onAdd,
@@ -1045,6 +1075,7 @@ class ImageMapEditor extends Component {
 								reloadImages={() => this.loadImages()}
 								reloadBackgrounds={() => this.loadBackgrounds()}
 								onSaveSlide={onSaveSlide}
+								userTemplates={userTemplates}
 							/>
 						</Grid>}
 					</Grid>
