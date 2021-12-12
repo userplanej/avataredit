@@ -125,10 +125,8 @@ const VideoPreview = () => {
   }
 
   const handleDeleteVideo = async () => {
-    await Promise.all([
-      deleteImagePackage(id),
-      deleteOutput(output.output_id)
-    ]).then(() => {
+    await deleteOutput(output.output_id);
+    await deleteImagePackage(id).then(() => {
       const path = video.is_template ? pathnameEnum.templates : pathnameEnum.videos;
       history.push(path);
     });
@@ -233,23 +231,32 @@ const VideoPreview = () => {
 
     // Duplicate slides
     let firstClipId = null;
-    video.image_clips.map(async (clip, index) => {
-      const newSlide = {
-        ...clip,
-        clip_id: null,
-        package_id: packageId
-      }
-      await postImageClip(newSlide).then((res) => {
-        if (index === 0) {
-          firstClipId = res.data.body.clip_id;
+    const slidePromise = new Promise((resolve) => {
+      const slides = video.image_clips;
+      slides.map(async (clip, index) => {
+        const newSlide = {
+          ...clip,
+          clip_id: null,
+          package_id: packageId
+        }
+        await postImageClip(newSlide).then((res) => {
+          if (index === 0) {
+            firstClipId = res.data.body.clip_id;
+          }
+        });
+
+        if (index === (slides.length - 1)) {
+          resolve();
         }
       });
     });
 
     // Update video current clip_id
-    await updateImagePackage(packageId, { clip_id: firstClipId }).then(() => {
-      history.push(`${pathnameEnum.editor}/${packageId}`);
-      dispatch(setShowBackdrop(false));
+    slidePromise.then(async () => {
+      await updateImagePackage(packageId, { clip_id: firstClipId }).then(() => {
+        history.push(`${video.is_template ? pathnameEnum.editorTemplate : pathnameEnum.editor}/${packageId}`);
+        dispatch(setShowBackdrop(false));
+      });
     });
   }
 

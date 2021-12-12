@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import { Grid, Typography } from '@mui/material';
@@ -11,8 +12,10 @@ import ConfirmDialog from '../../dialog/ConfirmDialog';
 
 import { getAllImagePackage, deleteImagePackage, postImagePackage, updateImagePackage } from '../../../api/image/package';
 import { postImageClip } from '../../../api/image/clip';
-import { postOutput } from '../../../api/output/output';
+
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
+
+import { pathnameEnum } from '../../constants/Pathname';
 
 const sortItems = [
   {
@@ -29,6 +32,7 @@ const VideoList = (props) => {
   const { isHome } = props;
 
   const dispatch = useDispatch();
+  const history = useHistory();
   const showBackdrop = useSelector(state => state.backdrop.showBackdrop);
 
   const [videosList, setVideosList] = useState([]);
@@ -113,8 +117,10 @@ const VideoList = (props) => {
     // Duplicate video
     let packageId = null;
     const newVideo = {
+      package_name: 'New video',
       package_name: video.package_name,
-      is_draft: video.is_draft,
+      is_draft: true,
+      is_template: false,
       user_id: video.user_id
     }
     await postImagePackage(newVideo).then((res) => {
@@ -123,32 +129,32 @@ const VideoList = (props) => {
 
     // Duplicate slides
     let firstClipId = null;
-    video.image_clips.map(async (clip, index) => {
-      const newSlide = {
-        ...clip,
-        clip_id: null,
-        package_id: packageId
-      }
-      await postImageClip(newSlide).then((res) => {
-        if (index === 0) {
-          firstClipId = res.data.body.clip_id;
+    const slidePromise = new Promise((resolve) => {
+      const slides = video.image_clips;
+      slides.map(async (clip, index) => {
+        const newSlide = {
+          ...clip,
+          clip_id: null,
+          package_id: packageId
+        }
+        await postImageClip(newSlide).then((res) => {
+          if (index === 0) {
+            firstClipId = res.data.body.clip_id;
+          }
+        });
+
+        if (index === (slides.length - 1)) {
+          resolve();
         }
       });
     });
 
     // Update video current clip_id
-    await updateImagePackage(packageId, { clip_id: firstClipId });
-
-    // Duplicate output
-    const newOutput = {
-      ...video.output,
-      output_id: null,
-      video_id: packageId,
-      user_id: video.user_id
-    }
-    await postOutput(newOutput).then(() => {
-      loadVideos();
-      dispatch(setShowBackdrop(false));
+    slidePromise.then(async () => {
+      await updateImagePackage(packageId, { clip_id: firstClipId }).then(() => {
+        history.push(`${pathnameEnum.editor}/${packageId}`);
+        dispatch(setShowBackdrop(false));
+      });
     });
   }
   
