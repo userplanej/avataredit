@@ -213,11 +213,15 @@ class ImageMapItems extends Component {
 	}
 
 	attachDocumentEventListener = () => {
+		const { canvasRef } = this.props;
+
 		document.addEventListener('keydown', e => {
 			if (e.code === code.DELETE) {
-				const activeObject = this.props.canvasRef.handler.getActiveObject();
+				const activeObject = canvasRef.handler.getActiveObject();
 				if (activeObject) {
-					this.props.setSelectedAvatar(null);
+					if (activeObject.subtype === 'avatar') {
+						this.props.setSelectedAvatar(null);
+					}
 					setTimeout(() => this.props.onSaveSlide(), 100);
 				}
 			}

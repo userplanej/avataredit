@@ -700,7 +700,7 @@ class ImageMapEditor extends Component {
 						onClick={() => {
 							const activeObject = this.canvasRef.handler.getActiveObject();
 							this.canvasRef.handler.remove();
-							if (activeObject.subtype === 'avatar') {
+							if (activeObject && activeObject.subtype === 'avatar') {
 								this.props.setSelectedAvatar(null);
 							}
 							this.canvasHandlers.onSaveSlide();
