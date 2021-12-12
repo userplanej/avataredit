@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 import Box from '@mui/material/Box';
 import { Grid, Typography } from '@mui/material';
@@ -12,6 +13,7 @@ import ConfirmDialog from '../../dialog/ConfirmDialog';
 
 import { getAllImagePackage, deleteImagePackage, postImagePackage, updateImagePackage } from '../../../api/image/package';
 import { postImageClip } from '../../../api/image/clip';
+import { uploadFile } from '../../../api/s3';
 
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
@@ -157,6 +159,76 @@ const VideoList = (props) => {
       });
     });
   }
+
+  const handleCreateTemplateFromVideo = async (video) => {
+    dispatch(setShowBackdrop(true));
+
+    let packageId = null;
+    let clipId = null;
+
+    // Create package
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const imagePackage = {
+      user_id: user.user_id,
+      package_name: 'New template',
+      is_draft: true,
+      is_template: true
+    }
+    await postImagePackage(imagePackage).then((res) => {
+      packageId = res.data.body.package_id;
+    });
+
+    // Create slides
+    const slidePromise = new Promise((resolve) => {
+      const slides = video.image_clips;
+      slides.forEach(async (slide, index) => {
+        let newLocation = null;
+
+        // Duplicate slide thumbnail
+        const slideImage = slide.html5_dir;
+        await axios.get(slideImage, { responseType: 'blob' }).then(async (res) => {
+          const blob = res.data;
+          const filename = `video-${packageId}-slide-${index}-${new Date().getTime()}`;
+          const file = new File([blob], filename, { type: "image/png" });
+
+          const formData = new FormData();
+          formData.append('files', file);
+          await uploadFile(formData, 'slide-thumbnail').then((res) => {
+            newLocation = res.data.body[0].file_dir;
+          });
+        });
+
+        const imageClip = {
+          package_id: packageId,
+          background_type: slide.background_type,
+          text_script: slide.text_script,
+          html5_script: slide.html5_script,
+          html5_dir: newLocation,
+          avatar_pose: slide.avatar_pose,
+          avatar_type: slide.avatar_type,
+          avatar_size: slide.avatar_size,
+          clip_order: slide.clip_order
+        }
+        await postImageClip(imageClip).then((res) => {
+          if (index === 0) {
+            clipId = res.data.body.clip_id;
+          }
+        });
+
+        if (index === (slides.length - 1)) {
+          resolve();
+        }
+      });
+    });
+
+    // Update image package current clip_id
+    slidePromise.then(async () => {
+      await updateImagePackage(packageId, { clip_id: clipId }).then(() => {
+        dispatch(setShowBackdrop(false));
+        history.push(`${pathnameEnum.editorTemplate}/${packageId}`);
+      });
+    });
+  }
   
   return (
     <Box sx={{ pb: 3 }}>
@@ -210,6 +282,7 @@ const VideoList = (props) => {
             output={video.output}
             onDeleteVideo={(id) => handleOpenConfirmDialog(id)}
             onDuplicateVideo={(video) => handleDuplicateVideo(video)}
+            onCreateTemplate={(video) => handleCreateTemplateFromVideo(video)}
           />
         ))}
         {!showBackdrop && videosListToDisplay && videosListToDisplay.length === 0 && 

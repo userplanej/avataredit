@@ -144,7 +144,7 @@ const VideoPreview = () => {
 
   const handleCloseConfirmDialog = () => setOpenConfirmDialog(false);
 
-  const handleCreateVideoFromTemplate = async () => {
+  const handleCreateVideoOrTemplate = async (isTemplate) => {
     dispatch(setShowBackdrop(true));
 
     let packageId = null;
@@ -154,9 +154,9 @@ const VideoPreview = () => {
     const user = JSON.parse(sessionStorage.getItem('user'));
     const imagePackage = {
       user_id: user.user_id,
-      package_name: 'New video',
+      package_name: isTemplate ? 'New template' : 'New video',
       is_draft: true,
-      is_template: false
+      is_template: isTemplate
     }
     await postImagePackage(imagePackage).then((res) => {
       packageId = res.data.body.package_id;
@@ -209,7 +209,8 @@ const VideoPreview = () => {
     slidePromise.then(async () => {
       await updateImagePackage(packageId, { clip_id: clipId }).then(() => {
         dispatch(setShowBackdrop(false));
-        history.push(pathnameEnum.editor + `/${packageId}`);
+        const path = isTemplate ? pathnameEnum.editorTemplate : pathnameEnum.editor;
+        history.push(`${path}/${packageId}`);
       });
     });
   }
@@ -381,7 +382,7 @@ const VideoPreview = () => {
                 }
 
                 {video.is_template &&
-                  <ListItem disablePadding onClick={handleCreateVideoFromTemplate}>
+                  <ListItem disablePadding onClick={handleCreateVideoOrTemplate}>
                     <ListItemButton>
                       <ListItemIcon>
                         <AddCircleIcon sx={{ color: '#fff' }} />
@@ -412,7 +413,7 @@ const VideoPreview = () => {
                 </ListItem>
 
                 {!video.is_template &&
-                  <ListItem disablePadding>
+                  <ListItem disablePadding onClick={() => handleCreateVideoOrTemplate(true)}>
                     <ListItemButton>
                       <ListItemIcon>
                         <AddCircleIcon sx={{ color: '#fff' }} />

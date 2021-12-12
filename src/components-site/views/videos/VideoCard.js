@@ -34,7 +34,7 @@ const gridStyle = {
 const ITEM_HEIGHT = 48;
 
 const VideoCard = (props) => {
-  const { video, output, onDeleteVideo, onDuplicateVideo } = props;
+  const { video, output, onDeleteVideo, onDuplicateVideo, onCreateTemplate } = props;
 
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -87,7 +87,8 @@ const VideoCard = (props) => {
   const handleCreateTemplate = (event) => {
     event.stopPropagation();
 
-    const id = video.package_id;
+    onCreateTemplate(video);
+    handleCloseMenu(event);
   }
 
   const options = [
