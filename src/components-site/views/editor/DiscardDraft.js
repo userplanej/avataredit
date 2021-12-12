@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import { Button, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,8 +19,9 @@ const DiscardDraft = (props) => {
   const doDiscardDraft = async () => {
     const id = routeMatch.params.id;
     await deleteImagePackage(id).then(() => {
-      showAlert('Draft discarded successfully', 'success')
-      history.push(pathnameEnum.videos);
+      showAlert('Draft discarded successfully', 'success');
+      const isTemplate = routeMatch !== null && routeMatch.url.includes("template");
+      history.push(isTemplate ? pathnameEnum.templates : pathnameEnum.videos);
     });
   }
 

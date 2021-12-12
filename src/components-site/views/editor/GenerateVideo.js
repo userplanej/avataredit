@@ -26,11 +26,9 @@ const labelStyle = {
 }
 
 const GenerateVideo = (props) => {
-  const { canvasRef, video, slides, open, close, textScript } = props;
+  const { canvasRef, video, slides, open, close } = props;
   const dispatch = useDispatch();
   const history = useHistory();
-  // const video = useSelector(state => state.video.video);
-  // const slides = useSelector(state => state.video.slides);
   const activeSlide = useSelector(state => state.video.activeSlide);
   const selectedAvatar = useSelector(state => state.video.selectedAvatar);
 
@@ -136,22 +134,10 @@ const GenerateVideo = (props) => {
 
             postOutput(dataToSend).then(() => {
               dispatch(setShowBackdrop(false));
-              history.push(`${pathnameEnum.videos}/${video.package_id}`);
+              const path = video.is_template ? pathnameEnum.templates : pathnameEnum.videos;
+              history.push(`${path}/${video.package_id}`);
             });
           });
-
-          // const url = URL.createObjectURL(blob);
-          // const a = document.createElement("a");
-          // a.href = url;
-          // a.download = 'test.mp4';
-          // a.click();
-
-          // var reader = new FileReader();
-          // reader.readAsDataURL(blob);
-          // reader.onloadend = function () {
-          //   var b64 = reader.result.replace(/^data:.+;base64,/, '');
-          //   var src = "data:video/webm;base64," + b64;
-          // }
         });
       },
       () => {
