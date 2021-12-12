@@ -4,6 +4,9 @@ import axios from 'axios';
 import { Grid, Box, Typography } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
+import { uploadFile } from '../../../api/s3';
+import { postImageClip } from '../../../api/image/clip';
+
 const TemplateDetail = (props) => {
   const { userTemplates, reloadSlides, video } = props;
 
@@ -72,9 +75,10 @@ const TemplateDetail = (props) => {
       <Grid container spacing={2}>
         {isList && userTemplates && userTemplates.length > 0 &&
           userTemplates.map((template) => {
+            const firstSlide = template.image_clips[0];
             return (
               <Grid item sm={6} md={3} lg={6} sx={{ cursor: 'pointer' }} onClick={() => handleClickTemplate(template)}>
-                <img src="/images/backgrounds/luxury-lobby.png" style={{ width: '100%', borderRadius: '6px' }} />
+                <img src={firstSlide.html5_dir} style={{ width: '100%', borderRadius: '6px' }} />
                 <Typography variant="body1" color="#fff" sx={{ mt: 1 }}>{template.package_name}</Typography>
               </Grid>
             );
@@ -85,7 +89,7 @@ const TemplateDetail = (props) => {
           templateSelected.image_clips.map((slide) => {
             return (
               <Grid item sm={6} md={3} lg={6} sx={{ cursor: 'pointer' }} onClick={() => handleClickSlide(slide)}>
-                <img src="/images/backgrounds/luxury-lobby.png" style={{ width: '100%', borderRadius: '6px' }} />
+                <img src={slide.html5_dir} style={{ width: '100%', borderRadius: '6px' }} />
               </Grid>
             )
           })
