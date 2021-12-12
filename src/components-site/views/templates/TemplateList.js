@@ -135,12 +135,12 @@ const TemplateList = (props) => {
               display: 'flex',
               alignItems: 'center', 
               justifyContent: 'center',
-              backgroundImage: firstSlide.html5_dir !== null ? `url(${firstSlide.html5_dir})` : '',
+              backgroundImage: firstSlide && firstSlide.html5_dir !== null ? `url(${firstSlide.html5_dir})` : '',
               backgroundPosition: 'center', /* Center the image */
               backgroundSize: 'cover'
             }}
           >
-            {(firstSlide.html5_dir === null || firstSlide.html5_dir === '') && <PanoramaIcon fontSize="large" />}
+            {(firstSlide && (firstSlide.html5_dir === null || firstSlide.html5_dir === '')) && <PanoramaIcon fontSize="large" />}
           </Box>
         </Box>
 
