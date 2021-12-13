@@ -19,8 +19,7 @@ const TemplateDetail = (props) => {
   }
 
   const handleClickSlide = async (slide) => {
-    // Copy slide
-    const packageId = video.packageId;
+    const packageId = video.package_id;
 
     let newLocation = null;
     // Duplicate slide thumbnail
