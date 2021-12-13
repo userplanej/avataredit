@@ -318,7 +318,7 @@ const VideoPreview = () => {
           </Grid>
           
           <Grid item xs={12} lg={4} sx={{ p: 4, color: '#fff', backgroundColor: '#3c4045', height: '100%' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               Enable {video.is_template ? 'template' : 'video'} sharing
               <Switch defaultChecked sx={{ mr: 1 }} />
             </Box>
@@ -364,7 +364,7 @@ const VideoPreview = () => {
                   </Button>
                 </Grid>
               </Grid>
-            </Box>
+            </Box> */}
 
             <Box sx={{ p: 2, mt: 2, border: '3px solid #9a9a99' }}>
               <Typography variant="h6" color="#fff">{video.is_template ? 'Template' : 'Video'} options</Typography>
