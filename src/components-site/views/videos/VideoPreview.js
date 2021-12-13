@@ -32,6 +32,7 @@ import { postImageClip } from '../../../api/image/clip';
 import { uploadFile } from '../../../api/s3';
 
 import { pathnameEnum } from '../../constants/Pathname';
+import classNames from 'classnames';
 
 const labelStyle = {
   color: "#9a9a9a",
@@ -382,7 +383,7 @@ const VideoPreview = () => {
                 }
 
                 {video.is_template &&
-                  <ListItem disablePadding onClick={handleCreateVideoOrTemplate}>
+                  <ListItem disablePadding onClick={() => handleCreateVideoOrTemplate(false)}>
                     <ListItemButton>
                       <ListItemIcon>
                         <AddCircleIcon sx={{ color: '#fff' }} />
