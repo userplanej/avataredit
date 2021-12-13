@@ -430,7 +430,7 @@ const ToolsView = (props) => {
           <Box sx={{ height: '520px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
 
           <Box sx={{ width: '100%' }}>
-            <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
+            {/* <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs 
                 value={avatarTab} 
                 variant="fullWidth" 
@@ -439,11 +439,11 @@ const ToolsView = (props) => {
                 aria-label="avatars-tabs"
               >
                 <Tab label="Full body" />
-                {/* <Tab label="Circle" />
-                <Tab label="Voice only" /> */}
+                <Tab label="Circle" />
+                <Tab label="Voice only" />
               </Tabs>
-            </Box>
-            <TabPanel name="avatar" value={avatarTab} index={0}>
+            </Box> */}
+            {/* <TabPanel name="avatar" value={avatarTab} index={0}> */}
               <Box sx={{ px: 2, py: 3, backgroundColor: '#262c34', width: '100%' }}>
                 <Box sx={{ display: 'flex' }}>
                   <Button
@@ -480,13 +480,13 @@ const ToolsView = (props) => {
                   </Stack>
                 </Box>
               </Box>
-            </TabPanel>
+            {/* </TabPanel>
             <TabPanel name="avatar" value={avatarTab} index={1}>Circle</TabPanel>
             <TabPanel name="avatar" value={avatarTab} index={2}>
               <Box sx={{ p: 7, backgroundColor: '#262c34', color: '#fff', textAlign: 'center' }}>
                 Avatar will not be shown on this slide.
               </Box>
-            </TabPanel>
+            </TabPanel> */}
           </Box>
         </TabPanel>
 
