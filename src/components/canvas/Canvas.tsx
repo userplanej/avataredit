@@ -160,7 +160,7 @@ class Canvas extends Component<CanvasProps, IState> {
 			<Box
 				ref={this.container}
 				id={id}
-				sx={{ width: { xs: '90%', sm: '550px', md: '550px', lg: '90%', xl: '550px' }, height: '310px' }}
+				sx={{ width: { xs: '90%', sm: '551px', md: '551px', lg: '90%', xl: '551px' }, height: '311px' }}
 			>
 				<canvas id={`canvas_${id}`} />
 			</Box>
