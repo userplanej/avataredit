@@ -497,14 +497,15 @@ const ToolsView = (props) => {
               <Tabs value={backgroundTab} variant="scrollable" scrollButtons={false} onChange={handleChangeBackgroundTab} aria-label="backgrounds-tabs">
                 <Tab label="Colors" />
                 <Tab label="Images" />
-                <Tab label="Videos" />
+                {/* <Tab label="Videos" /> */}
                 <Tab label="Uploads" />
               </Tabs>
             </Box>
             <TabPanel name="background" value={backgroundTab} index={0}>{props.backgroundsColors}</TabPanel>
             <TabPanel name="background" value={backgroundTab} index={1}>{props.backgroundsImagesDefault}</TabPanel>
-            <TabPanel name="background" value={backgroundTab} index={2}>{props.backgroundsVideosDefault}</TabPanel>
-            <TabPanel name="background" value={backgroundTab} index={3}>{props.backgroundsImagesUploaded}</TabPanel>
+            {/* <TabPanel name="background" value={backgroundTab} index={2}>{props.backgroundsVideosDefault}</TabPanel> */}
+            <TabPanel name="background" value={backgroundTab} index={2}>{props.backgroundsImagesUploaded}</TabPanel>
+            {/* <TabPanel name="background" value={backgroundTab} index={3}>{props.backgroundsImagesUploaded}</TabPanel> */}
           </Box>
         </TabPanel>
 
