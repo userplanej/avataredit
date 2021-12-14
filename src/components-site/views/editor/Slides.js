@@ -272,24 +272,22 @@ const Slides = (props) => {
                     backgroundPosition: 'center',
                     backgroundSize: 'cover',
                     display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    position: 'relative'
+                    justifyContent: 'right'
                   }}
-                />
-
-                <MoreVertIcon 
-                  id={`slide-menu-btn-${slideId}`}
-                  className="slide-menu" 
-                  onClick={(event) => handleClickMenu(event, slideId)} 
-                  sx={{ 
-                    display: 'none',
-                    position: 'absolute',
-                    top: '20px',
-                    left: { xs: '185px', sm: '210px', md: '180px', lg: '180px', xl: '190px' },
-                    cursor: 'pointer'
-                  }} 
-                />
+                >
+                  <MoreVertIcon
+                    id={`slide-menu-btn-${slideId}`}
+                    className="slide-menu"
+                    onClick={(event) => handleClickMenu(event, slideId)}
+                    sx={{
+                      mt: 1,
+                      mr: 1,
+                      display: 'none',
+                      float: 'right',
+                      cursor: 'pointer'
+                    }}
+                  />
+                </Box>
 
                 <Menu
                   id={`slide-menu-${slideId}`}
