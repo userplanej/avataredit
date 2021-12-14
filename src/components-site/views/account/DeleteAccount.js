@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, InputLabel, Stack } from '@mui/material';
@@ -7,6 +9,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import CustomInput from '../../inputs/CustomInput';
 
 import { showAlert } from '../../../utils/AlertUtils';
+
+import { deleteUser } from '../../../api/user/user';
+
+import { pathnameEnum } from '../../constants/Pathname';
 
 const listDeleteReasons = [
   'I am waiting for the API',
@@ -22,6 +28,7 @@ const DeleteAccount = (props) => {
     open,
     close
   } = props;
+  const history = useHistory();
 
   const [email, setEmail] = useState('');
   const [showEnterEmail, setShowEnterEmail] = useState(true);
@@ -69,9 +76,14 @@ const DeleteAccount = (props) => {
     setShowEnterEmail(true);
   }
 
-  const handleCloseFinalPage = () => {
+  const handleCloseFinalPage = async () => {
     // TODO: Remove account and logout (remove sessionStorage and redirect to login page)
-    close();
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    await deleteUser(user.user_id).then(() => {
+      close();
+      sessionStorage.removeItem('user');
+      history.push(pathnameEnum.login);
+    });
   }
 
   const getEnterEmail = () => {
