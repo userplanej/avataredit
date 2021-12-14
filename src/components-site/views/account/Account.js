@@ -367,7 +367,7 @@ const Account = () => {
           </Grid>
         </Grid>
 
-        <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Notifications</Typography>
+        {/* <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Notifications</Typography>
 
         <Box sx={{ mt: 1.5, ml: 1 }}>
           <Grid container>
@@ -377,14 +377,14 @@ const Account = () => {
           <Grid container sx={{ mt: 2 }}>
             <Grid item><FormControlLabel control={<Switch sx={{ mr: 1 }} />} label="Product updates" sx={{ color: '#fff' }} /></Grid>
           </Grid>
-        </Box>
+        </Box> */}
 
-        <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Billing information</Typography>
+        {/* <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Billing information</Typography>
 
         <Box sx={{ mt: 2, color: '#fff' }}>
           {"To see invoices change credit card, VAT or address, "}
           <Link color="#df678c" onClick={() => handleShowBillingPage()}>please click here.</Link>
-        </Box>
+        </Box> */}
       </Box>
 
       <Dialog
