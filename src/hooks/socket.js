@@ -1,3 +1,4 @@
+import React from 'react';
 import { io } from "socket.io-client";
 
 const SOCKET_URL = "http://18.189.13.6:5000";
