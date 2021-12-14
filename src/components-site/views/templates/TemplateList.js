@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
@@ -8,13 +9,22 @@ import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
+import { Menu, MenuItem } from '@mui/material';
 import PanoramaIcon from '@mui/icons-material/Panorama';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+
+import ConfirmDialog from '../../dialog/ConfirmDialog';
 
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
-import { getAllImagePackage } from '../../../api/image/package';
+import { deleteImagePackage, getAllImagePackage, postImagePackage, updateImagePackage } from '../../../api/image/package';
+import { uploadFile } from '../../../api/s3';
+import { postImageClip } from '../../../api/image/clip';
+import { deleteOutput } from '../../../api/output/output';
 
 import { pathnameEnum } from '../../constants/Pathname';
+
+const ITEM_HEIGHT = 48;
 
 const templateBoxStyle = {
   mt: 3,
@@ -52,13 +62,40 @@ const TemplateList = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
+  const showBackdrop = useSelector(state => state.backdrop.showBackdrop);
 
   const [defaultTemplateList, setDefaultTemplateList] = useState([]);
   const [myTemplateList, setMyTemplateList] = useState([]);
   const [templateTab, setTemplateTab] = useState(0);
+  const [templateSelected, setTemplateSelected] = useState(null);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+
+  const options = [
+    {
+      name: 'Create video',
+      action: (event) => handleCreateVideo(event),
+      isDraft: false
+    },
+    {
+      name: 'Duplicate',
+      action: (event) => handleDuplicateTemplate(event),
+      isDraft: false
+    },
+    {
+      name: 'Delete',
+      action: (event) => {
+        handleOpenConfirmDialog(event);
+        handleCloseMenu(event);
+      },
+      isDraft: true
+    }
+  ];
 
   useEffect(() => {
     loadTemplates();
+    setTemplateSelected(null);
   }, []);
 
   const loadTemplates = async () => {
@@ -76,6 +113,157 @@ const TemplateList = (props) => {
       // setVideosListToDisplay(videosSorted);
       dispatch(setShowBackdrop(false));
     });
+  }
+
+  const handleOpenConfirmDialog = () => setOpenConfirmDialog(true);
+
+  const handleCloseConfirmDialog = () => setOpenConfirmDialog(false);
+
+  const handleClickMenu = (event, template) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setTemplateSelected(template);
+  };
+
+  const handleCloseMenu = (event) => {
+    event.stopPropagation();
+    setAnchorEl(null);
+  };
+
+  const handleCreateVideo = async (event) => {
+    handleCloseMenu(event);
+
+    dispatch(setShowBackdrop(true));
+
+    let packageId = null;
+    let clipId = null;
+
+    // Create package
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const imagePackage = {
+      user_id: user.user_id,
+      package_name: 'New video',
+      is_draft: true,
+      is_template: false
+    }
+    await postImagePackage(imagePackage).then((res) => {
+      packageId = res.data.body.package_id;
+    });
+
+    // Create slides
+    const slidePromise = new Promise((resolve) => {
+      const slides = templateSelected.image_clips;
+      slides.forEach(async (slide, index) => {
+        let newLocation = null;
+
+        // Duplicate slide thumbnail
+        const slideImage = slide.html5_dir;
+        await axios.get(slideImage, { responseType: 'blob' }).then(async (res) => {
+          const blob = res.data;
+          const filename = `video-${packageId}-slide-${index}`;
+          const file = new File([blob], filename, { type: "image/png" });
+
+          const formData = new FormData();
+          formData.append('files', file);
+          await uploadFile(formData, 'slide-thumbnail').then((res) => {
+            newLocation = res.data.body[0].file_dir;
+          });
+        });
+
+        const imageClip = {
+          package_id: packageId,
+          background_type: slide.background_type,
+          text_script: slide.text_script,
+          html5_script: slide.html5_script,
+          html5_dir: newLocation,
+          avatar_pose: slide.avatar_pose,
+          avatar_type: slide.avatar_type,
+          avatar_size: slide.avatar_size,
+          clip_order: slide.clip_order
+        }
+        await postImageClip(imageClip).then((res) => {
+          if (index === 0) {
+            clipId = res.data.body.clip_id;
+          }
+        });
+
+        if (index === (slides.length - 1)) {
+          resolve();
+        }
+      });
+    });
+
+    // Update image package current clip_id
+    slidePromise.then(async () => {
+      await updateImagePackage(packageId, { clip_id: clipId }).then(() => {
+        dispatch(setShowBackdrop(false));
+        history.push(`${pathnameEnum.editorTemplate}/${packageId}`);
+      });
+    });
+  }
+
+  const handleDuplicateTemplate = async (event) => {
+    handleCloseMenu(event);
+
+    dispatch(setShowBackdrop(true));
+
+    // Duplicate template
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    let packageId = null;
+    const newVideo = {
+      package_name: 'New template',
+      is_draft: true,
+      is_template: true,
+      user_id: user.user_id
+    }
+    await postImagePackage(newVideo).then((res) => {
+      packageId = res.data.body.package_id;
+    });
+
+    // Duplicate slides
+    let firstClipId = null;
+    const slidePromise = new Promise((resolve) => {
+      const slides = templateSelected.image_clips;
+      slides.map(async (clip, index) => {
+        const newSlide = {
+          ...clip,
+          clip_id: null,
+          package_id: packageId
+        }
+        await postImageClip(newSlide).then((res) => {
+          if (index === 0) {
+            firstClipId = res.data.body.clip_id;
+          }
+        });
+
+        if (index === (slides.length - 1)) {
+          resolve();
+        }
+      });
+    });
+
+    // Update video current clip_id
+    slidePromise.then(async () => {
+      await updateImagePackage(packageId, { clip_id: firstClipId }).then(() => {
+        history.push(`${pathnameEnum.editorTemplate}/${packageId}`);
+        dispatch(setShowBackdrop(false));
+      });
+    });
+  }
+
+  const handleDeleteTemplate = async () => {
+    if (templateSelected.is_draft) {
+      await deleteImagePackage(templateSelected.package_id).then(() => {
+        loadTemplates();
+        handleCloseConfirmDialog();
+      });
+    } else {
+      await deleteOutput(templateSelected.output.output_id);
+      await deleteImagePackage(templateSelected.package_id).then(() => {
+        loadTemplates();
+        handleCloseConfirmDialog();
+      });
+    }
   }
 
   const handleChangeTemplateTab = (event, newValue) => {
@@ -121,15 +309,19 @@ const TemplateList = (props) => {
   }
 
   const displayTemplateItem = (template, firstSlide, isDraft) => {
+    const templateId = template.package_id;
     return (
       <Box sx={templateBoxStyle}>
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'center',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            ':hover .template-menu': {
+              display: 'block'
+            }
           }}
-          onClick={() => handleClickTemplate(template.package_id, isDraft)}
+          onClick={() => handleClickTemplate(templateId, isDraft)}
         >
           <Box 
             sx={{ 
@@ -137,30 +329,40 @@ const TemplateList = (props) => {
               width: '100%',
               height: isHome ? '180px' : '230px',
               borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center', 
-              justifyContent: 'center',
+              display: 'grid',
+              justifyContent: 'right',
               backgroundImage: firstSlide && firstSlide.html5_dir !== null ? `url(${firstSlide.html5_dir})` : '',
               backgroundPosition: 'center', /* Center the image */
               backgroundSize: 'cover'
             }}
           >
-            {(firstSlide && (firstSlide.html5_dir === null || firstSlide.html5_dir === '')) && <PanoramaIcon fontSize="large" />}
+            <MoreVertIcon
+              id={`template-menu-btn-${templateId}`}
+              className="template-menu"
+              onClick={(event) => handleClickMenu(event, template)}
+              sx={{
+                mt: 1,
+                mr: 1,
+                display: 'none',
+                float: 'right',
+                cursor: 'pointer'
+              }}
+            />
           </Box>
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
           <Typography variant="body1" color="#fff">{getShortName(template.package_name)}</Typography>
-          {isDraft && 
+          {isDraft &&
             <Box
-              sx={{ 
-                textAlign: 'center', 
-                fontSize: '14px', 
-                fontWeight: 'bold', 
-                color: '#9a9a9a', 
-                width: '65px', 
-                height: '25px', 
-                borderRadius: '4px', 
+              sx={{
+                textAlign: 'center',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: '#9a9a9a',
+                width: '65px',
+                height: '25px',
+                borderRadius: '4px',
                 border: 'solid 2px #babbbb',
                 ml: 2
               }}
@@ -171,6 +373,22 @@ const TemplateList = (props) => {
         </Box>
       </Box>
     );
+  }
+
+  const displayOptions = () => {
+    if (!templateSelected) {
+      return;
+    }
+    const optionsList = templateSelected.is_draft ? options.filter((option) => templateSelected.is_draft === option.isDraft) : options;
+    return optionsList.map((option) => (
+      <MenuItem
+        key={option.name}
+        onClick={(event) => option.action(event)}
+        sx={{ ':hover': { backgroundColor: '#f5f0fa' } }}
+      >
+        {option.name}
+      </MenuItem>
+    ));
   }
 
   return (
@@ -197,16 +415,42 @@ const TemplateList = (props) => {
       <TabPanel name="main" value={templateTab} index={1}> */}
         {isHome &&
           <Box sx={{ display: 'flex' }}>
-            {displayTemplateList()}
+            {!showBackdrop && displayTemplateList()}
           </Box>
         }
 
         {!isHome &&
           <Grid container sx={{ display: 'flex' }}>
-            {displayTemplateList()}
+            {!showBackdrop && displayTemplateList()}
           </Grid>
         }
     {/* </TabPanel> */}
+
+      <Menu
+        id="template-menu"
+        MenuListProps={{
+          'aria-labelledby': 'template-menu-btn',
+        }}
+        anchorEl={anchorEl}
+        open={openMenu}
+        onClose={handleCloseMenu}
+        PaperProps={{
+          style: {
+            maxHeight: ITEM_HEIGHT * 4.5,
+            width: '15ch',
+          },
+        }}
+      >
+        {displayOptions()}
+      </Menu>
+
+      <ConfirmDialog
+        open={openConfirmDialog}
+        close={handleCloseConfirmDialog}
+        title="Delete template"
+        text="Are you sure you want to delete this template?"
+        onConfirm={handleDeleteTemplate}
+      />
     </Box>
   );
 }
