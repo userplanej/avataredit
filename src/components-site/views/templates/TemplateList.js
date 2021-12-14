@@ -99,20 +99,25 @@ const TemplateList = (props) => {
   }
 
   const displayTemplateList = () => {
-    return myTemplateList.map((template) => {
-      const firstSlide = template.image_clips[0];
-      const isDraft = template.is_draft;
-      return isHome ?
-        (
-          <Box key={template.package_id} sx={{ display: 'flex' }}>
-            {displayTemplateItem(template, firstSlide, isDraft)} 
-          </Box>
-        ) : (
-          <Grid item key={template.package_id} xs={12} md={5} lg={4} xl={3} sx={{ display: 'flex', justifyContent: 'center' }}>
-            {displayTemplateItem(template, firstSlide, isDraft)} 
-          </Grid>
-        )
-    });
+    return myTemplateList && myTemplateList.length > 0 ?
+      (
+        myTemplateList.map((template) => {
+          const firstSlide = template.image_clips[0];
+          const isDraft = template.is_draft;
+          return isHome ?
+            (
+              <Box key={template.package_id} sx={{ display: 'flex' }}>
+                {displayTemplateItem(template, firstSlide, isDraft)}
+              </Box>
+            ) : (
+              <Grid item key={template.package_id} xs={12} md={5} lg={4} xl={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+                {displayTemplateItem(template, firstSlide, isDraft)}
+              </Grid>
+            )
+        })
+      ) : (
+        <Typography variant="h6">You have no templates, please create a new one.</Typography>
+      );
   }
 
   const displayTemplateItem = (template, firstSlide, isDraft) => {
