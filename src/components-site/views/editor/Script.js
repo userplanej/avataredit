@@ -62,7 +62,7 @@ const Script = (props) => {
   // Boolean to show voices dialog
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
   // Store current selected voice
-  const [selectedVoice, setSelectedVoice] = useState(null);
+  const [selectedVoice, setSelectedVoice] = useState(voices[0]);
   // Related to playing script sound
   const [playSound, setPlaySound] = useState(false);
   const [hasScriptChanged, setHasScriptChanged] = useState(true);
@@ -170,6 +170,10 @@ const Script = (props) => {
     setPlaySound(false);
   }
 
+  // const handleUploadVoice = () => {
+    
+  // }
+
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '90%' }}>
@@ -236,7 +240,7 @@ const Script = (props) => {
                 width: '95%',
                 cursor: 'pointer'
               }}>
-                {selectedVoice && selectedVoice.value}
+                {selectedVoice && selectedVoice.label}
               </Box>
           </Grid>
 
