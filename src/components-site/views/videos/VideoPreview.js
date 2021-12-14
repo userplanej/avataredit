@@ -32,7 +32,6 @@ import { postImageClip } from '../../../api/image/clip';
 import { uploadFile } from '../../../api/s3';
 
 import { pathnameEnum } from '../../constants/Pathname';
-import classNames from 'classnames';
 
 const labelStyle = {
   color: "#9a9a9a",
@@ -140,7 +139,7 @@ const VideoPreview = () => {
   const handleCloseScriptDialog = () => {
     setOpenScriptDialog(false);
   }
-  
+
   const handleOpenConfirmDialog = () => setOpenConfirmDialog(true);
 
   const handleCloseConfirmDialog = () => setOpenConfirmDialog(false);
@@ -173,7 +172,7 @@ const VideoPreview = () => {
         const slideImage = slide.html5_dir;
         await axios.get(slideImage, { responseType: 'blob' }).then(async (res) => {
           const blob = res.data;
-          const filename = `video-${packageId}-slide-${index}-${new Date().getTime()}`;
+          const filename = `video-${packageId}-slide-${index}`;
           const file = new File([blob], filename, { type: "image/png" });
 
           const formData = new FormData();

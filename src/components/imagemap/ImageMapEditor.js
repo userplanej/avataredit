@@ -8,6 +8,8 @@ import SandBox from '../sandbox/SandBox';
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 
+import { SocketContext } from '../../hooks/socket';
+
 import '../../libs/fontawesome-5.2.0/css/all.css';
 import '../../styles/index.less';
 
@@ -113,6 +115,8 @@ const defaultOption = {
 const indexFormatTab = 7;
 
 class ImageMapEditor extends Component {
+	static contextType = SocketContext;
+
 	state = {
 		updatedValue : false,
 		selectedItem: null,
@@ -727,7 +731,7 @@ class ImageMapEditor extends Component {
 			const { activeSlideId, activeSlide } = this.props;
 
 			const canvasBlob = this.canvasRef?.handler?.getCanvasImageAsBlob();
-			const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
+			const fileName = `video-${packageId}-slide-${activeSlideId}.png`;
 			const file = new File([canvasBlob], fileName, { type: "image/png" });
 
 			// Delete old thumbnail

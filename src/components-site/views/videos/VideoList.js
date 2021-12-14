@@ -188,7 +188,7 @@ const VideoList = (props) => {
         const slideImage = slide.html5_dir;
         await axios.get(slideImage, { responseType: 'blob' }).then(async (res) => {
           const blob = res.data;
-          const filename = `video-${packageId}-slide-${index}-${new Date().getTime()}`;
+          const filename = `video-${packageId}-slide-${index}`;
           const file = new File([blob], filename, { type: "image/png" });
 
           const formData = new FormData();
