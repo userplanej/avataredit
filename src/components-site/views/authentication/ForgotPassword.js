@@ -9,7 +9,7 @@ import { InputLabel } from '@mui/material';
 
 import CustomInput from '../../inputs/CustomInput';
 
-import { sendResetCode, checkResetCode, defineNewPassword } from '../../../api/user/user';
+import { sendCode, checkCode, defineNewPassword } from '../../../api/user/user';
 
 import { showAlert } from '../../../utils/AlertUtils';
 
@@ -89,7 +89,7 @@ const ForgotPassword = (props) => {
       email: email
     }
 
-    await sendResetCode(dataToSend)
+    await sendCode(dataToSend)
       .then(() => setPage(pageNames.code))
       .catch((error) => showAlert(error.response.data.message, 'error'));
   }
@@ -100,7 +100,7 @@ const ForgotPassword = (props) => {
       reset_code: code
     }
 
-    await checkResetCode(dataToSend)
+    await checkCode(dataToSend)
       .then(() => setPage(pageNames.newpassword))
       .catch((error) => showAlert(error.response.data.message, 'error'));
   }
