@@ -27,7 +27,7 @@ const DiscardDraft = (props) => {
 
   return (
     <Dialog
-      maxWidth="md"
+      maxWidth="sm"
       open={open}
       aria-labelledby="generate-video-dialog-title"
       aria-describedby="generate-video-dialog-description"
@@ -36,9 +36,9 @@ const DiscardDraft = (props) => {
         <CloseIcon fontSize="large" onClick={close} sx={{ cursor: 'pointer', color: '#fff' }} />
       </DialogTitle>
 
-      <DialogContent sx={{ pl: 5, pr: 15 }}>
-        <Typography variant="h4">Discard draft</Typography>
-        <Typography variant="h5">By confirming draft will be permanently deleted.</Typography>
+      <DialogContent sx={{ color: "#9a9a9a" }}>
+        <Typography variant="h5" color="#fff" sx={{ mb: 2 }}>Discard draft</Typography>
+        By confirming draft will be permanently deleted.
       </DialogContent>
       
       <DialogActions>
