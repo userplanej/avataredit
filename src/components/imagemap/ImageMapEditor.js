@@ -73,6 +73,10 @@ const propertiesToInclude = [
 	'points',
 	'svg',
 	'loadType',
+	'subtype',
+	'crossOrigin',
+	'src_thumbnail',
+	'positionButton'
 ];
 
 const defaultOption = {
@@ -425,6 +429,10 @@ class ImageMapEditor extends Component {
 			if (!editing) {
 				this.changeEditing(true);
 			}
+			const activeObject = this.canvasRef.handler.getActiveObject();
+			if (activeObject && activeObject.subtype === 'avatar') {
+				this.props.setSelectedAvatar(null);
+			}
 			// Change tools tab
 			this.canvasHandlers.onSelect(null);
 			// this.props.setActiveTab(this.props.previousTab);
@@ -703,7 +711,7 @@ class ImageMapEditor extends Component {
 							if (activeObject && activeObject.subtype === 'avatar') {
 								this.props.setSelectedAvatar(null);
 							}
-							this.canvasHandlers.onSaveSlide();
+							setTimeout(() => this.canvasHandlers.onSaveSlide(), 1);
 						}}
 					>
 						Delete
@@ -715,36 +723,34 @@ class ImageMapEditor extends Component {
 			this.forceUpdate();
 		},
 		onSaveSlide: async () => {
-			// setTimeout(async () => {
-				const { packageId } = this.state;
-				const { activeSlideId, activeSlide } = this.props;
+			const { packageId } = this.state;
+			const { activeSlideId, activeSlide } = this.props;
 
-				const canvasBlob = this.canvasRef?.handler?.getCanvasImageAsBlob();
-				const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
-				const file = new File([canvasBlob], fileName, { type: "image/png" });
+			const canvasBlob = this.canvasRef?.handler?.getCanvasImageAsBlob();
+			const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
+			const file = new File([canvasBlob], fileName, { type: "image/png" });
 
-				// Delete old thumbnail
-				const oldLocation = activeSlide.html5_dir;
-				if (oldLocation !== null) {
-					const dataToSend = {
-						file_dir: oldLocation
-					}
-					await deleteFile(dataToSend);
+			// Delete old thumbnail
+			const oldLocation = activeSlide.html5_dir;
+			if (oldLocation !== null) {
+				const dataToSend = {
+					file_dir: oldLocation
 				}
+				await deleteFile(dataToSend);
+			}
 
-				const uploadFormData = new FormData();
-				uploadFormData.append('files', file);
-				await uploadFile(uploadFormData, 'slide-thumbnail').then(async (res) => {
-					const upload = res.data.body[0];
-					const objects = this.canvasRef.handler.exportJSON();
-					const dataToSend = {
-						html5_script: JSON.stringify(objects),
-						html5_dir: upload.file_dir
-					}
-		
-					await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
-				});
-			// }, 1000);
+			const uploadFormData = new FormData();
+			uploadFormData.append('files', file);
+			await uploadFile(uploadFormData, 'slide-thumbnail').then(async (res) => {
+				const upload = res.data.body[0];
+				const objects = this.canvasRef.handler.exportJSON();
+				const dataToSend = {
+					html5_script: JSON.stringify(objects),
+					html5_dir: upload.file_dir
+				}
+	
+				await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
+			});
 		}
 	};
 
@@ -1022,22 +1028,28 @@ class ImageMapEditor extends Component {
 				<Box sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
 					<Grid container sx={{ width: '100%', height: '100%' }}>
 						
-						<Grid item xs={12} md={3} lg={2} xl={2}>
+						<Grid item xs={12} md={3} lg={2.3} xl={1.7}>
 							<Box sx={{ backgroundColor: '#24282c', height: '100%' }}>
 							{this.canvasRef && video && slides && slides.length > 0 &&
-								<Slides video={video} slides={slides} loadSlides={() => this.loadImageClips()} canvasRef={this.canvasRef} packageId={packageId} />
+								<Slides
+									video={video}
+									slides={slides}
+									loadSlides={() => this.loadImageClips()}
+									canvasRef={this.canvasRef}
+									packageId={packageId}
+								/>
 							}
 							</Box>
 						</Grid>
 						
-						<Grid item xs={12} md={9} lg={5} xl={5.5}>
+						<Grid item xs={12} md={9} lg={4.9} xl={5.7}>
 							<Box sx={{ py: 5, display: 'flex', justifyContent: 'center' }}>
 								<Canvas
 									ref={c => {
 										this.canvasRef = c;
 									}}
-									minZoom={30}
-									maxZoom={300}
+									minZoom={100}
+									maxZoom={100}
 									zoomEnabled={false}
 									objectOption={defaultOption}
 									propertiesToInclude={propertiesToInclude}
@@ -1060,7 +1072,7 @@ class ImageMapEditor extends Component {
 						</Grid>
 
 						{this.canvasRef && 
-						<Grid item xs={12} md={12} lg={5} xl={4.5}>
+						<Grid item xs={12} md={12} lg={4.8} xl={4.6}>
 							<ImageMapItems
 								canvasRef={this.canvasRef}
 								descriptors={descriptors}
