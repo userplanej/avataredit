@@ -8,7 +8,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { uploadFile } from '../../../api/s3';
 import { postImageClip } from '../../../api/image/clip';
 
-import { setActiveSlide, setActiveSlideId, setIsSaving } from '../../../redux/video/videoSlice';
+import { setActiveSlide, setActiveSlideId, setIsSaving, setIsLoadSlide } from '../../../redux/video/videoSlice';
 
 const TemplateDetail = (props) => {
   const { userTemplates, reloadSlides, video } = props;
@@ -51,18 +51,12 @@ const TemplateDetail = (props) => {
     delete imageClip.create_date;
     delete imageClip.update_date;
 
-    await postImageClip(imageClip).then((res) => {
+    await postImageClip(imageClip).then(async (res) => {
       const clip = res.data.body;
       const clipId = res.data.body.clip_id;
       dispatch(setActiveSlide(clip));
       dispatch(setActiveSlideId(clipId));
-      reloadSlides().then(() => {
-        const element = document.getElementById(`slide-container-${clipId}`);
-        if (element) {
-          document.getElementById(`slide-container-${clipId}`).click();
-        }
-      });
-
+      await reloadSlides().then(() => dispatch(setIsLoadSlide(true)));
       dispatch(setIsSaving(false));
     });
   }

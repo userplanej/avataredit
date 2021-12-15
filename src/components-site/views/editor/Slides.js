@@ -82,6 +82,7 @@ const Slides = (props) => {
   const { video, slides, canvasRef, packageId, loadSlides } = props;
   const dispatch = useDispatch();
   const activeSlideId = useSelector(state => state.video.activeSlideId);
+  const isLoadSlide = useSelector(state => state.video.isLoadSlide);
 
   const [selectedSlideId, setSelectedSlideId] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -90,7 +91,14 @@ const Slides = (props) => {
   useEffect(() => {
     const clipId = video.clip_id;
     loadSlide(clipId);
+    const slideToLoad = slides.find(slide => slide.clip_id === clipId);
+    dispatch(setActiveSlide(slideToLoad));
+    dispatch(setActiveSlideId(clipId));
   }, []);
+
+  useEffect(() => {
+    loadSlide(activeSlideId);
+  }, [isLoadSlide]);
 
   const saveVideoActiveClipId = async (id) => {
     const dataToSend = {
@@ -104,7 +112,7 @@ const Slides = (props) => {
 
     canvasRef.handler.clear(true);
     canvasRef.handler.workareaHandler.initialize();
-    
+
     const objects = canvasRef.handler.exportJSON();
     const imageClip = {
       package_id: packageId,
@@ -116,7 +124,7 @@ const Slides = (props) => {
       avatar_size: 100,
       clip_order: slides.length + 1
     }
-    
+
     await postImageClip(imageClip).then((res) => {
       const clip = res.data.body;
       const clipId = res.data.body.clip_id;
@@ -124,7 +132,7 @@ const Slides = (props) => {
       dispatch(setActiveSlide(clip));
       dispatch(setActiveSlideId(clipId));
       saveVideoActiveClipId(clipId);
-      
+
       dispatch(setIsSaving(false));
     });
   }
@@ -132,6 +140,10 @@ const Slides = (props) => {
   const changeSlide = async (id) => {
     if (id !== activeSlideId) {
       loadSlide(id);
+      saveVideoActiveClipId(id);
+      const slideToLoad = slides.find(slide => slide.clip_id === id);
+      dispatch(setActiveSlide(slideToLoad));
+      dispatch(setActiveSlideId(id));
       canvasRef.handler?.transactionHandler.initialize();
     }
   }
@@ -158,9 +170,6 @@ const Slides = (props) => {
         }
         dispatch(setAvatarPose(slideToLoad.avatar_pose));
       }
-      dispatch(setActiveSlide(slideToLoad));
-      dispatch(setActiveSlideId(id));
-      saveVideoActiveClipId(id);
     }
   }
 
@@ -179,13 +188,16 @@ const Slides = (props) => {
       if (selectedSlideId === activeSlideId) {
         const firstSlide = slides.find(slide => slide.clip_id !== selectedSlideId);
         loadSlide(firstSlide.clip_id);
+        saveVideoActiveClipId(firstSlide.clip_id);
+        dispatch(setActiveSlide(firstSlide));
+        dispatch(setActiveSlideId(firstSlide.clip_id));
       }
     });
   }
 
   const copySlide = async () => {
     dispatch(setIsSaving(true));
-    
+
     const selectedSlide = slides.find(slide => slide.clip_id === selectedSlideId);
     if (selectedSlide) {
       const imageClip = {
@@ -196,14 +208,16 @@ const Slides = (props) => {
       delete imageClip.create_date;
       delete imageClip.update_date;
 
-      await postImageClip(imageClip).then((res) => {
+      await postImageClip(imageClip).then(async (res) => {
         const clip = res.data.body;
         const clipId = res.data.body.clip_id;
-        loadSlides().then(() => loadSlide(clipId));
-        dispatch(setActiveSlide(clip));
-        dispatch(setActiveSlideId(clipId));
+        await loadSlides().then(() => {
+          loadSlide(selectedSlideId);
+          dispatch(setActiveSlide(clip));
+          dispatch(setActiveSlideId(clipId));
+        });
         saveVideoActiveClipId(clipId);
-        
+
         dispatch(setIsSaving(false));
       });
     }
