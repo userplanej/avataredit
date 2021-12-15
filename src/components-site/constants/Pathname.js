@@ -1,4 +1,5 @@
 export const pathnameEnum = {
+  login: '/login',
   editor: '/studio/editor/video',
   editorTemplate: '/studio/editor/template',
   videos: '/studio/videos',

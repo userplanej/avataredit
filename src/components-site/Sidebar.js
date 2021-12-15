@@ -182,7 +182,7 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
 
   const onClickLogout = () => {
     sessionStorage.removeItem('user');
-    history.push('/login');
+    history.push(pathnameEnum.login);
   }
 
   const isEditorPage = () => {

@@ -20,7 +20,7 @@ const componentName = {
 }
 
 const Signup = (props) => {
-  const { setLogin } = props;
+  const { setLogin, setActivation } = props;
   const dispatch = useDispatch();
   const signupData = useSelector(state => state.signup);
 
@@ -43,8 +43,7 @@ const Signup = (props) => {
      
     await postUser(dataToSend)
     .then(() => {
-      showAlert('Your account has been created.', 'success');
-      setLogin();
+      setActivation(signupData.email);
     })
     .catch((error) => {
       let message = '';

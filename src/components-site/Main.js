@@ -39,7 +39,7 @@ export default function Main() {
   };
 
   if (!sessionStorage.getItem('user')) {
-    return <Redirect to="/login" />;
+    return <Redirect to={pathnameEnum.login} />;
   }
 
   return (

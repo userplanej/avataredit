@@ -11,12 +11,12 @@ import { InputLabel } from '@mui/material';
 
 import CustomInput from '../../inputs/CustomInput';
 
-import { signInUser } from '../../../api/user/user';
+import { signInUser, sendCode } from '../../../api/user/user';
 
 import { showAlert } from '../../../utils/AlertUtils';
 
 const Login = (props) => {
-  const { setSignup, setForgot } = props;
+  const { setSignup, setForgot, setActivation } = props;
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,10 +53,25 @@ const Login = (props) => {
     }
 
     await signInUser(dataToSend)
-    .then((res) => {
+    .then(async (res) => {
       const user = res.data.body;
-      sessionStorage.setItem('user', JSON.stringify(user));
-      history.push('/studio/home');
+      if (user.is_active) {
+        sessionStorage.setItem('user', JSON.stringify(user));
+        history.push('/studio/home');
+      } else {
+        // Send activation code
+        await sendCode({ email: email })
+          .then(() => setActivation(email))
+          .catch((error) => {
+            const data = error.response.data;
+            if (data.body && data.body.is_active !== undefined) {
+              // Account exists but is not activated yet
+              setActivation(email);
+            } else {
+              showAlert(data.message);
+            }
+          });
+      }
     })
     .catch(error => {
       let message = '';
