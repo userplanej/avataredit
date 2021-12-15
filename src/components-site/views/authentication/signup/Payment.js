@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { countries } from 'countries-list';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -8,6 +9,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
 import CustomInput from '../../../inputs/CustomInput';
+import SelectInput from '../../../inputs/SelectInput';
 
 import { setPaymentEmail, setCardNumber, setCardDate, setCardCode, setCardName, setPaymentCountry } from '../../../../redux/form/signupSlice';
 
@@ -34,8 +36,12 @@ const Payment = (props) => {
   const [saveCardInfo, setSaveCardInfo] = useState(false);
   // Boolean to disable or enable confirm button
   const [canSubmit, setCanSubmit] = useState(false);
+  const [countriesList, setCountriesList] = useState([]);
 
   useEffect(() => {
+    const countriesData = Object.keys(countries).map((key) => ({ label: countries[key].name, value: key }));
+    setCountriesList(countriesData)
+
     // When getting back to this page, we need to validate inputs again
     validateInputs(paymentEmail, cardNumber, cardDate, cardCode, cardName, paymentCountry);
   }, []);
@@ -220,10 +226,9 @@ const Payment = (props) => {
         onChange={(event) => onChangeValue('cardName', event.target.value)}
       />
 
-      <InputLabel sx={{ mt: 2 }}>Country or region</InputLabel>
-      <CustomInput 
-        placeholder="Your country or region" 
-        fullWidth  
+      <InputLabel sx={{ mt: 2 }}>Country</InputLabel>
+      <SelectInput
+        items={countriesList}
         id="paymentCountry"
         name="paymentCountry"
         value={paymentCountry}
