@@ -752,8 +752,12 @@ class ImageMapEditor extends Component {
 					html5_script: JSON.stringify(objects),
 					html5_dir: upload.file_dir
 				}
-	
-				await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
+
+				const socket = this.context;
+				socket.emit('update-slides', dataToSend);
+				// TODO: load image clips
+				
+				// await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
 			});
 		}
 	};
