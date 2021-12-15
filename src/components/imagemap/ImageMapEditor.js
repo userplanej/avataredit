@@ -28,7 +28,7 @@ import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 import { setActiveSlide, setActiveSlideId, setSelectedAvatar } from '../../redux/video/videoSlice';
-import { setLeft, setTop, setWidth, setHeight, setIsBack, setIsFront } from '../../redux/object/objectSlice';
+import { setLeft, setTop, setWidth, setHeight, setIsBack, setIsFront, setAvatarPosition, setAvatarSize } from '../../redux/object/objectSlice';
 
 import { getAllImagePackage, getImagePackage } from '../../api/image/package';
 import { getAllUserImages, getAllDefaultImages } from '../../api/image/image';
@@ -77,8 +77,7 @@ const propertiesToInclude = [
 	'loadType',
 	'subtype',
 	'crossOrigin',
-	'src_thumbnail',
-	'positionButton'
+	'src_thumbnail'
 ];
 
 const defaultOption = {
@@ -710,11 +709,7 @@ class ImageMapEditor extends Component {
 				<Menu>
 					<Menu.Item
 						onClick={() => {
-							const activeObject = this.canvasRef.handler.getActiveObject();
 							this.canvasRef.handler.remove();
-							if (activeObject && activeObject.subtype === 'avatar') {
-								this.props.setSelectedAvatar(null);
-							}
 							setTimeout(() => this.canvasHandlers.onSaveSlide(), 1);
 						}}
 					>
@@ -728,7 +723,7 @@ class ImageMapEditor extends Component {
 		},
 		onSaveSlide: async () => {
 			const { packageId } = this.state;
-			const { activeSlideId, activeSlide } = this.props;
+			const { activeSlideId, activeSlide, avatarPosition, avatarSize } = this.props;
 
 			const canvasBlob = this.canvasRef?.handler?.getCanvasImageAsBlob();
 			const fileName = `video-${packageId}-slide-${activeSlideId}.png`;
@@ -753,11 +748,25 @@ class ImageMapEditor extends Component {
 					html5_dir: upload.file_dir
 				}
 
+				// Update avatar props
+				const avatar = objects.find(object => object.subtype === 'avatar');
+				if (!avatar) {
+					this.props.setSelectedAvatar(null);
+					this.props.setAvatarPosition(null);
+					this.props.setAvatarSize(null);
+				}
+				if (activeSlide.avatar_position !== avatarPosition) {
+					dataToSend.avatar_position = avatarPosition;
+				}
+				if (activeSlide.avatar_size !== avatarSize) {
+					dataToSend.avatar_size = avatarSize;
+				}
+
 				const socket = this.context;
 				socket.emit('update-slides', dataToSend);
 				// TODO: load image clips
-				
-				// await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
+
+				await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
 			});
 		}
 	};
@@ -1111,7 +1120,9 @@ const mapStateToProps = state => ({
 	activeTab: state.toolbar.activeTab,
 	previousTab: state.toolbar.previousTab,
 	activeSlide: state.video.activeSlide,
-	activeSlideId: state.video.activeSlideId
+	activeSlideId: state.video.activeSlideId,
+	avatarPosition: state.object.avatarPosition,
+	avatarSize: state.object.avatarSize
 });
 
 const mapDispatchToProps  = {
@@ -1122,6 +1133,8 @@ const mapDispatchToProps  = {
 	setActiveSlide,
 	setActiveSlideId,
 	setSelectedAvatar,
+	setAvatarPosition,
+	setAvatarSize,
 	setLeft,
 	setTop,
 	setWidth,

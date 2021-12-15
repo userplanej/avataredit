@@ -21,20 +21,26 @@ import { updateImageClip } from '../../../api/image/clip';
 
 import { setActiveObject } from '../../../redux/canvas/canvasSlice';
 import { setActiveTab } from '../../../redux/toolbar/toolbarSlice';
-import { setHeight, setLeft, setTop, setWidth, setIsFront, setIsBack, setAvatarPose as setCurrentAvatarPose } from '../../../redux/object/objectSlice';
+import {
+  setHeight,
+  setLeft,
+  setTop,
+  setWidth,
+  setIsFront,
+  setIsBack,
+  setAvatarPose as setCurrentAvatarPose,
+  setAvatarPosition as setCurrentAvatarPosition,
+  setAvatarSize as setCurrentAvatarSize
+} from '../../../redux/object/objectSlice';
 
 import { scaling } from '../../../components/canvas/constants';
+
 import { avatarPoseEnum, avatarPoseValues } from '../../../enums/AvatarPose';
+import { avatarPositionValues } from '../../../enums/AvatarPosition';
 
 const propertiesNames = {
   position: 'position',
   size: 'size'
-}
-
-const avatarPositionValues = {
-  left: 'left',
-  center: 'center',
-  right: 'right'
 }
 
 function TabPanel(props) {
@@ -74,17 +80,18 @@ const ToolsView = (props) => {
   const activeObjectTop = useSelector(state => state.object.top);
   const activeObjectWidth = useSelector(state => state.object.width);
   const activeObjectHeight = useSelector(state => state.object.height);
-  const avatarPositionSaved = useSelector(state => state.object.avatarPosition);
   const isActiveObjectFront = useSelector(state => state.object.isFront);
   const isActiveObjectBack = useSelector(state => state.object.isBack);
   const currentAvatarPose = useSelector(state => state.object.avatarPose);
+  const avatarSizeSaved = useSelector(state => state.object.avatarSize);
+  const avatarPositionSaved = useSelector(state => state.object.avatarPosition);
   const activeSlide = useSelector(state => state.video.activeSlide);
 
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
   const [imageTab, setImageTab] = useState(0);
   const [avatarSize, setAvatarSize] = useState(100);
-  const [avatarPosition, setAvatarPosition] = useState('center');
+  const [avatarPosition, setAvatarPosition] = useState(null);
   const [avatarPose, setAvatarPose] = useState(avatarPoseEnum.all_around);
 
   useEffect(() => {
@@ -99,6 +106,10 @@ const ToolsView = (props) => {
   useEffect(() => {
     setAvatarPose(currentAvatarPose);
   }, [currentAvatarPose]);
+
+  useEffect(() => {
+    setAvatarSize(avatarSizeSaved);
+  }, [avatarSizeSaved]);
 
   const handleChange = (event, newValue) => {
     dispatch(setActiveTab(newValue));
@@ -117,6 +128,14 @@ const ToolsView = (props) => {
   }
 
   const handleChangeAvatarSize = (event, newValue) => {
+    const { canvasRef } = props;
+    const objects = canvasRef.handler.getObjects();
+    const avatar = objects.find((obj) => obj.subtype === 'avatar');
+
+    if (!avatar) {
+      return;
+    }
+
     setAvatarSize(newValue);
     updateAvatarSize(newValue);
   };
@@ -127,7 +146,7 @@ const ToolsView = (props) => {
   }
 
   const updateAvatarSize = (size) => {
-    const { canvasRef } = props;
+    const { canvasRef, onSaveSlide } = props;
     const objects = canvasRef.handler.getObjects();
     const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
@@ -135,6 +154,9 @@ const ToolsView = (props) => {
     let newScale = (parseInt(size) * defaultScale) / 100;
     canvasRef.handler.setByObject(avatar, 'scaleX', newScale);
     canvasRef.handler.setByObject(avatar, 'scaleY', newScale);
+
+    dispatch(setCurrentAvatarSize(size));
+    setTimeout(() => onSaveSlide(), 100);
   }
 
   const updateAvatarPose = async (pose) => {
@@ -396,25 +418,28 @@ const ToolsView = (props) => {
     const objects = canvasRef.handler.getObjects();
     const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
+    if (!avatar) {
+      return;
+    }
+
     if (position === avatarPositionValues.left) {
       avatar.centerV();
       avatar.setCoords();
       avatar.setPositionByOrigin(new fabric.Point(0, avatar.top), 'left', 'center');
-      setAvatarPosition(avatarPositionValues.left);
+      dispatch(setCurrentAvatarPosition(avatarPositionValues.left));
     }
     if (position === avatarPositionValues.center) {
       avatar.center();
       avatar.setCoords();
-      setAvatarPosition(avatarPositionValues.center);
+      dispatch(setCurrentAvatarPosition(avatarPositionValues.center));
     }
     if (position === avatarPositionValues.right) {
       const workareaWidth = canvasRef.handler.workarea.width;
       avatar.centerV();
       avatar.setCoords();
       avatar.setPositionByOrigin(new fabric.Point(workareaWidth, avatar.top), 'right', 'center');
-      setAvatarPosition(avatarPositionValues.right);
+      dispatch(setCurrentAvatarPosition(avatarPositionValues.right));
     }
-    avatar.positionButton = position;
     setTimeout(() => onSaveSlide(), 100);
   }
 

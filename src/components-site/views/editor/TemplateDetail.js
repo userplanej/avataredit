@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import axios from 'axios';
 
 import { Grid, Box, Typography } from '@mui/material';
@@ -7,8 +8,11 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { uploadFile } from '../../../api/s3';
 import { postImageClip } from '../../../api/image/clip';
 
+import { setActiveSlide, setActiveSlideId, setIsSaving } from '../../../redux/video/videoSlice';
+
 const TemplateDetail = (props) => {
   const { userTemplates, reloadSlides, video } = props;
+  const dispatch = useDispatch();
 
   const [templateSelected, setTemplateSelected] = useState(null);
   const [isList, setIsList] = useState(true);
@@ -19,6 +23,8 @@ const TemplateDetail = (props) => {
   }
 
   const handleClickSlide = async (slide) => {
+    dispatch(setIsSaving(true));
+
     const packageId = video.package_id;
 
     let newLocation = null;
@@ -37,19 +43,27 @@ const TemplateDetail = (props) => {
     });
     
     const imageClip = {
+      ...slide,
       package_id: packageId,
-      background_type: slide.background_type,
-      text_script: slide.text_script,
-      html5_script: slide.html5_script,
-      html5_dir: newLocation,
-      avatar_pose: slide.avatar_pose,
-      avatar_type: slide.avatar_type,
-      avatar_size: slide.avatar_size,
-      clip_order: slide.clip_order
+      html5_dir: newLocation
     }
+    delete imageClip.clip_id;
+    delete imageClip.create_date;
+    delete imageClip.update_date;
+
     await postImageClip(imageClip).then((res) => {
-      // clipId = res.data.body.clip_id;
-      reloadSlides();
+      const clip = res.data.body;
+      const clipId = res.data.body.clip_id;
+      dispatch(setActiveSlide(clip));
+      dispatch(setActiveSlideId(clipId));
+      reloadSlides().then(() => {
+        const element = document.getElementById(`slide-container-${clipId}`);
+        if (element) {
+          document.getElementById(`slide-container-${clipId}`).click();
+        }
+      });
+
+      dispatch(setIsSaving(false));
     });
   }
 

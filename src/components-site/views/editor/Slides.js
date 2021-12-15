@@ -14,9 +14,12 @@ import { postImageClip, deleteImageClip } from '../../../api/image/clip';
 import { updateImagePackage } from '../../../api/image/package';
 
 import { setActiveSlideId, setActiveSlide, setIsSaving, setSelectedAvatar } from '../../../redux/video/videoSlice';
-import { setAvatarPosition, setAvatarPose } from '../../../redux/object/objectSlice';
+import { setAvatarPosition, setAvatarPose, setAvatarSize } from '../../../redux/object/objectSlice';
 
 import { showAlert } from '../../../utils/AlertUtils';
+
+import { avatarPoseEnum } from '../../../enums/AvatarPose';
+import { avatarPositionValues } from '../../../enums/AvatarPosition';
 
 const ITEM_HEIGHT = 48;
 
@@ -107,7 +110,11 @@ const Slides = (props) => {
       package_id: packageId,
       background_type: null,
       html5_script: JSON.stringify(objects),
-      text_script: ''
+      text_script: '',
+      avatar_position: avatarPositionValues.center,
+      avatar_pose: avatarPoseEnum.all_around,
+      avatar_size: 100,
+      clip_order: slides.length + 1
     }
     
     await postImageClip(imageClip).then((res) => {
@@ -142,12 +149,13 @@ const Slides = (props) => {
 
         const avatar = objects.find(obj => obj.subtype === 'avatar');
         if (avatar) {
-          if (avatar.positionButton) {
-            dispatch(setAvatarPosition(avatar.positionButton));
-          }
           dispatch(setSelectedAvatar(avatar));
+          dispatch(setAvatarPosition(slideToLoad.avatar_position));
+          dispatch(setAvatarSize(slideToLoad.avatar_size));
+        } else {
+          dispatch(setAvatarPosition(null));
+          dispatch(setAvatarSize("100"));
         }
-
         dispatch(setAvatarPose(slideToLoad.avatar_pose));
       }
       dispatch(setActiveSlide(slideToLoad));
@@ -164,6 +172,8 @@ const Slides = (props) => {
     }
 
     await deleteImageClip(selectedSlideId).then(() => {
+      // TODO: Update slides order
+
       loadSlides();
       // If active slide is deleted, we need to load the first not deleted slide
       if (selectedSlideId === activeSlideId) {
@@ -179,12 +189,12 @@ const Slides = (props) => {
     const selectedSlide = slides.find(slide => slide.clip_id === selectedSlideId);
     if (selectedSlide) {
       const imageClip = {
-        package_id: packageId,
-        background_type: selectedSlide.background_type,
-        html5_script: selectedSlide.html5_script,
-        html5_dir: selectedSlide.html5_dir,
-        text_script: selectedSlide.text_script
+        ...selectedSlide,
+        clip_order: slides.length + 1
       }
+      delete imageClip.clip_id;
+      delete imageClip.create_date;
+      delete imageClip.update_date;
 
       await postImageClip(imageClip).then((res) => {
         const clip = res.data.body;
@@ -251,7 +261,6 @@ const Slides = (props) => {
               }
             }}
             // sx={isActive ? slideActiveContainerStyle : slideContainerStyle}
-            onClick={() => changeSlide(slideId)}
           >
             <Grid container /*sx={isActive ? { borderLeft: '4px solid #df678c' } : null}*/>
               <Grid item xs={1} md={1} xl={1.5} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
@@ -260,7 +269,9 @@ const Slides = (props) => {
               </Grid>
               
               <Grid item xs={10} md={9} xl={10.5}>
-                <Box 
+                <Box
+                  id={`slide-container-${slideId}`}
+                  onClick={() => changeSlide(slideId)}
                   sx={{ 
                     minWidth: '185px',
                     maxWidth: '185px',

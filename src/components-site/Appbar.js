@@ -32,6 +32,7 @@ import { drawerWidth } from './constants/Drawer';
 
 import { showAlert } from '../utils/AlertUtils';
 import { avatarPoseEnum } from '../enums/AvatarPose';
+import { avatarPositionValues } from '../enums/AvatarPosition';
 
 const boxStyle = {
   display: 'flex', 
@@ -129,7 +130,10 @@ const Appbar = (props) => {
       package_id: null,
       background_type: null,
       text_script: '',
-      avatar_pose: avatarPoseEnum.all_around
+      avatar_pose: avatarPoseEnum.all_around,
+      avatar_position: avatarPositionValues.center,
+      avatar_size: 100,
+      clip_order: 1
     }
 
     let packageId = null;

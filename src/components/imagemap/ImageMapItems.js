@@ -15,16 +15,17 @@ import ToolsView from '../../components-site/views/editor/ToolsView';
 import SearchInput from '../../components-site/inputs/SearchInput';
 
 import { getStringShortcut } from '../../utils/StringUtils';
+import { showAlert } from '../../utils/AlertUtils';
 
 import { uploadFile } from '../../api/s3';
 import { postImage, deleteImage } from '../../api/image/image';
 import { postBackground, deleteBackground } from '../../api/background/background';
 
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
-import { setLeft, setTop, setWidth, setHeight, setAvatarPosition } from '../../redux/object/objectSlice';
+import { setLeft, setTop, setWidth, setHeight, setAvatarPosition, setAvatarSize } from '../../redux/object/objectSlice';
 import { setSelectedAvatar } from '../../redux/video/videoSlice';
 
-import { showAlert } from '../../utils/AlertUtils';
+import { avatarPositionValues } from '../../enums/AvatarPosition';
 
 notification.config({
 	top: 80,
@@ -185,7 +186,6 @@ class ImageMapItems extends Component {
 			'object:moved': () => {
 				const activeObject = canvas.handler.getActiveObject();
 				if (activeObject.subtype === 'avatar') {
-					activeObject.positionButton = null;
 					this.props.setAvatarPosition(null);
 				}
 				this.props.onSaveSlide();
@@ -213,8 +213,6 @@ class ImageMapItems extends Component {
 	}
 
 	attachDocumentEventListener = () => {
-		const { canvasRef } = this.props;
-
 		document.addEventListener('keydown', e => {
 			if (e.code === code.DELETE) {
 				setTimeout(() => this.props.onSaveSlide(), 1);
@@ -263,6 +261,8 @@ class ImageMapItems extends Component {
 					canvasRef.handler.remove(obj, true);
 				});
 				this.props.setSelectedAvatar(item);
+				this.props.setAvatarPosition(avatarPositionValues.center);
+				this.props.setAvatarSize("100");
 			}
 			const target = canvasRef.handler.add(option, centered, false, onSaveSlide);
 
@@ -761,7 +761,8 @@ const mapDispatchToProps  = {
 	setTop,
 	setWidth,
 	setHeight,
-	setAvatarPosition
+	setAvatarPosition,
+	setAvatarSize
 }
 
 export default connect(null, mapDispatchToProps)(ImageMapItems);

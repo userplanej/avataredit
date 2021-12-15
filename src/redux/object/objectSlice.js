@@ -5,10 +5,11 @@ const initialState = {
   left: 0,
   width: 0,
   height: 0,
-  avatarPosition: null,
   isBack: false,
   isFront: false,
-  avatarPose: null
+  avatarPose: null,
+  avatarPosition: null,
+  avatarSize: null
 }
 
 export const objectSlice = createSlice({
@@ -38,11 +39,14 @@ export const objectSlice = createSlice({
     },
     setAvatarPose: (state, action) => {
       state.avatarPose = action.payload;
+    },
+    setAvatarSize: (state, action) => {
+      state.avatarSize = action.payload;
     }
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { setTop, setLeft, setWidth, setHeight, setAvatarPosition, setIsBack, setIsFront, setAvatarPose } = objectSlice.actions;
+export const { setTop, setLeft, setWidth, setHeight, setAvatarPosition, setIsBack, setIsFront, setAvatarPose, setAvatarSize } = objectSlice.actions;
 
 export default objectSlice.reducer;

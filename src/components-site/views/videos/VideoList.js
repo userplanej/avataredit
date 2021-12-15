@@ -133,13 +133,33 @@ const VideoList = (props) => {
     let firstClipId = null;
     const slidePromise = new Promise((resolve) => {
       const slides = video.image_clips;
-      slides.map(async (clip, index) => {
-        const newSlide = {
-          ...clip,
-          clip_id: null,
-          package_id: packageId
+      slides.forEach(async (slide, index) => {
+        let newLocation = null;
+
+        // Duplicate slide thumbnail
+        const slideImage = slide.html5_dir;
+        await axios.get(slideImage, { responseType: 'blob' }).then(async (res) => {
+          const blob = res.data;
+          const filename = `video-${packageId}-slide-${index}`;
+          const file = new File([blob], filename, { type: "image/png" });
+
+          const formData = new FormData();
+          formData.append('files', file);
+          await uploadFile(formData, 'slide-thumbnail').then((res) => {
+            newLocation = res.data.body[0].file_dir;
+          });
+        });
+
+        const imageClip = {
+          ...slide,
+          package_id: packageId,
+          html5_dir: newLocation
         }
-        await postImageClip(newSlide).then((res) => {
+        delete imageClip.clip_id;
+        delete imageClip.create_date;
+        delete imageClip.update_date;
+
+        await postImageClip(imageClip).then((res) => {
           if (index === 0) {
             firstClipId = res.data.body.clip_id;
           }
@@ -199,16 +219,14 @@ const VideoList = (props) => {
         });
 
         const imageClip = {
+          ...slide,
           package_id: packageId,
-          background_type: slide.background_type,
-          text_script: slide.text_script,
-          html5_script: slide.html5_script,
-          html5_dir: newLocation,
-          avatar_pose: slide.avatar_pose,
-          avatar_type: slide.avatar_type,
-          avatar_size: slide.avatar_size,
-          clip_order: slide.clip_order
+          html5_dir: newLocation
         }
+        delete imageClip.clip_id;
+        delete imageClip.create_date;
+        delete imageClip.update_date;
+
         await postImageClip(imageClip).then((res) => {
           if (index === 0) {
             clipId = res.data.body.clip_id;
