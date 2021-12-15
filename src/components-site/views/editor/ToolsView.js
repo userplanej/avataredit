@@ -113,6 +113,7 @@ const ToolsView = (props) => {
 
   const handleChange = (event, newValue) => {
     dispatch(setActiveTab(newValue));
+    props.resetSearch();
   }
 
   const handleChangeAvatarTab = (event, newValue) => {

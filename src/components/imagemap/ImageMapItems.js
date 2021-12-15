@@ -8,6 +8,7 @@ import { Flex } from '../flex';
 import { code, scaling } from '../canvas/constants';
 
 import { Box } from '@mui/system';
+import { Typography } from '@mui/material';
 import UploadIcon from '@mui/icons-material/Upload';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -402,15 +403,21 @@ class ImageMapItems extends Component {
 
 	renderItems = (items, key, type, isUpload) => {
 		const isText = type === 'text';
+		let hasOneItem = false;
+
+		const itemsList = items && items.map(item => {
+			if (this.shouldRenderItem(item, type)) {
+				hasOneItem = true;
+				return this.renderItem(item, isUpload);
+			}
+		});
+
 		return <div key={key}>
 				{this.renderSearchField(type)}
 				{!isText && <Flex flexWrap="wrap" flexDirection="row" style={{ width: '100%' }} key={key}>
 					{isUpload && this.renderUploadItem(type)}
-					{items && items.map(item => {
-						if (this.shouldRenderItem(item, type)) {
-							return this.renderItem(item, isUpload);
-						}
-					})}
+					{hasOneItem && itemsList}
+					{!isUpload && !hasOneItem && <Typography variant="body1" color="#fff">No result</Typography>}
 				</Flex>}
 				{isText && <div style={{ width: '100%' }} key={key}>
 					{items.map(item => {
@@ -638,6 +645,13 @@ class ImageMapItems extends Component {
 		this.setState({ imageSearch: value });
 	}
 
+	resetSearch = () => {
+		this.handleAvatarNameChange('');
+		this.handleBackgroundColorChange('');
+		this.handleBackgroundImageNameChange('');
+		this.handleImageNameChange('');
+	}
+
 	uploadImage = async (event, type) => {
 		const user = JSON.parse(sessionStorage.getItem('user'));
     const filePath = event.target.value;
@@ -748,6 +762,7 @@ class ImageMapItems extends Component {
 					userTemplates={userTemplates}
 					reloadSlides={reloadSlides}
 					video={video}
+					resetSearch={this.resetSearch}
 				/>
 			</Box>
 		);
