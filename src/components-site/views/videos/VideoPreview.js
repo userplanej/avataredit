@@ -26,7 +26,7 @@ import ConfirmDialog from '../../dialog/ConfirmDialog';
 
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
-import { deleteOutput, getOutputByVideoId, updateOutput } from '../../../api/output/output';
+import { deleteOutput, updateOutput } from '../../../api/output/output';
 import { deleteImagePackage, getImagePackage, postImagePackage, updateImagePackage } from '../../../api/image/package';
 import { postImageClip } from '../../../api/image/clip';
 import { uploadFile } from '../../../api/s3';
@@ -47,9 +47,9 @@ const VideoPreview = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [video, setVideo] = useState(null);
   const [output, setOutput] = useState(null);
-  const [title, setTitle] = useState('test');
+  const [title, setTitle] = useState('');
   const [isEditTitle, setIsEditTitle] = useState(false);
-  const [description, setDescription] = useState('test');
+  const [description, setDescription] = useState('');
   const [isEditDescription, setIsEditDescription] = useState(false);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -57,10 +57,7 @@ const VideoPreview = () => {
   useEffect(() => {
     dispatch(setShowBackdrop(true));
     
-    Promise.all([
-      loadVideo(id),
-      loadOutput(id)
-    ]).then(() => {
+    loadVideo(id).then(() => {
       dispatch(setShowBackdrop(false));
       setIsLoading(false);
     });
@@ -70,15 +67,9 @@ const VideoPreview = () => {
     await getImagePackage(id).then((res) => {
       const video = res.data.body;
       setVideo(video);
-      setTitle(video.package_name);
-      setOutput(video.output);
-    });
-  }
-
-  const loadOutput = async (id) => {
-    await getOutputByVideoId(id).then((res) => {
-      const output = res.data.body.rows[0];
+      const output = video.output;
       setOutput(output);
+      setTitle(output.video_name);
       setDescription(output.description);
     });
   }
@@ -106,6 +97,7 @@ const VideoPreview = () => {
 
   const saveVideoTitle = async () => {
     await updateImagePackage(id, { package_name: title });
+    await updateOutput(output.output_id, { video_name: title });
   }
 
   const handleLeaveEditDescription = () => {
@@ -475,7 +467,7 @@ const VideoPreview = () => {
             </Typography>
             <Box>
               {video.image_clips.map((clip, index) => (
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box key={clip.clip_id} sx={{ display: 'flex', alignItems: 'center' }}>
                   <Typography variant="body2" sx={{ mr: 2 }}>{index + 1}</Typography>
                   <Typography color="#fff" variant="body1">{clip.text_script}</Typography>
                 </Box>
