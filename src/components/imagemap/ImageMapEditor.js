@@ -47,6 +47,7 @@ import {
 	createBackgroundVideoObject,
 	createBackgroundColorObject
 } from '../../utils/CanvasObjectUtils';
+import { showAlert } from '../../utils/AlertUtils';
 
 const propertiesToInclude = [
 	'id',
@@ -150,6 +151,11 @@ class ImageMapEditor extends Component {
 	};
 
 	componentDidMount() {
+		const socket = this.context;
+		socket.on('update-slide-done', () => {
+			this.loadImageClips();
+		});
+
 		this.props.setShowBackdrop(true);
 
 		Promise.all([
@@ -168,6 +174,11 @@ class ImageMapEditor extends Component {
 			this.props.setShowBackdrop(false);
 			this.setState({ selectedItem: null });
 		});
+	}
+
+	componentWillUnmount() {
+		const socket = this.context;
+		socket.off('update-slide-done');
 	}
 
 	loadImagePackage = async () => {
@@ -189,6 +200,7 @@ class ImageMapEditor extends Component {
 
 			const currentSlide = slides.find(slide => slide.clip_id === this.props.activeSlideId);
 			this.props.setActiveSlide(currentSlide);
+			this.props.setActiveSlideId(currentSlide.clip_id);
 		});
 	}
 
@@ -726,48 +738,30 @@ class ImageMapEditor extends Component {
 			const { activeSlideId, activeSlide, avatarPosition, avatarSize } = this.props;
 
 			const canvasBlob = this.canvasRef?.handler?.getCanvasImageAsBlob();
-			const fileName = `video-${packageId}-slide-${activeSlideId}.png`;
-			const file = new File([canvasBlob], fileName, { type: "image/png" });
-
-			// Delete old thumbnail
+			const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
 			const oldLocation = activeSlide.html5_dir;
-			if (oldLocation !== null) {
-				const dataToSend = {
-					file_dir: oldLocation
-				}
-				await deleteFile(dataToSend);
+			const objects = this.canvasRef.handler.exportJSON();
+			const dataToSend = {
+				html5_script: JSON.stringify(objects),
+				activeSlideId
 			}
 
-			const uploadFormData = new FormData();
-			uploadFormData.append('files', file);
-			await uploadFile(uploadFormData, 'slide-thumbnail').then(async (res) => {
-				const upload = res.data.body[0];
-				const objects = this.canvasRef.handler.exportJSON();
-				const dataToSend = {
-					html5_script: JSON.stringify(objects),
-					html5_dir: upload.file_dir
-				}
+			// Update avatar props
+			const avatar = objects.find(object => object.subtype === 'avatar');
+			if (!avatar) {
+				this.props.setSelectedAvatar(null);
+				this.props.setAvatarPosition(null);
+				this.props.setAvatarSize(null);
+			}
+			if (activeSlide.avatar_position !== avatarPosition) {
+				dataToSend.avatar_position = avatarPosition;
+			}
+			if (activeSlide.avatar_size !== avatarSize) {
+				dataToSend.avatar_size = avatarSize;
+			}
 
-				// Update avatar props
-				const avatar = objects.find(object => object.subtype === 'avatar');
-				if (!avatar) {
-					this.props.setSelectedAvatar(null);
-					this.props.setAvatarPosition(null);
-					this.props.setAvatarSize(null);
-				}
-				if (activeSlide.avatar_position !== avatarPosition) {
-					dataToSend.avatar_position = avatarPosition;
-				}
-				if (activeSlide.avatar_size !== avatarSize) {
-					dataToSend.avatar_size = avatarSize;
-				}
-
-				const socket = this.context;
-				socket.emit('update-slides', dataToSend);
-				// TODO: load image clips
-
-				await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
-			});
+			const socket = this.context;
+			socket.emit('update-slide', oldLocation, fileName, canvasBlob, dataToSend);
 		}
 	};
 
