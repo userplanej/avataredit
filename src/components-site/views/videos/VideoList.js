@@ -43,6 +43,7 @@ const VideoList = (props) => {
   const [isSortAsc, setIsSortAsc] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [videoIdSelected, setVideoIdSelected] = useState(null);
+  const [isSearch, setIsSearch] = useState(false);
 
   useEffect(() => {
     loadVideos();
@@ -66,9 +67,11 @@ const VideoList = (props) => {
     const nameSearch = event.target.value;
     if (nameSearch && nameSearch === '') {
       setVideosListToDisplay(videosList);
+      setIsSearch(false);
     } else {
       const newVideosList = videosList.filter(video => video.package_name.toLowerCase().includes(nameSearch.toLowerCase()));
       setVideosListToDisplay(newVideosList);
+      setIsSearch(true);
     }
   }
 
@@ -304,7 +307,9 @@ const VideoList = (props) => {
           />
         ))}
         {!showBackdrop && videosListToDisplay && videosListToDisplay.length === 0 && 
-          <Typography variant="h6">You have no videos, please create a new one.</Typography>
+          <Typography variant="h6">
+            {isSearch ? 'No result' : 'You have no videos, please create a new one.'}
+          </Typography>
         }
       </Box>
 
