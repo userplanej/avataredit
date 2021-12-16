@@ -122,10 +122,12 @@ const ToolsView = (props) => {
 
   const handleChangeBackgroundTab = (event, newValue) => {
     setBackgroundTab(newValue);
+    props.resetSearch();
   }
 
   const handleChangeImageTab = (event, newValue) => {
     setImageTab(newValue);
+    props.resetSearch();
   }
 
   const handleChangeAvatarSize = (event, newValue) => {
