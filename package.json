@@ -85,6 +85,7 @@
 		"socket.io-client": "^4.4.0",
 		"store": "^2.0.12",
 		"uuid": "^7.0.3",
+		"validate-vat": "^0.8.0",
 		"warning": "^4.0.3"
 	},
 	"devDependencies": {
