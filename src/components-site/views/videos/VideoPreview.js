@@ -60,6 +60,20 @@ const VideoPreview = () => {
     loadVideo(id).then(() => {
       dispatch(setShowBackdrop(false));
       setIsLoading(false);
+
+      const videoElt = document.getElementById('video');
+      videoElt.addEventListener('loadedmetadata', () => {
+        if (videoElt.duration == Infinity) {
+          videoElt.currentTime = 1e101;
+          videoElt.ontimeupdate = function () {
+            this.ontimeupdate = () => {
+                return;
+            }
+            videoElt.currentTime = 0;
+            return;
+        }
+        }
+      });
     });
   }, []);
 
@@ -278,7 +292,7 @@ const VideoPreview = () => {
         <Grid container sx={{ pb: 3 }}>
           <Grid item xs={12} lg={8} sx={{ mb: 4 }}>
             <Box sx={{ width: { xs: '98%', xl: '95%' } }}>
-              <video controls preload="auto" style={{ width: '100%', borderRadius: '6px' }}>
+              <video id="video" controls preload="auto" style={{ width: '100%', borderRadius: '6px' }}>
                 <source src={output.video_dir} type="video/mp4" />
                 <source type="video/webm" src={output.video_dir} />
               </video>
