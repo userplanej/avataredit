@@ -91,7 +91,14 @@ const ForgotPassword = (props) => {
 
     await sendCode(dataToSend)
       .then(() => setPage(pageNames.code))
-      .catch((error) => showAlert(error.response.data.message, 'error'));
+      .catch((error) => {
+        const body = error.response.data.body;
+        if (body && body.is_active !== undefined && !body.is_active) {
+          showAlert('Your account is not active, you can\'t reset your password.', 'error');
+        } else {
+          showAlert(error.response.data.message, 'error')
+        }
+      });
   }
 
   const handleSubmitCode = async () => {
