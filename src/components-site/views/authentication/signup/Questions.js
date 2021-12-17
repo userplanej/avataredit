@@ -93,6 +93,7 @@ const Questions = (props) => {
       <Typography component="h1" variant="h5">
         Optional questions
       </Typography>
+      <Typography variant="h6">You can skip this part, but it will help us if you could answer!</Typography>
 
       <InputLabel sx={{ mt: '20px' }}>How did you hear about M Studio?</InputLabel>
       <CustomInput 
