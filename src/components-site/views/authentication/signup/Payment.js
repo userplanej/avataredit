@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { countries } from 'countries-list';
+
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -40,7 +41,8 @@ const Payment = (props) => {
 
   useEffect(() => {
     const countriesData = Object.keys(countries).map((key) => ({ label: countries[key].name, value: key }));
-    setCountriesList(countriesData)
+    countriesData.sort((a, b) => a.label.localeCompare(b.label));
+    setCountriesList(countriesData);
 
     // When getting back to this page, we need to validate inputs again
     validateInputs(paymentEmail, cardNumber, cardDate, cardCode, cardName, paymentCountry);
