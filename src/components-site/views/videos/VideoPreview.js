@@ -62,20 +62,32 @@ const VideoPreview = () => {
       setIsLoading(false);
 
       const videoElt = document.getElementById('video');
-      videoElt.addEventListener('loadedmetadata', () => {
-        if (videoElt.duration == Infinity) {
-          videoElt.currentTime = 1e101;
-          videoElt.ontimeupdate = function () {
-            this.ontimeupdate = () => {
-                return;
-            }
-            videoElt.currentTime = 0;
+      if (videoElt) {
+        videoElt.addEventListener('loadedmetadata', () => addEventToVideo(videoElt));
+      }
+    });
+
+    // Remove listener on unmount
+    return () => {
+      const videoElt = document.getElementById('video');
+      if (videoElt) {
+        videoElt.removeEventListener('loadedmetadata', () => addEventToVideo(videoElt));
+      }
+    }
+  }, []);
+
+  const addEventToVideo = (videoElt) => {
+    if (videoElt.duration == Infinity) {
+      videoElt.currentTime = 1e101;
+      videoElt.ontimeupdate = function () {
+        this.ontimeupdate = () => {
             return;
         }
-        }
-      });
-    });
-  }, []);
+        videoElt.currentTime = 0;
+        return;
+      }
+    }
+  }
 
   const loadVideo = async (id) => {
     await getImagePackage(id).then((res) => {

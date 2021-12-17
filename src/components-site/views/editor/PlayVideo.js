@@ -7,20 +7,33 @@ const PlayVideo = (props) => {
   const { open, close, source } = props;
 
   useEffect(() => {
-    const videoElt = document.getElementById('video');
-    videoElt.addEventListener('loadedmetadata', () => {
-      if (videoElt.duration == Infinity) {
-        videoElt.currentTime = 1e101;
-        videoElt.ontimeupdate = function () {
-          this.ontimeupdate = () => {
-              return;
-          }
-          videoElt.currentTime = 0;
-          return;
+    if (open) {
+      const videoElt = document.getElementById('video');
+      if (videoElt) {
+        videoElt.addEventListener('loadedmetadata', () => addEventToVideo(videoElt));
+      }
+
+      return () => {
+        const videoElt = document.getElementById('video');
+        if (videoElt) {
+          videoElt.removeEventListener('loadedmetadata', () => addEventToVideo(videoElt));
         }
       }
-    });
-  }, []);
+    }
+  }, [open]);
+
+  const addEventToVideo = (videoElt) => {
+    if (videoElt.duration == Infinity) {
+      videoElt.currentTime = 1e101;
+      videoElt.ontimeupdate = function () {
+        this.ontimeupdate = () => {
+            return;
+        }
+        videoElt.currentTime = 0;
+        return;
+      }
+    }
+  }
 
   return (
     <Dialog
