@@ -90,7 +90,10 @@ const ForgotPassword = (props) => {
     }
 
     await sendCode(dataToSend)
-      .then(() => setPage(pageNames.code))
+      .then(() => {
+        showAlert('Code sent to your email', 'info');
+        setPage(pageNames.code);
+      })
       .catch((error) => {
         const body = error.response.data.body;
         if (body && body.is_active !== undefined && !body.is_active) {
@@ -150,6 +153,8 @@ const ForgotPassword = (props) => {
             {page === pageNames.newpassword && i18n.t('form.forgotPassword.newPassword.content')}
         </Typography>
 
+        {page === pageNames.code && <Typography variant="body2">You have to wait 10 minutes before asking for a new code.</Typography>}
+
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 5 }} width="100%">          
           <InputLabel required>
             {page === pageNames.email && i18n.t('common.input.email')}
@@ -204,7 +209,7 @@ const ForgotPassword = (props) => {
             </Box>
           }
 
-          {page === pageNames.code && <Link onClick={handleSubmitCode} variant="body2" underline="hover" color="#9a9a9a">
+          {page === pageNames.code && <Link onClick={handleSubmitEmail} variant="body2" underline="hover" color="#9a9a9a">
             {i18n.t('form.forgotPassword.reset.resend')}
           </Link>}
 
