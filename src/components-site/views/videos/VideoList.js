@@ -14,6 +14,7 @@ import ConfirmDialog from '../../dialog/ConfirmDialog';
 import { getAllImagePackage, deleteImagePackage, postImagePackage, updateImagePackage } from '../../../api/image/package';
 import { postImageClip } from '../../../api/image/clip';
 import { uploadFile } from '../../../api/s3';
+import { downloadVideo } from '../../../api/output/output';
 
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
@@ -108,6 +109,22 @@ const VideoList = (props) => {
   }
 
   const handleCloseConfirmDialog = () => setOpenConfirmDialog(false);
+
+  const handleDownloadVideo = async (output) => {
+    const videoName = `${output.video_name.replaceAll(' ', '-')}.mp4`;
+    const dataToSend = {
+      video_dir: output.video_dir
+    }
+    await downloadVideo(dataToSend).then((res) => {
+      const data = res.data;
+      const url = URL.createObjectURL(data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = videoName;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
 
   const handleDeleteVideo = async () => {
     await deleteImagePackage(videoIdSelected).then(() => {
@@ -301,6 +318,7 @@ const VideoList = (props) => {
             key={video.package_id}
             video={video}
             output={video.output}
+            onDownloadVideo={(output) => handleDownloadVideo(output)}
             onDeleteVideo={(id) => handleOpenConfirmDialog(id)}
             onDuplicateVideo={(video) => handleDuplicateVideo(video)}
             onCreateTemplate={(video) => handleCreateTemplateFromVideo(video)}

@@ -23,3 +23,7 @@ export const updateOutput = async (id, output) => {
 export const deleteOutput = async (id) => {
   return await API.delete(`${outputPath}delete/${id}`);
 }
+
+export const downloadVideo = async (output) => {
+  return await API.post(`${outputPath}download`, output, { responseType: 'blob' });
+}

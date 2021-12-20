@@ -26,7 +26,7 @@ import ConfirmDialog from '../../dialog/ConfirmDialog';
 
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
-import { deleteOutput, updateOutput } from '../../../api/output/output';
+import { deleteOutput, downloadVideo, updateOutput } from '../../../api/output/output';
 import { deleteImagePackage, getImagePackage, postImagePackage, updateImagePackage } from '../../../api/image/package';
 import { postImageClip } from '../../../api/image/clip';
 import { uploadFile } from '../../../api/s3';
@@ -135,11 +135,21 @@ const VideoPreview = () => {
     await updateOutput(output.output_id, { description: description });
   }
 
-  const handleDownloadVideo = () => {
-    const a = document.createElement("a");
-    a.href = output.video_dir;
-    a.download = `${title}.mp4`;
-    a.click();
+  const handleDownloadVideo = async () => {
+    const videoName = output.video_name.replaceAll(' ', '-');
+    const dataToSend = {
+      video_dir: output.video_dir,
+      video_name: videoName
+    }
+    await downloadVideo(dataToSend).then((res) => {
+      const data = res.data;
+      const url = URL.createObjectURL(data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = videoName;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   }
 
   const handleDeleteVideo = async () => {

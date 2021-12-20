@@ -34,7 +34,7 @@ const gridStyle = {
 const ITEM_HEIGHT = 48;
 
 const VideoCard = (props) => {
-  const { video, output, onDeleteVideo, onDuplicateVideo, onCreateTemplate } = props;
+  const { video, output, onDownloadVideo, onDeleteVideo, onDuplicateVideo, onCreateTemplate } = props;
 
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -56,10 +56,8 @@ const VideoCard = (props) => {
 
   const handleDownloadVideo = (event) => {
     event.stopPropagation();
-    const a = document.createElement("a");
-    a.href = output.video_dir;
-    a.download = `${video.package_name}.mp4`;
-    a.click();
+
+    onDownloadVideo(output);
     handleCloseMenu(event);
   }
 
