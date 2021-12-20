@@ -661,7 +661,7 @@ class ImageMapItems extends Component {
     if (files && files.length > 0) {
 			const file = files[0];
 			if (!['image/png', 'image/bmp', 'image/jpeg', 'image/gif'].includes(file.type)) {
-				showAlert('You can only upload image file.', 'error');
+				showAlert('You can only upload image files.', 'error');
 				return;
 			}
 
