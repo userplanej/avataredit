@@ -85,7 +85,7 @@ const TemplateDetail = (props) => {
             const firstSlide = template.image_clips[0];
             return (
               <Grid item sm={6} md={3} lg={6} sx={{ cursor: 'pointer' }} onClick={() => handleClickTemplate(template)}>
-                <img src={firstSlide.html5_dir} style={{ width: '100%', borderRadius: '6px' }} />
+                <img alt={template.package_name} src={firstSlide.html5_dir} style={{ minHeight: '150px', width: '100%', borderRadius: '6px' }} />
                 <Typography variant="body1" color="#fff" sx={{ mt: 1, wordBreak: 'break-all' }}>{template.package_name}</Typography>
               </Grid>
             );
@@ -96,7 +96,7 @@ const TemplateDetail = (props) => {
           templateSelected.image_clips.map((slide) => {
             return (
               <Grid item sm={6} md={3} lg={6} sx={{ cursor: 'pointer' }} onClick={() => handleClickSlide(slide)}>
-                <img src={slide.html5_dir} style={{ width: '100%', borderRadius: '6px' }} />
+                <img src={slide.html5_dir} style={{ minHeight: '150px', width: '100%', borderRadius: '6px' }} />
               </Grid>
             )
           })
