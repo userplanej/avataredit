@@ -1,5 +1,7 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import i18n from 'i18next';
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
@@ -52,7 +54,7 @@ const Signup = (props) => {
       } else if (error.request) {
         message = error.request;
       } else {
-        message = 'An error occured while trying to create the account.'
+        message = i18n.t('form.signup.error');
       }
       showAlert(message, 'error');
     });
@@ -92,7 +94,7 @@ const Signup = (props) => {
         <Box><img src="/images/img_mstudio.png" /></Box>
 
         <Typography component="h1" variant="h4" sx={{ mt: 1, fontWeight: 'normal' }}>
-          Create an account
+          {i18n.t('form.signup.title')}
         </Typography>
 
         <Box sx={{ mt: 2 }} width="100%">

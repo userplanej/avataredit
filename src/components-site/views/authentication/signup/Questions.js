@@ -1,5 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import i18n from 'i18next';
+
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -14,40 +16,40 @@ import { setKnowAbout, setUseCase, setCompanySize, setApiInterested } from '../.
 const companySizeValues = [
   {
     value: 1,
-    label: '1-10 employees'
+    label: i18n.t('form.signup.questions.companySize.value1')
   },
   {
     value: 2,
-    label: '11-50 employees'
+    label: i18n.t('form.signup.questions.companySize.value2')
   },
   {
     value: 3,
-    label: '51-200 employees'
+    label: i18n.t('form.signup.questions.companySize.value3')
   },
   {
     value: 4,
-    label: '201-500 employees'
+    label: i18n.t('form.signup.questions.companySize.value4')
   },
   {
     value: 5,
-    label: '501-1000 employees'
+    label: i18n.t('form.signup.questions.companySize.value5')
   },
   {
     value: 6,
-    label: '1001-5000 employees'
+    label: i18n.t('form.signup.questions.companySize.value6')
   },
   {
     value: 7,
-    label: '5001-10,000 employees'
+    label: i18n.t('form.signup.questions.companySize.value7')
   },
   {
     value: 8,
-    label: '10,001+ employees'
+    label: i18n.t('form.signup.questions.companySize.value8')
   }
 ];
 
 // Values used in question about API's select input
-const apiInterestedValues = [{ value: 1, label: 'No' }, { value: 2, label: 'Yes' }];
+const apiInterestedValues = [{ value: 1, label: i18n.t('common.no') }, { value: 2, label: i18n.t('common.yes') }];
 
 /**
  * Signup form: optional questions page
@@ -91,31 +93,31 @@ const Questions = (props) => {
   return (
     <Box component="form" noValidate onSubmit={handleLocalSubmit}>
       <Typography component="h1" variant="h5">
-        Optional questions
+        {i18n.t('form.signup.questions.title')}
       </Typography>
-      <Typography variant="h6">You can skip this part, but it will help us if you could answer!</Typography>
+      <Typography variant="h6">{i18n.t('form.signup.questions.content')}</Typography>
 
-      <InputLabel sx={{ mt: '20px' }}>How did you hear about M Studio?</InputLabel>
-      <CustomInput 
-        placeholder="Type your answer" 
-        fullWidth  
+      <InputLabel sx={{ mt: '20px' }}>{i18n.t('form.signup.questions.hearAbout')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('form.signup.questions.hearAboutPlaceholder')}
+        fullWidth
         id="know-about"
         name="know-about"
         value={knowAbout}
         onChange={(event) => onChangeValue('knowAbout', event.target.value)}
       />
 
-      <InputLabel sx={{ mt: '20px' }}>Use case</InputLabel>
-      <CustomInput 
-        placeholder="Type your use case" 
-        fullWidth  
+      <InputLabel sx={{ mt: '20px' }}>{i18n.t('form.signup.questions.useCase')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('form.signup.questions.useCasePlaceholder')}
+        fullWidth
         id="use-case"
         name="use-case"
         value={useCase}
         onChange={(event) => onChangeValue('useCase', event.target.value)}
       />
       
-      <InputLabel sx={{ mt: '20px' }}>Company size</InputLabel>
+      <InputLabel sx={{ mt: '20px' }}>{i18n.t('form.signup.questions.companySize.title')}</InputLabel>
       <SelectInput 
         items={companySizeValues}
         id="company-size"
@@ -124,7 +126,7 @@ const Questions = (props) => {
         onChange={(event) => onChangeValue('companySize', event.target.value)}
       />
 
-      <InputLabel sx={{ mt: '20px' }}>Are you interested in our API?</InputLabel>
+      <InputLabel sx={{ mt: '20px' }}>{i18n.t('form.signup.questions.interested')}</InputLabel>
       <SelectInput 
         items={apiInterestedValues}
         id="api-interested"
@@ -141,7 +143,7 @@ const Questions = (props) => {
           sx={{ mr: 3 }}
           onClick={setCompany}
         >
-          Back
+          {i18n.t('common.button.back')}
         </Button>
         <Button
           fullWidth
@@ -149,7 +151,7 @@ const Questions = (props) => {
           onClick={setPayment}
           type="submit"
         >
-          Next
+          {i18n.t('common.button.next')}
         </Button>
       </Box>
     </Box>

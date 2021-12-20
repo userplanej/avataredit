@@ -34,18 +34,22 @@
 			"forgotPassword": "Forgot your password?",
 			"login": "Login",
 			"notMember": "Not a member?",
-			"joinHere": "Join here"
+			"joinHere": "Join here",
+			"error": "Email and password are incorrect."
 		},
 		"forgotPassword": {
 			"email": {
 				"title": "Can't log in?",
 				"content": "Type your email so we can send you a password recovery email",
 				"havingTrouble": "Still having trouble?",
-				"contactUs": "Contact us at"
+				"contactUs": "Contact us at",
+				"errorNotActivated": "Your account is not active, you can't reset your password.",
+				"codeSent": "Code sent to your email"
 			},
 			"reset": {
 				"title": "Reset password",
 				"content": "Enter the code sent to your email",
+				"info": "You have to wait 10 minutes before asking for a new code.",
 				"code": "Verification code",
 				"codePlaceholder": "Type your verification code",
 				"resend": "Resend code",
@@ -73,10 +77,14 @@
 				"vat": "Vat number",
 				"vatPlaceholder": "Type your vat number (eg - GB2803414523)",
 				"tc": "Lorem Ipsum Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Lorem IpsumLorem IpsumLorem IpsumIpsumLorem IpsumLorem Ipsum",
-				"tcAgreement": "Agree to T&C"
+				"tcAgreement": "Agree to T&C",
+				"errors": {
+					"vat": "Please check the VAT number format. It must be less than 16 characters."
+				}
 			},
 			"questions": {
 				"title": "Optional questions",
+				"content": "You can skip this part, but it will help us if you could answer!",
 				"hearAbout": "How did you hear about M Studio?",
 				"hearAboutPlaceholder": "Type your answer",
 				"useCase": "Use case",
@@ -102,12 +110,25 @@
 				"cardInfoPlaceholder3": "CVV",
 				"cardName": "Name on card",
 				"cardNamePlaceholder": "Your name on card",
-				"countryRegion": "Country or region",
-				"countryRegionPlaceholder": "Your country or region",
+				"country": "Country",
 				"saveCard": "Save card info for next billing",
 				"terms": "By confirming your subscription, you allow M Studio to charge your card for this payment and future payments in accordance with their terms",
-				"suscribe": "Suscribe"
-			}
+				"suscribe": "Suscribe",
+				"errors": {
+					"cardNumber": "The card number format is not correct.",
+					"cardDate": "Card date format is not correct.",
+					"cardExpired": "The expiry date has passed",
+					"cardCode": "The card code format is not correct."
+				}
+			},
+			"error": "An error occured while trying to create the account."
+		},
+		"activation": {
+			"title": "Activate your account",
+			"content": "We have sent you an email with an activation code. Please type the code in order to activate your account.",
+			"code": "Activation code",
+			"codePlaceholder": "Your activation code",
+			"success": "Your account has been activated."
 		}
 	},
 	"views": {
@@ -224,6 +245,7 @@
 				"cancelAccount": "To cancel your account, "
 			},
 			"personal": {
+				"title": "Personal information",
 				"shortBio": "Short bio"
 			},
 			"notification": {
@@ -252,6 +274,7 @@
 			},
 			"dialog": {
 				"changePassword": {
+					"title": "Change password",
 					"currentPassword": "Current password",
 					"currentPasswordPlaceholder": "Type your current password",
 					"newPassword": "New password",
@@ -259,6 +282,7 @@
 					"confirmNewPassword": "Confirm new password",
 					"confirmNewPasswordPlaceholder": "Confirm your new password",
 					"save": "Save and proceeed",
+					"error": "Current password is incorrect.",
 					"success": "Password changed successfully"
 				},
 				"cancelAccount": {
@@ -273,6 +297,7 @@
 						"reason5": "I need more features for my use case",
 						"reason6": "I am not satisfied with the video/voice quality and options"
 					},
+					"error": "Incorrect email",
 					"success": {
 						"title": "Thank you for helping us make the product better",
 						"content": "Our team will now process your request and you’ll receive an email",

@@ -76,7 +76,7 @@ const Login = (props) => {
     .catch(error => {
       let message = '';
       if (error.response) {
-        message = 'Email and password are incorrect.';
+        message = i18n.t('form.login.error');
       } else if (error.request) {
         message = error.request;
       } else {

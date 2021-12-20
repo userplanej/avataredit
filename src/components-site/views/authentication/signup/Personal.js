@@ -25,7 +25,7 @@ const Personal = (props) => {
   const password = useSelector(state => state.signup.password);
   const confirmPassword = useSelector(state => state.signup.confirmPassword);
   // Inputs helper text
-  const [passwordHelperText, setPasswordHelperText] = useState('Both passwords must match');
+  const [passwordHelperText, setPasswordHelperText] = useState(i18n.t('common.input.confirmPasswordHelper'));
   // Boolean to tell if passwords are matching or not
   const [passwordMatch, setPasswordMatch] = useState(false);
   // Boolean to disable or enable confirm button
@@ -52,7 +52,7 @@ const Personal = (props) => {
     let passwordMatch  = false;
     if (confirmPassword && confirmPassword !== '') {
       passwordMatch = confirmPassword === password;
-      setPasswordHelperText(passwordMatch ? 'Both password match' : 'Both passwords must match');
+      setPasswordHelperText(passwordMatch ? i18n.t('common.input.confirmPasswordHelperOk') : i18n.t('common.input.confirmPasswordHelper'));
       setPasswordMatch(passwordMatch);
     }
     setCanSubmit(nameValidation && emailValidation && passwordValidation && passwordMatch);
@@ -101,35 +101,35 @@ const Personal = (props) => {
 
   return (
     <Box component="form" noValidate onSubmit={handleLocalSubmit}>
-      <InputLabel required sx={{ mt: '20px' }}>Name</InputLabel>
-      <CustomInput 
-        placeholder="Type your name" 
-        fullWidth 
-        required 
+      <InputLabel required sx={{ mt: '20px' }}>{i18n.t('common.input.name')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('common.input.namePlaceholder')}
+        fullWidth
+        required
         id="name"
         name="name"
         value={name}
         onChange={(event) => onChangeValue('name', event.target.value)}
       />
       
-      <InputLabel required sx={{ mt: '20px' }}>Email</InputLabel>
-      <CustomInput 
-        placeholder="Type your email" 
-        fullWidth 
-        required 
+      <InputLabel required sx={{ mt: '20px' }}>{i18n.t('common.input.email')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('common.input.emailPlaceholder')}
+        fullWidth
+        required
         id="email"
-        type="email" 
+        type="email"
         name="email"
         autoComplete="email"
         value={email}
         onChange={(event) => onChangeValue('email', event.target.value)}
       />
 
-      <InputLabel required sx={{ mt: '20px' }}>Password</InputLabel>
-      <CustomInput 
-        placeholder="Type your password" 
-        fullWidth 
-        required 
+      <InputLabel required sx={{ mt: '20px' }}>{i18n.t('common.input.password')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('common.input.passwordPlaceholder')}
+        fullWidth
+        required
         type="password"
         id="password"
         name="password"
@@ -141,11 +141,11 @@ const Personal = (props) => {
         {i18n.t('common.input.passwordRules')}
       </Typography>
       
-      <InputLabel required sx={{ mt: '20px' }}>Confirm password</InputLabel>
-      <CustomInput 
-        placeholder="Confirm your password" 
-        fullWidth 
-        required 
+      <InputLabel required sx={{ mt: '20px' }}>{i18n.t('common.input.confirmPassword')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('common.input.confirmPasswordPlaceholder')}
+        fullWidth
+        required
         type="password"
         id="confirm-password"
         name="confirm-password"
@@ -165,13 +165,13 @@ const Personal = (props) => {
         disabled={!canSubmit}
         type="submit"
       >
-        Continue
+        {i18n.t('common.button.continue')}
       </Button>
 
       <Box sx={{ textAlign: 'center' }} color="#fff">
-        Already a member? {" "}
+        {i18n.t('form.signup.personal.alreadyMember')} {" "}
         <Link onClick={setLogin} color="#df678c">
-          Login here
+          {i18n.t('form.signup.personal.loginHere')}
         </Link>
       </Box>
     </Box>

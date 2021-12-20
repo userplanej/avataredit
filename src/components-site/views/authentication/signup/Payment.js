@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { countries } from 'countries-list';
+import i18n from 'i18next';
 
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -72,7 +73,7 @@ const Payment = (props) => {
       cardNumber.length == 13 && cardNumber[0] == 4);
 
     if (!isValid) {
-      setCardNumberError("The card number format is not correct.");
+      setCardNumberError(i18n.t('form.signup.payment.errors.cardNumber'));
     } else {
       setCardNumberError("");
     }
@@ -82,7 +83,7 @@ const Payment = (props) => {
 
   const validateCardDate = (cardDate) => {
     if (!cardDate.match(/(0[1-9]|1[0-2])[/][0-9]{2}/)) {
-      setCardDateError("Card date format is not correct.");
+      setCardDateError(i18n.t('form.signup.payment.errors.cardDate'));
       return false;
     }
 
@@ -96,7 +97,7 @@ const Payment = (props) => {
 
     const isExpired = year < currentYear || (year == currentYear && month < currentMonth);
     if (isExpired) {
-      setCardDateError("The expiry date has passed.");
+      setCardDateError(i18n.t('form.signup.payment.errors.cardExpired'));
     } else {
       setCardDateError("");
     }
@@ -109,7 +110,7 @@ const Payment = (props) => {
     if (isValid) {
       setCardCodeError("");
     } else {
-      setCardCodeError("The card code format is not correct.");
+      setCardCodeError(i18n.t('form.signup.payment.errors.cardCode'));
     }
     return isValid;
   }
@@ -172,40 +173,40 @@ const Payment = (props) => {
   return (
     <Box component="form" noValidate onSubmit={handleLocalSubmit}>
       <Typography component="h1" variant="h5">
-       Payment
+        {i18n.t('form.signup.payment.title')}
       </Typography>
 
-      <InputLabel sx={{ mt: 4 }}>Email</InputLabel>
-      <CustomInput 
-        placeholder="Type your email" 
-        fullWidth  
+      <InputLabel sx={{ mt: 4 }}>{i18n.t('common.input.email')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('common.input.emailPlaceholder')}
+        fullWidth
         id="paymentEmail"
         name="paymentEmail"
         value={paymentEmail}
         onChange={(event) => onChangeValue('paymentEmail', event.target.value)}
       />
 
-      <InputLabel sx={{ mt: 2 }}>Card Information</InputLabel>
-      <CustomInput 
-        placeholder="Eg - 876492329384" 
-        fullWidth  
+      <InputLabel sx={{ mt: 2 }}>{i18n.t('form.signup.payment.cardInfo')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('form.signup.payment.cardInfoPlaceholder1')}
+        fullWidth
         id="cardNumber" 
         name="cardNumber"
         value={cardNumber}
         onChange={(event) => onChangeValue('cardNumber', event.target.value)}
       />
       <Box sx={{ display: 'flex' }}>
-        <CustomInput 
-          placeholder="MM/YY" 
-          fullWidth  
+        <CustomInput
+          placeholder={i18n.t('form.signup.payment.cardInfoPlaceholder2')}
+          fullWidth
           id="cardDate"
           name="cardDate"
           value={cardDate}
           onChange={(event) => onChangeValue('cardDate', event.target.value)}
         />
-        <CustomInput 
-          placeholder="CVV" 
-          fullWidth  
+        <CustomInput
+          placeholder={i18n.t('form.signup.payment.cardInfoPlaceholder3')}
+          fullWidth
           id="cardCode"
           name="cardCode"
           value={cardCode}
@@ -218,17 +219,17 @@ const Payment = (props) => {
         <Box>{cardCodeError}</Box>
       </Typography>
       
-      <InputLabel sx={{ mt: 2 }}>Name on card</InputLabel>
-      <CustomInput 
-        placeholder="Your name on card" 
-        fullWidth  
+      <InputLabel sx={{ mt: 2 }}>{i18n.t('form.signup.payment.cardName')}</InputLabel>
+      <CustomInput
+        placeholder={i18n.t('form.signup.payment.cardNamePlaceholder')}
+        fullWidth
         id="cardName"
         name="cardName"
         value={cardName}
         onChange={(event) => onChangeValue('cardName', event.target.value)}
       />
 
-      <InputLabel sx={{ mt: 2 }}>Country</InputLabel>
+      <InputLabel sx={{ mt: 2 }}>{i18n.t('form.signup.payment.country')}</InputLabel>
       <SelectInput
         items={countriesList}
         id="paymentCountry"
@@ -240,12 +241,10 @@ const Payment = (props) => {
       <FormControlLabel 
         sx={{ mt: 2, color: '#9a9a9a' }}
         control={<Checkbox value={saveCardInfo} onChange={() => setSaveCardInfo(!saveCardInfo)} sx={{ '& .MuiSvgIcon-root': { fontSize: 30, color: '#fff' } }} />} 
-        label="Save card info for next billing" 
+        label={i18n.t('form.signup.payment.saveCard')}
       />
         
-      <Typography variant="body2" mt={1}>
-        By confirming your subscription, you allow M Studio to charge your card for this payment and future payments in accordance with their terms
-      </Typography>
+      <Typography variant="body2" mt={1}>{i18n.t('form.signup.payment.terms')}</Typography>
 
       <Box sx={{ display: 'flex', mt: 2 }}>
         <Button
@@ -255,7 +254,7 @@ const Payment = (props) => {
           sx={{ mr: 3 }}
           onClick={setQuestions}
         >
-          Back
+          {i18n.t('common.button.back')}
         </Button>
         <Button
           fullWidth
@@ -264,7 +263,7 @@ const Payment = (props) => {
           disabled={!canSubmit}
           type="submit"
         >
-          Subscribe
+          {i18n.t('form.signup.payment.suscribe')}
         </Button>
       </Box>
     </Box>

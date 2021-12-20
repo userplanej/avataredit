@@ -34,18 +34,22 @@
 			"forgotPassword": "비밀번호 찾기",
 			"login": "로그인",
 			"notMember": "아직 회원이 아니신가요?",
-			"joinHere": "가입하기"
+			"joinHere": "가입하기",
+			"error": "Email and password are incorrect."
 		},
 		"forgotPassword": {
 			"email": {
 				"title": "비밀번호를 잊으셨나요?",
 				"content": "계정과 연결된 이메일 주소로 비밀번호 재설정 코드를 보내드립니다.",
 				"havingTrouble": "도움이 필요하신가요?",
-				"contactUs": "고객센터에 문의하세요."
+				"contactUs": "고객센터에 문의하세요.",
+				"errorNotActivated": "Your account is not active, you can't reset your password.",
+				"codeSent": "Code sent to your email"
 			},
 			"reset": {
 				"title": "비밀번호 재설정",
 				"content": "이메일로 전송된 코드를 입력하세요.",
+				"info": "You have to wait 10 minutes before asking for a new code.",
 				"code": "인증 코드",
 				"codePlaceholder": "코드 입력",
 				"resend": "코드 재전송",
@@ -102,12 +106,19 @@
 				"cardInfoPlaceholder3": "CVV",
 				"cardName": "카드상 영문 이름",
 				"cardNamePlaceholder": "영문 이름 입력",
-				"countryRegion": "나라 또는 지역",
-				"countryRegionPlaceholder": "나라 또는 지역 입력",
+				"country": "나라",
 				"saveCard": "카드 정보를 저장합니다.",
 				"terms": "상기 결제내역과 개인정보 수집·이용 및 환불정책에 관한 유의사항 내용을 확인하였으며 결제에 동의합니다.",
 				"suscribe": "구독"
-			}
+			},
+			"error": "An error occured while trying to create the account."
+		},
+		"activation": {
+			"title": "Activate your account",
+			"content": "We have sent you an email with an activation code. Please type the code in order to activate your account.",
+			"code": "Activation code",
+			"codePlaceholder": "Your activation code",
+			"success": "Your account has been activated."
 		}
 	},
 	"views": {
@@ -224,6 +235,7 @@
 				"cancelAccount": "계정을 탈퇴하려면, "
 			},
 			"personal": {
+				"title": "Personal information",
 				"shortBio": "짧은 소개글"
 			},
 			"notification": {
@@ -252,6 +264,7 @@
 			},
 			"dialog": {
 				"changePassword": {
+					"title": "Change password",
 					"currentPassword": "현재 비밀번호",
 					"currentPasswordPlaceholder": "비밀번호 입력",
 					"newPassword": "새 비밀번호",
@@ -259,6 +272,7 @@
 					"confirmNewPassword": "새 비밀번호 확인",
 					"confirmNewPasswordPlaceholder": "새 비밀번호 다시 입력",
 					"save": "저장 후 계속",
+					"error": "Current password is incorrect.",
 					"success": "비밀번호가 재설정되었습니다."
 				},
 				"cancelAccount": {
@@ -273,6 +287,7 @@
 						"reason5": "I need more features for my use case",
 						"reason6": "I am not satisfied with the video/voice quality and options"
 					},
+					"error": "Incorrect email",
 					"success": {
 						"title": "Thank you for helping us make the product better",
 						"content": "Our team will now process your request and you’ll receive an email",

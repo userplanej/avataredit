@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import i18n from 'i18next';
 import validate from 'validate-vat';
 
 import Button from '@mui/material/Button';
@@ -37,7 +38,7 @@ const Company = (props) => {
    */
   const validateInputs = (vat, tc) => {
     const vatValidation = vat === '' || (vat !== '' && vat.length < 16);
-    setVatError(vatValidation ? '' : 'Please check the VAT number format. It must be less than 16 characters.');
+    setVatError(vatValidation ? '' : i18n.t('form.signup.company.errors.vat'));
     setCanSubmit(vatValidation && tc);
   }
 
@@ -71,12 +72,12 @@ const Company = (props) => {
   return (
     <Box component="form" noValidate onSubmit={handleLocalSubmit}>
       <Typography component="h1" variant="h5">
-        Company information (optional)
+        {i18n.t('form.signup.company.title')}
       </Typography>
 
-      <InputLabel sx={{ mt: 4 }}>Company name</InputLabel>
+      <InputLabel sx={{ mt: 4 }}>{i18n.t('form.signup.company.name')}</InputLabel>
       <CustomInput
-        placeholder="Type your company name"
+        placeholder={i18n.t('form.signup.company.namePlaceholder')}
         fullWidth
         id="company"
         name="company"
@@ -84,9 +85,9 @@ const Company = (props) => {
         onChange={(event) => onChangeValue('company', event.target.value)}
       />
 
-      <InputLabel sx={{ mt: 2 }}>Billing address</InputLabel>
+      <InputLabel sx={{ mt: 2 }}>{i18n.t('form.signup.company.billingAddress')}</InputLabel>
       <CustomInput
-        placeholder="Type your billing address"
+        placeholder={i18n.t('form.signup.company.billingAddressPlaceholder')}
         fullWidth
         id="billing-address"
         name="billing-address"
@@ -94,9 +95,9 @@ const Company = (props) => {
         onChange={(event) => onChangeValue('billingAddress', event.target.value)}
       />
       
-      <InputLabel sx={{ mt: 2 }}>Vat number</InputLabel>
+      <InputLabel sx={{ mt: 2 }}>{i18n.t('form.signup.company.vat')}</InputLabel>
       <CustomInput
-        placeholder="Type your vat number (eg - GB2803414523)"
+        placeholder={i18n.t('form.signup.company.vatPlaceholder')}
         fullWidth
         id="vat"
         name="vat"
@@ -108,14 +109,13 @@ const Company = (props) => {
       </Typography>
         
       <Typography variant="body2" mt={4}>
-        Lorem Ipsum Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem 
-        Lorem IpsumLorem IpsumLorem IpsumIpsumLorem IpsumLorem Ipsum
+        {i18n.t('form.signup.company.tc')}
       </Typography>
 
       <FormControlLabel
         sx={{ color: "#9a9a9a" }}
         control={<Checkbox value={tc} onChange={(event) => onChangeValue('tc', !tc)} sx={{ '& .MuiSvgIcon-root': { fontSize: 30 }, mr: '5px', color: '#fff' }} />}
-        label="Agree to T&C"
+        label={i18n.t('form.signup.company.tcAgreement')}
       />
 
       <Box sx={{ display: 'flex', mt: 5 }}>
@@ -126,7 +126,7 @@ const Company = (props) => {
           fullWidth
           onClick={setPersonal}
         >
-          Back
+          {i18n.t('common.button.back')}
         </Button>
         <Button
           fullWidth
@@ -135,7 +135,7 @@ const Company = (props) => {
           disabled={!canSubmit}
           type="submit"
         >
-          Next
+          {i18n.t('common.button.next')}
         </Button>
       </Box>
     </Box>

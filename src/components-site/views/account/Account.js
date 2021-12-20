@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import i18n from 'i18next';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -47,7 +48,7 @@ const Account = () => {
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   // Inputs helper text
-  const [passwordHelperText, setPasswordHelperText] = useState('Both passwords must match');
+  const [passwordHelperText, setPasswordHelperText] = useState(i18n.t('common.input.confirmPasswordHelper'));
   // Boolean to disable or enable submit button
   const [canSubmit, setCanSubmit] = useState(false);
   // Boolean to show change password dialog
@@ -60,17 +61,20 @@ const Account = () => {
   // Array to build passwords inputs
   const passwords = [
     {
-      label: 'Current password',
+      label: i18n.t('views.settings.dialog.currentPassword'),
+      placeholder: i18n.t('views.settings.dialog.currentPasswordPlaceholder'),
       name: fieldNames.currentPassword,
-      caption: 'Password must be at least 8 characters long. Must include at least one letter and one number.',
+      caption: i18n.t('common.input.passwordRules')
     },
     {
-      label: 'New password',
+      label: i18n.t('views.settings.dialog.newPassword'),
+      placeholder: i18n.t('views.settings.dialog.newPasswordPlaceholder'),
       name: fieldNames.newPassword,
-      caption: 'Password must be at least 8 characters long. Must include at least one letter and one number.'
+      caption: i18n.t('common.input.passwordRules')
     },
     {
-      label: 'Confirm new password',
+      label: i18n.t('views.settings.dialog.confirmNewPassword'),
+      placeholder: i18n.t('views.settings.dialog.confirmNewPasswordPlaceholder'),
       name: fieldNames.confirmNewPassword
     }
   ]
@@ -95,8 +99,7 @@ const Account = () => {
         userId: data.user_id,
         email: data.email,
         name: data.name ? data.name : '',
-        bio: data.bio ? data.bio : '',
-        // currentPassword: data.currentPassword
+        bio: data.bio ? data.bio : ''
       }
       setUser(user);
 
@@ -132,7 +135,7 @@ const Account = () => {
     let passwordMatch  = false;
     if (confirmNewPassword && confirmNewPassword !== '') {
       passwordMatch = confirmNewPassword === newPassword;
-      setPasswordHelperText(passwordMatch ? 'Both password match' : 'Both passwords must match');
+      setPasswordHelperText(passwordMatch ? i18n.t('common.input.confirmPasswordHelperOk') : i18n.t('common.input.confirmPasswordHelper'));
       setPasswordMatch(passwordMatch);
     }
     setCanSubmit(passwordValidation && newPasswordValidation && passwordMatch);
@@ -225,12 +228,12 @@ const Account = () => {
   }
 
   // Return the input with label and caption for each password inputs
-  const getPasswordInput = (label, name, caption) => {
+  const getPasswordInput = (label, placeholder, name, caption) => {
     return (
       <Box key={name}>
         <InputLabel sx={{ mt: '20px' }}>{label}</InputLabel>
         <CustomInput 
-          placeholder={`Type your ${label.toLowerCase()}`}
+          placeholder={placeholder}
           fullWidth 
           type="password"
           id={name}
@@ -259,14 +262,14 @@ const Account = () => {
       setOpenChangePasswordDialog(false);
       resetPasswordInputs();
       // Show dialog success
-      dispatch(setDialogAlertTitle('Change password'));
-      dispatch(setDialogAlertMessage('Password changed successfully'));
-      dispatch(setDialogAlertButtonText('Done'));
+      dispatch(setDialogAlertTitle(i18n.t('views.settings.dialog.changePassword.title')));
+      dispatch(setDialogAlertMessage(i18n.t('views.settings.dialog.changePassword.success')));
+      dispatch(setDialogAlertButtonText(i18n.t('common.button.done')));
       dispatch(setDialogAlertOpen(true));
     }).catch(error => {
       let message = '';
       if (error.response) {
-        message = 'Current password is incorrect.';
+        message = i18n.t('views.settings.dialog.changePassword.error');
       } else if (error.request) {
         message = error.request;
       } else {
@@ -290,16 +293,16 @@ const Account = () => {
   return (
     <Container maxWidth={false}>
       <Box sx={{ pb: 3 }}>
-        <Typography variant="h5" color="#fff">Account information</Typography>
+        <Typography variant="h5" color="#fff">{i18n.t('views.settings.account.title')}</Typography>
 
         <Grid container sx={{ mt: 2, width: '100%' }}>
           <Grid item xs={9} md={6} xl={4}>
-            <InputLabel>Email</InputLabel>
-            <CustomInput 
-              placeholder="Email" 
-              fullWidth  
+            <InputLabel>{i18n.t('common.input.email')}</InputLabel>
+            <CustomInput
+              placeholder={i18n.t('common.input.email')}
+              fullWidth
               id="email"
-              type="email" 
+              type="email"
               name="email"
               autoComplete="email"
               value={email}
@@ -309,7 +312,7 @@ const Account = () => {
         </Grid>
 
         <Grid container sx={{ mt: 1, width: '100%' }}>
-          <InputLabel>Password</InputLabel>
+          <InputLabel>{i18n.t('common.input.password')}</InputLabel>
           <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
             <Grid item xs ={9} md={6} xl={4}>
               <CustomInput 
@@ -324,24 +327,24 @@ const Account = () => {
             </Grid>
             
             <Grid item xs={3} md={3} xl={2} sx={{ pl: 1 }}>
-              <Button variant="contained" color="secondary" fullWidth onClick={openChangePassword}>Change</Button>
+              <Button variant="contained" color="secondary" fullWidth onClick={openChangePassword}>{i18n.t('common.button.change')}</Button>
             </Grid>
           </Box>
         </Grid>
 
         <Box sx={{ mt: 2, color: '#fff' }}>
-          {"To cancel your account, "}
-          <Link color="#df678c" onClick={() => setOpenDeleteAccountDialog(true)}>please click here.</Link>
+          {i18n.t('views.settings.account.cancelAccount')}
+          <Link color="#df678c" onClick={() => setOpenDeleteAccountDialog(true)}>{i18n.t('views.settings.common.clickHere')}</Link>
         </Box>
 
-        <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>Personal information</Typography>
+        <Typography variant="h5" color="#fff" sx={{ mt: 3 }}>{i18n.t('views.settings.personal.title')}</Typography>
 
         <Grid container sx={{ mt: 2, width: '100%' }}>
           <Grid item xs={9} md={6} xl={4}>
-            <InputLabel>Name</InputLabel>
-            <CustomInput 
-              placeholder="Name" 
-              fullWidth  
+            <InputLabel>{i18n.t('common.input.name')}</InputLabel>
+            <CustomInput
+              placeholder={i18n.t('common.input.name')}
+              fullWidth
               id="name"
               name="name"
               autoComplete="name"
@@ -353,9 +356,9 @@ const Account = () => {
 
         <Grid container sx={{ mt: 2, width: '100%' }}>
           <Grid item xs={9} md={6} xl={4}>
-            <InputLabel>Short bio</InputLabel>
+            <InputLabel>{i18n.t('views.settings.personal.shortBio')}</InputLabel>
             <MultilineInput 
-              placeholder="Short bio"
+              placeholder={i18n.t('views.settings.personal.shortBio')}
               minRows={4}
               maxRows={4} 
               id="bio"
@@ -400,19 +403,19 @@ const Account = () => {
 
           <DialogContent>
             <Typography variant="h5" color="#fff">
-              Change password
+            {i18n.t('views.settings.dialog.changePassword.title')}
             </Typography>
 
-            {passwords.map(password => getPasswordInput(password.label, password.name, password.caption))}
+            {passwords.map(password => getPasswordInput(password.label, password.placeholder, password.name, password.caption))}
           </DialogContent>
 
           <DialogActions>
             <Button variant="contained" color="secondary" fullWidth onClick={closeChangePassword}>
-              Cancel
+              {i18n.t('common.button.cancel')}
             </Button>
 
             <Button type="submit" disabled={!canSubmit} variant="contained" fullWidth onClick={saveChangePassword}>
-              Save and proceed
+              {i18n.t('views.settings.dialog.changePassword.save')}
             </Button>
           </DialogActions>
         </Box>

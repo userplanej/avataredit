@@ -32,7 +32,7 @@ const Activation = (props) => {
 
     await checkCode(dataToSend)
       .then(() => {
-        showAlert('Your account has been activated.', 'success');
+        showAlert(i18n.t('form.activation.success'), 'success');
         setLogin();
       })
       .catch((error) => showAlert(error.response.data.message, 'error'));
@@ -52,15 +52,15 @@ const Activation = (props) => {
         <Box><img src="/images/img_mstudio.png" /></Box>
 
         <Typography component="h1" variant="h4" sx={{ mt: 3, fontWeight: 'normal' }}>
-          Activate your account
+          {i18n.t('form.activation.title')}
         </Typography>
 
         <Typography component="h1" variant="subtitle1" sx={{ mt: 1 }}>
-          We have sent you an email with an activation code. Please type the code in order to activate your account.
+          {i18n.t('form.activation.content')}
         </Typography>
 
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 2 }} width="100%">
-          <InputLabel required>Email</InputLabel>
+          <InputLabel required>{i18n.t('common.input.email')}</InputLabel>
           <CustomInput
             disabled
             fullWidth
@@ -70,9 +70,9 @@ const Activation = (props) => {
             value={email}
           />
 
-          <InputLabel required>Activation code</InputLabel>
+          <InputLabel required>{i18n.t('form.activation.code')}</InputLabel>
           <CustomInput 
-            placeholder="Your activation code"
+            placeholder={i18n.t('form.activation.codePlaceholder')}
             fullWidth 
             required 
             id="activation-code"

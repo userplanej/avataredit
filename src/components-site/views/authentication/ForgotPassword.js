@@ -91,13 +91,13 @@ const ForgotPassword = (props) => {
 
     await sendCode(dataToSend)
       .then(() => {
-        showAlert('Code sent to your email', 'info');
+        showAlert(i18n.t('form.forgotPassword.email.codeSent'), 'info');
         setPage(pageNames.code);
       })
       .catch((error) => {
         const body = error.response.data.body;
         if (body && body.is_active !== undefined && !body.is_active) {
-          showAlert('Your account is not active, you can\'t reset your password.', 'error');
+          showAlert(i18n.t('form.forgotPassword.email.errorNotActivated'), 'error');
         } else {
           showAlert(error.response.data.message, 'error')
         }
@@ -153,7 +153,7 @@ const ForgotPassword = (props) => {
             {page === pageNames.newpassword && i18n.t('form.forgotPassword.newPassword.content')}
         </Typography>
 
-        {page === pageNames.code && <Typography variant="body2">You have to wait 10 minutes before asking for a new code.</Typography>}
+        {page === pageNames.code && <Typography variant="body2">{i18n.t('form.forgotPassword.newPassword.info')}</Typography>}
 
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 5 }} width="100%">          
           <InputLabel required>

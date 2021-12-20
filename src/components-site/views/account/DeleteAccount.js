@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import i18n from 'i18next';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -15,12 +16,12 @@ import { deleteUser } from '../../../api/user/user';
 import { pathnameEnum } from '../../constants/Pathname';
 
 const listDeleteReasons = [
-  'I am waiting for the API',
-  'I don\'t need to create more videos right now',
-  'Pricing',
-  'I would like a wider selection of actors',
-  'I need more features for my use case',
-  'I am not satisfied with the video/voice quality and options'
+  i18n.t('views.settings.dialog.cancelAccount.reasons.reason1'),
+  i18n.t('views.settings.dialog.cancelAccount.reasons.reason2'),
+  i18n.t('views.settings.dialog.cancelAccount.reasons.reason3'),
+  i18n.t('views.settings.dialog.cancelAccount.reasons.reason4'),
+  i18n.t('views.settings.dialog.cancelAccount.reasons.reason5'),
+  i18n.t('views.settings.dialog.cancelAccount.reasons.reason6')
 ]
 
 const DeleteAccount = (props) => {
@@ -67,7 +68,7 @@ const DeleteAccount = (props) => {
     if (user.email === email) {
       setShowEnterEmail(false);
     } else {
-      const message = 'Incorrect email.';
+      const message = i18n.t('views.settings.dialog.cancelAccount.error');
       showAlert(message, 'error');
     }
   }
@@ -77,7 +78,6 @@ const DeleteAccount = (props) => {
   }
 
   const handleCloseFinalPage = async () => {
-    // TODO: Remove account and logout (remove sessionStorage and redirect to login page)
     const user = JSON.parse(sessionStorage.getItem('user'));
     await deleteUser(user.user_id).then(() => {
       close();
@@ -95,17 +95,17 @@ const DeleteAccount = (props) => {
 
         <DialogContent>
           <Typography variant="h5" color="#fff">
-            We're sorry to see you go!
+            {i18n.t('views.settings.dialog.cancelAccount.title')}
           </Typography>
 
           <Typography variant="subtitle1" sx={{ mb: 4 }}>
-            Enter the email associated with your account
+            {i18n.t('views.settings.dialog.cancelAccount.content')}
           </Typography>
 
-          <InputLabel>Email</InputLabel>
-          <CustomInput 
-            placeholder="Type your current email" 
-            fullWidth  
+          <InputLabel>{i18n.t('common.input.email')}</InputLabel>
+          <CustomInput
+            placeholder={i18n.t('common.input.emailPlaceholder')}
+            fullWidth
             id="email"
             type="email" 
             name="email"
@@ -117,11 +117,11 @@ const DeleteAccount = (props) => {
 
         <DialogActions>
           <Button variant="contained" color="secondary" fullWidth onClick={close}>
-            Cancel
+            {i18n.t('common.button.cancel')}
           </Button>
 
           <Button type="submit" disabled={!canSubmit} variant="contained" fullWidth onClick={handleSubmitEmail}>
-            Next
+            {i18n.t('common.button.next')}
           </Button>
         </DialogActions>
       </Box>
@@ -137,7 +137,7 @@ const DeleteAccount = (props) => {
 
         <DialogContent sx={{ width: '100%' }}>
           <Typography variant="h5" color="#fff">
-            Would you mind telling us why would you like to cancel?
+            {i18n.t('views.settings.dialog.cancelAccount.reasons.title')}
           </Typography>
           
           <Stack spacing={1} sx={{ mt: 2 }}>
@@ -160,11 +160,11 @@ const DeleteAccount = (props) => {
 
         <DialogActions>
           <Button variant="contained" color="secondary" fullWidth onClick={handleBackToEnterEmail}>
-            Back
+            {i18n.t('common.button.back')}
           </Button>
 
           <Button type="submit" disabled={!canSubmit} variant="contained" fullWidth onClick={() => setShowFinalPage(true)}>
-            Next
+            {i18n.t('common.button.next')}
           </Button>
         </DialogActions>
       </Box>
@@ -181,15 +181,15 @@ const DeleteAccount = (props) => {
 
         <DialogContent sx={{ width: '100%' }}>
           <Typography variant="h5" color="#fff">
-            Thank you for helping us make the product better
+            {i18n.t('views.settings.dialog.cancelAccount.success.title')}
           </Typography>
           
           <Typography variant="subtitle1">
-            Our team will now process your request and you’ll receive an email
+            {i18n.t('views.settings.dialog.cancelAccount.success.content')}
           </Typography>
 
           <Typography variant="subtitle1" mt={4}>
-            We hope to see you soon
+            {i18n.t('views.settings.dialog.cancelAccount.success.seeyou')}
           </Typography>
         </DialogContent>
       </Box>
