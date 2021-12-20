@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
 import ReactHowler from 'react-howler';
+import { useDropzone } from 'react-dropzone';
 
-import { Button, Grid, Tab, Tabs, Typography, Dialog, DialogTitle, DialogContent, CircularProgress } from '@mui/material';
+import { Button, Grid, Tab, Tabs, Typography, Dialog, DialogTitle, DialogContent, CircularProgress, Chip } from '@mui/material';
 import { Box } from '@mui/system';
 import CloseIcon from '@mui/icons-material/Close';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -49,11 +49,20 @@ const voices = [
 ];
 
 const Script = (props) => {
+  const dropzoneOptions = {
+    noClick: true,
+    noKeyboard: true,
+    accept: 'audio/wav',
+    maxFiles: 1,
+    onDropAccepted: (file) => {
+      setVoiceFile(file[0]);
+    }
+  }
+  
+  const { acceptedFiles, fileRejections, getRootProps, getInputProps, open } = useDropzone(dropzoneOptions);
   const dispatch = useDispatch();
   const activeSlide = useSelector(state => state.video.activeSlide);
   const activeSlideId = useSelector(state => state.video.activeSlideId);
-
-  const hiddenVoiceFileInput = useRef(null);
 
   // Store active tab index
   const [activeTab, setActiveTab] = useState(0);
@@ -71,9 +80,8 @@ const Script = (props) => {
   const [soundSrc, setSoundSrc] = useState(null);
   const [isSoundLoading, setIsSoundLoading] = useState(false);
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
-  // Store voice file if uploaded
+  // Voice file
   const [voiceFile, setVoiceFile] = useState(null);
-  const [voiceFileName, setVoiceFileName] = useState(null);
 
   useEffect(() => {
     const script = activeSlide && activeSlide.text_script !== null ? activeSlide.text_script : '';
@@ -175,31 +183,30 @@ const Script = (props) => {
     setPlaySound(false);
   }
 
-  const handleUploadVoice = () => {
-    hiddenVoiceFileInput.current.click();
-  }
-
-  const uploadVoice = (event) => {
-    const files = event.target.files;
-    const filePath = event.target.value;
-    if (files && files.length > 0) {
-      const file = files[0];
-      if (!['audio/wav'].includes(file.type)) {
-				showAlert('You can only upload wav files.', 'error');
-				return;
-			}
-      setVoiceFile(file);
-      const fileName = filePath.replace(/^.*?([^\\\/]*)$/, '$1');
-      setVoiceFileName(fileName);
-
-      // TODO: Store the file in server when generating video and keep the dir in slide
-    }
-  }
+  // const uploadVoice = (event) => {
+  //   event.preventDefault();
+  //   let files = event.target.files;
+  //   if (files) {
+  //     const filePath = event.target.value;
+  //     if (files && files.length > 0) {
+  //       const file = files[0];
+  //       if (!['audio/wav'].includes(file.type)) {
+  //         showAlert('You can only upload wav files.', 'error');
+  //         return;
+  //       }
+  //       setVoiceFile(file);
+  //       const fileName = filePath.replace(/^.*?([^\\\/]*)$/, '$1');
+  //       setVoiceFileName(fileName);
+  //     }
+  //   } else {
+  //     files = event.dataTransfer.files;
+  //     console.log(files)
+  //   }
+  //   // TODO: Store the file in server when generating video and keep the dir in slide
+  // }
 
   const handleRemoveVoiceFile = () => {
-    hiddenVoiceFileInput.current.value = '';
     setVoiceFile(null);
-    setVoiceFileName(null);
   }
 
   return (
@@ -304,18 +311,25 @@ const Script = (props) => {
               color: '#9a9a9a',
               padding: '34px 17px 16px 15px',
               borderRadius: '6px',
-              backgroundColor: '#202427',              
+              backgroundColor: '#202427',
             }}
+            { ...getRootProps({ className: 'dropzone' }) }
           >
               <Typography variant="h6" color="#fff">Drag and drop your own voice file</Typography>
-              You can upload in mp3, mp4, m4a, FLAC, and WAV formats
+              You can only upload one file and WAV format
 
-              <Box sx={{ display: 'flex', mt: 4, mb: 1, alignItems: 'center', wordBreak: 'break-all' }}>
-                <Typography color="#fff">{voiceFileName}</Typography>
-                {voiceFileName && <CloseIcon fontSize="small" sx={{ cursor: 'pointer', color: "#df678c" }} onClick={handleRemoveVoiceFile} />}
+              <Box sx={{ mt: 2, mb: 1, alignItems: 'center' }}>
+                {acceptedFiles.length > 0 && voiceFile &&
+                  <Box sx={{ display: 'flex', alignItems: 'center', wordBreak: 'break-all' }}>
+                    <Chip label={voiceFile.path} onDelete={handleRemoveVoiceFile} sx={{ color: '#fff', backgroundColor: '#df678c' }} />
+                    {/* <Typography color="#fff">{voiceFile.path}</Typography>
+                    <CloseIcon fontSize="small" sx={{ cursor: 'pointer', color: "#df678c" }} onClick={handleRemoveVoiceFile} /> */}
+                  </Box>
+                }
+                {fileRejections.length > 0  && <Typography color="red">{fileRejections[0].errors.map(e => e.message)}</Typography>}
               </Box>
-              <input id="upload-voice" type="file" hidden onChange={uploadVoice} accept="audio/wav" ref={hiddenVoiceFileInput} />
-              <Button fullWidth variant="contained" color="secondary" sx={{ maxWidth: '100%' }} onClick={handleUploadVoice}>Browse file</Button>
+              <input id="upload-voice" { ...getInputProps() } />
+              <Button fullWidth variant="contained" color="secondary" sx={{ maxWidth: '100%' }} onClick={open}>Browse file</Button>
           </Box>
         </Box>
       </div>
