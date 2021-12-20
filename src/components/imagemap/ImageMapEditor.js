@@ -198,9 +198,11 @@ class ImageMapEditor extends Component {
 			const slides = res.data.body.rows;
 			this.setState({ slides });
 
-			const currentSlide = slides.find(slide => slide.clip_id === this.props.activeSlideId);
-			this.props.setActiveSlide(currentSlide);
-			this.props.setActiveSlideId(currentSlide.clip_id);
+			setTimeout(() => {
+				const currentSlide = slides.find(slide => slide.clip_id === this.props.activeSlideId);
+				this.props.setActiveSlide(currentSlide);
+				// this.props.setActiveSlideId(currentSlide.clip_id);
+			}, 100);
 		});
 	}
 
