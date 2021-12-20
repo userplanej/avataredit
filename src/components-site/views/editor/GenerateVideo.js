@@ -116,7 +116,7 @@ const GenerateVideo = (props) => {
       canvasImagePromise.then(async () => {
         requestVideo(file, script).then(async (res) => {
           const blob = res.data;
-          const filename = `${video.package_name}-${new Date().getTime()}.mp4`;
+          const filename = `${video.package_name.replace(' ', '-')}-${new Date().getTime()}.mp4`;
           const file = new File([blob], filename, { type: "video/mp4" });
           const formData = new FormData();
           formData.append('files', file);
