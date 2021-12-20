@@ -74,6 +74,7 @@
 		"react-design-editor": "^0.0.34",
 		"react-dom": "^16.14.0",
 		"react-dom-factories": "^1.0.2",
+		"react-dropzone": "^11.4.2",
 		"react-helmet": "^5.2.0",
 		"react-hot-loader": "^4.12.20",
 		"react-howler": "^5.2.0",
