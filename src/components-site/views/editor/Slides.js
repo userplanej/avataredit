@@ -13,7 +13,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { postImageClip, deleteImageClip } from '../../../api/image/clip';
 import { updateImagePackage } from '../../../api/image/package';
 
-import { setActiveSlideId, setActiveSlide, setIsSaving, setSelectedAvatar } from '../../../redux/video/videoSlice';
+import { setActiveSlideId, setActiveSlide, setIsSaving, setSelectedAvatar, setIsLoadSlide } from '../../../redux/video/videoSlice';
 import { setAvatarPosition, setAvatarPose, setAvatarSize } from '../../../redux/object/objectSlice';
 
 import { showAlert } from '../../../utils/AlertUtils';
@@ -97,7 +97,10 @@ const Slides = (props) => {
   }, []);
 
   useEffect(() => {
-    loadSlide(activeSlideId);
+    if (isLoadSlide) {
+      loadSlide(activeSlideId);
+      dispatch(setIsLoadSlide(false));
+    }
   }, [isLoadSlide]);
 
   const saveVideoActiveClipId = async (id) => {
