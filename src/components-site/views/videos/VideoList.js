@@ -4,7 +4,9 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import Box from '@mui/material/Box';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, BottomNavigation, Paper } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 import SearchInput from '../../inputs/SearchInput';
 import SortInput from '../../inputs/SortInput';
@@ -19,6 +21,7 @@ import { downloadVideo } from '../../../api/output/output';
 import { setShowBackdrop } from '../../../redux/backdrop/backdropSlice';
 
 import { pathnameEnum } from '../../constants/Pathname';
+import { drawerWidth } from '../../constants/Drawer';
 
 const sortItems = [
   {
@@ -38,6 +41,7 @@ const VideoList = (props) => {
   const history = useHistory();
   const showBackdrop = useSelector(state => state.backdrop.showBackdrop);
 
+  const [selected, setSelected] = useState([]);
   const [videosList, setVideosList] = useState([]);
   const [videosListToDisplay, setVideosListToDisplay] = useState([]);
   const [sortType, setSortType] = useState(1);
@@ -267,7 +271,40 @@ const VideoList = (props) => {
       });
     });
   }
-  
+
+  const handleSelectVideo = (id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+  }
+
+  const handleDeleteSelectedVideo = () => {
+    if (selected.length > 0) {
+      const promise = new Promise((resolve) => {
+        selected.forEach(async (id) => {
+          await deleteImagePackage(id);
+        });
+        resolve();
+      });
+      promise.then(() => {
+        setSelected([]);
+        loadVideos();
+      });
+    }
+  }
+
   return (
     <Box sx={{ pb: 3 }}>
       {!isHome &&
@@ -322,6 +359,8 @@ const VideoList = (props) => {
             onDeleteVideo={(id) => handleOpenConfirmDialog(id)}
             onDuplicateVideo={(video) => handleDuplicateVideo(video)}
             onCreateTemplate={(video) => handleCreateTemplateFromVideo(video)}
+            onSelectVideo={(id) => handleSelectVideo(id)}
+            isSelected={selected.indexOf(video.package_id) !== -1}
           />
         ))}
         {!showBackdrop && videosListToDisplay && videosListToDisplay.length === 0 && 
@@ -330,6 +369,34 @@ const VideoList = (props) => {
           </Typography>
         }
       </Box>
+
+      {selected.length > 0 &&
+        <Box
+          sx={{
+            p: 2,
+            backgroundColor: '#df678c',
+            color: '#fff',
+            position: 'fixed',
+            bottom: 0,
+            left: { xs: 0, lg: 'auto' },
+            right: 0,
+            zIndex: 'auto',
+            width: { lg: `calc(100% - ${drawerWidth}px)` },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          {selected.length} selected
+          <IconButton
+            aria-label="delete"
+            id="delete-button"
+            onClick={handleDeleteSelectedVideo}
+          >
+            <DeleteForeverIcon sx={{ color: '#fff' }} />
+          </IconButton>
+        </Box>
+      }
 
       <ConfirmDialog 
         open={openConfirmDialog}

@@ -34,7 +34,7 @@ const gridStyle = {
 const ITEM_HEIGHT = 48;
 
 const VideoCard = (props) => {
-  const { video, output, onDownloadVideo, onDeleteVideo, onDuplicateVideo, onCreateTemplate } = props;
+  const { video, output, onDownloadVideo, onDeleteVideo, onDuplicateVideo, onCreateTemplate, onSelectVideo, isSelected } = props;
 
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -50,8 +50,9 @@ const VideoCard = (props) => {
     setAnchorEl(null);
   };
 
-  const handleSelectVideo = (event) => {
+  const handleSelectVideo = (event, id) => {
     event.stopPropagation();
+    onSelectVideo(id);
   }
 
   const handleDownloadVideo = (event) => {
@@ -113,13 +114,13 @@ const VideoCard = (props) => {
   return (
     <Grid 
       key={video.package_id}
-      container 
+      container
       columns={20}
       onClick={handleClickVideo}  
       sx={{ 
         width: '100%',
         alignItems: 'center', 
-        backgroundColor: '#202427', 
+        backgroundColor: isSelected ? '#2e3438' : '#202427',
         padding: '12px 20px 12px 20px', 
         cursor: 'pointer',
         ':hover': {
@@ -131,7 +132,7 @@ const VideoCard = (props) => {
       }}
     >
       <Grid item xs={20} sm={2} md={1} lg={1} xl={1} sx={gridStyle}>
-        <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 35 }, color: '#fff', width: '100%' }} onClick={handleSelectVideo} />
+        <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 35 }, color: '#fff', width: '100%' }} onClick={(event) => handleSelectVideo(event, video.package_id)} />
       </Grid>
 
       <Grid item xs={20} sm={3.2} md={2.1} lg={2} xl={1.5} sx={gridStyle}>
@@ -177,7 +178,7 @@ const VideoCard = (props) => {
       <Grid item xs={0} sm={2} md={0} lg={0} xl={0} sx={{ display: { xs: 'none', sm: video.is_draft ? 'none' : 'block', md: 'none' } }}></Grid>
 
       <Grid item xs={20} sm={video.is_draft ? 3.5 : 3} md={2} lg={2} xl={2} sx={{ textAlign: { xs: 'left', sm: 'center' } }}>
-        <Typography variant="body1" sx={{ color: '#fff', mt: { xs: 1, sm: 0 } }}>{video.time ? video.time : '00:00:00'}</Typography>
+        {!video.is_draft && <Typography variant="body1" sx={{ color: '#fff', mt: { xs: 1, sm: 0 } }}>{video.time ? video.time : '00:00:00'}</Typography>}
       </Grid>
 
       <Grid
@@ -221,8 +222,8 @@ const VideoCard = (props) => {
       >
         {!video.is_draft && 
           <Box sx={playButtonStyle}>
-            <PlayArrowIcon sx={{ mr: '5px' }} />
-            <Typography variant="body1" sx={{ color: '#fff' }}>Play</Typography>
+            {/* <PlayArrowIcon sx={{ mr: '5px' }} />
+            <Typography variant="body1" sx={{ color: '#fff' }}>Play</Typography> */}
           </Box>
         }
       </Grid>
