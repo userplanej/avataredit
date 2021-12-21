@@ -314,7 +314,7 @@ const VideoPreview = () => {
         <Grid container sx={{ pb: 3 }}>
           <Grid item xs={12} lg={8} sx={{ mb: 4 }}>
             <Box sx={{ width: { xs: '98%', xl: '95%' } }}>
-              <video id="video" controls preload="auto" style={{ width: '100%', borderRadius: '6px' }}>
+              <video id="video" controls preload="auto" style={{ width: '100%', height: '500px', borderRadius: '6px' }}>
                 <source src={output.video_dir} type="video/mp4" />
                 <source type="video/webm" src={output.video_dir} />
               </video>
