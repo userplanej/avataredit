@@ -972,7 +972,7 @@ class ImageMapEditor extends Component {
 
 	updateAvatarType = async (type) => {
 		const { activeSlideId } = this.props;
-		await updateImageClip(activeSlideId, { avatar_type: type });
+		await updateImageClip(activeSlideId, { avatar_type: type }).then(() => this.loadImageClips());
 	}
 
 	render() {

@@ -164,7 +164,10 @@ const ToolsView = (props) => {
 
   const updateAvatarPose = async (pose) => {
     const id = activeSlide.clip_id;
-    await updateImageClip(id, { avatar_pose: pose }).then(() => dispatch(setCurrentAvatarPose(pose)));
+    await updateImageClip(id, { avatar_pose: pose }).then(() => {
+      dispatch(setCurrentAvatarPose(pose));
+      props.reloadSlides();
+    });
   }
 
   const renderMoveButtons = () => {
