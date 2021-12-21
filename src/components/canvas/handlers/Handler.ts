@@ -758,7 +758,7 @@ class Handler implements HandlerOptions {
 		if (!this.transactionHandler.active && !loaded) {
 			this.transactionHandler.save('add');
 		}
-		if (obj.type !== 'image') {
+		if (obj.type !== 'image' && onSaveSlide !== null) {
 			onSaveSlide();
 		}
 		if (onAdd && editable && !loaded) {
@@ -902,10 +902,10 @@ class Handler implements HandlerOptions {
 	 * Remove object by id
 	 * @param {string} id
 	 */
-	public removeById = (id: string) => {
+	public removeById = (id: string, isManual = false) => {
 		const findObject = this.findById(id);
 		if (findObject) {
-			this.remove(findObject);
+			this.remove(findObject, isManual);
 		}
 	};
 
