@@ -758,6 +758,9 @@ class Handler implements HandlerOptions {
 		if (!this.transactionHandler.active && !loaded) {
 			this.transactionHandler.save('add');
 		}
+		if (obj.type !== 'image') {
+			onSaveSlide();
+		}
 		if (onAdd && editable && !loaded) {
 			onAdd(createdObj);
 		}
