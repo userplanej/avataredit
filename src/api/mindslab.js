@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = 'http://serengeti.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
+const url = 'http://serengeti2.maum.ai/api.app/app/v2/handle/catalog/instance/lifecycle/executes';
 
 const getHeaders = () => {
   return {
@@ -10,11 +10,30 @@ const getHeaders = () => {
   };
 }
 
-export const requestVideo = async (file, script) => {
+export const requestVideo = async (props) => {
+  const {
+    /**
+     * Background png file
+     */
+    file,
+    /**
+     * Script text
+     */
+    script,
+    /**
+     * Avatar action
+     */
+    action,
+    /**
+     * Model type
+     */
+    model
+  } = props;
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('lifecycleName', 'Studio_Main_Action_Lifecycle');
-  formData.append('catalogInstanceName', 'Studio_Main_Action_Catalog1');
+  formData.append('lifecycleName', 'Studio-Main-Action-Lifecycle');
+  formData.append('catalogInstanceName', 'Studio-Main-Action-Catalog');
   formData.append('target', 'SoftwareCatalogInstance');
   formData.append('async', false);
 
@@ -22,13 +41,11 @@ export const requestVideo = async (file, script) => {
     "text": script,
     "width": "1280",
     "height": "720",
-    "speaker": "0",
-    "action": "greeting",
-    "model": "daon",
-    "transparent": "false",
-    "resolution": "HD",
-    "apiId": "ryu",
-    "apiKey": "d0cad9547b9c4a65a5cdfe50072b1588"
+    "speaker_id": "0",
+    "action": action,
+    "modelType": model,
+    "apiId": "hoho105e032bc05d138",
+    "apiKey": "563e1097eeb64c5897990c43d391203d"
   };
 
   formData.append('payload', JSON.stringify(payload));

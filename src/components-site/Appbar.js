@@ -256,13 +256,14 @@ const Appbar = (props) => {
           const objects = canvasRef.handler?.getObjects();
           const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
           if (avatar) {
-            canvasRef.handler?.removeById(avatar.id);
+            canvasRef.handler?.remove(avatar, true);
           }
 
           const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
-          file = new File([canvasBlob], "canvas", { type: "image/png" });
+          file = new File([canvasBlob], "canvas.png", { type: "image/png" });
 
           if (avatar) {
+            canvasRef.handler.clear();
             canvasRef.handler.importJSON(objects);
             canvasRef.handler.transactionHandler.state = objects;
           }
@@ -275,7 +276,14 @@ const Appbar = (props) => {
       });
       
       canvasImagePromise.then(async () => {
-        await requestVideo(file, script).then((res) => {
+        const videoData = {
+          file: file,
+          script: script,
+          action: activeSlide.avatar_pose,
+          model: activeSlide.avatar_type
+        }
+
+        await requestVideo(videoData).then((res) => {
           dispatch(setShowBackdrop(false));
 
           const blob = res.data;

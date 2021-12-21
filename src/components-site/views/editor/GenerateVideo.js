@@ -95,13 +95,14 @@ const GenerateVideo = (props) => {
           const objects = canvasRef.handler?.getObjects();
           const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
           if (avatar) {
-            canvasRef.handler?.removeById(avatar.id);
+            canvasRef.handler?.remove(avatar, true);
           }
 
           const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
-          file = new File([canvasBlob], "canvas", { type: "image/png" });
+          file = new File([canvasBlob], "canvas.png", { type: "image/png" });
 
           if (avatar) {
+            canvasRef.handler.clear();
             canvasRef.handler.importJSON(objects);
             canvasRef.handler.transactionHandler.state = objects;
           }
@@ -114,7 +115,14 @@ const GenerateVideo = (props) => {
       });
       
       canvasImagePromise.then(async () => {
-        requestVideo(file, script).then(async (res) => {
+        const videoData = {
+          file: file,
+          script: script,
+          action: activeSlide.avatar_pose,
+          model: activeSlide.avatar_type
+        }
+
+        await requestVideo(videoData).then(async (res) => {
           const blob = res.data;
           const filename = `${video.package_name.replace(' ', '-')}-${new Date().getTime()}.mp4`;
           const file = new File([blob], filename, { type: "video/mp4" });
