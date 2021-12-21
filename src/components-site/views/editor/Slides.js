@@ -171,9 +171,9 @@ const Slides = (props) => {
           dispatch(setAvatarPosition(null));
           dispatch(setAvatarSize("100"));
         }
-        dispatch(setAvatarPose(slideToLoad.avatar_pose));
       }
     }
+    dispatch(setAvatarPose(slideToLoad.avatar_pose));
   }
 
   const deleteSlide = async () => {
