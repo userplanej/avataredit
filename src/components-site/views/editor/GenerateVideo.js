@@ -92,7 +92,7 @@ const GenerateVideo = (props) => {
       let file = null;
       let canvasImagePromise = new Promise((resolve, reject) => {
         try {
-          const objects = canvasRef.handler?.getObjects();
+          const objects = canvasRef.handler.exportJSON();
           const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
           if (avatar) {
             canvasRef.handler?.remove(avatar, true);
