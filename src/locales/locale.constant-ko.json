@@ -49,7 +49,6 @@
 			"reset": {
 				"title": "비밀번호 재설정",
 				"content": "이메일로 전송된 코드를 입력하세요.",
-				"info": "You have to wait 10 minutes before asking for a new code.",
 				"code": "인증 코드",
 				"codePlaceholder": "코드 입력",
 				"resend": "코드 재전송",
@@ -58,6 +57,7 @@
 			"newPassword": {
 				"title": "비밀번호 재설정",
 				"content": "새 비밀번호",
+				"info": "You have to wait 10 minutes before asking for a new code.",
 				"passwordPlaceholder": "새 비밀번호 입력"
 			},
 			"success": "비밀번호가 재설정되었습니다."
@@ -77,7 +77,10 @@
 				"vat": "VAT 등록 번호",
 				"vatPlaceholder": "VAT 등록 번호 입력 (예 - GB2803414523)",
 				"tc": "Lorem Ipsum Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Lorem IpsumLorem IpsumLorem IpsumIpsumLorem IpsumLorem Ipsum",
-				"tcAgreement": "위 약관에 동의합니다."
+				"tcAgreement": "위 약관에 동의합니다.",
+				"errors": {
+					"vat": "Please check the VAT number format. It must be less than 16 characters."
+				}
 			},
 			"questions": {
 				"title": "선택 질문 항목",
@@ -109,7 +112,13 @@
 				"country": "나라",
 				"saveCard": "카드 정보를 저장합니다.",
 				"terms": "상기 결제내역과 개인정보 수집·이용 및 환불정책에 관한 유의사항 내용을 확인하였으며 결제에 동의합니다.",
-				"suscribe": "구독"
+				"suscribe": "구독",
+				"errors": {
+					"cardNumber": "The card number format is not correct.",
+					"cardDate": "Card date format is not correct.",
+					"cardExpired": "The expiry date has passed",
+					"cardCode": "The card code format is not correct."
+				}
 			},
 			"error": "An error occured while trying to create the account."
 		},

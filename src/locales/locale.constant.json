@@ -49,7 +49,6 @@
 			"reset": {
 				"title": "Reset password",
 				"content": "Enter the code sent to your email",
-				"info": "You have to wait 10 minutes before asking for a new code.",
 				"code": "Verification code",
 				"codePlaceholder": "Type your verification code",
 				"resend": "Resend code",
@@ -58,6 +57,7 @@
 			"newPassword": {
 				"title": "New password",
 				"content": "Please enter a new password",
+				"info": "You have to wait 10 minutes before asking for a new code.",
 				"passwordPlaceholder": "Type your new password"
 			},
 			"success": "Password reset successfully."
