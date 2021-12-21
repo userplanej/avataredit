@@ -262,7 +262,7 @@ const Script = (props) => {
 
         <Grid container sx={{ px: 2, pb: 2, display: 'flex', alignItems: 'center' }}>
           <Grid item xs={8} sm={9} md={8} lg={8} xl={9}>
-            <Box 
+            {/* <Box 
               onClick={handleOpenVoice}
               sx={{ 
                 textAlign: 'center', 
@@ -276,11 +276,11 @@ const Script = (props) => {
                 cursor: 'pointer'
               }}>
                 {selectedVoice && selectedVoice.label}
-              </Box>
+              </Box> */}
           </Grid>
 
           <Grid item xs={3} sm={3} md={4} lg={4} xl={3}>
-            <Button variant="contained" sx={{ width: '100%'}} onClick={handlePlayScript}>
+            <Button variant="contained" sx={{ width: '100%'}} onClick={isSoundPlaying || isSoundLoading ? null : handlePlayScript}>
               {!isSoundPlaying && !isSoundLoading && 'Play script'}
               {!isSoundPlaying && isSoundLoading && <CircularProgress size={20} />}
               {!isSoundLoading && isSoundPlaying && <PauseIcon />}

@@ -7,7 +7,8 @@ const initialState = {
   activeSlideId: 0,
   isSaving: false,
   selectedAvatar: null,
-  isLoadSlide: false
+  isLoadSlide: false,
+  audioFile: null
 }
 
 export const videoSlice = createSlice({
@@ -30,10 +31,10 @@ export const videoSlice = createSlice({
       state.isSaving = action.payload;
     },
     setSelectedAvatar: (state, action) => {
-      state.selectedAvatar = action.payload
+      state.selectedAvatar = action.payload;
     },
     setIsLoadSlide: (state, action) => {
-      state.isLoadSlide = action.payload
+      state.isLoadSlide = action.payload;
     }
   },
 })

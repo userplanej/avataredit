@@ -970,6 +970,11 @@ class ImageMapEditor extends Component {
     this.props.setIsFront(objects[objects.length - 1] === target);
 	}
 
+	updateAvatarType = async (type) => {
+		const { activeSlideId } = this.props;
+		await updateImageClip(activeSlideId, { avatar_type: type });
+	}
+
 	render() {
 		const {
 			avatars,
@@ -1103,6 +1108,7 @@ class ImageMapEditor extends Component {
 								userTemplates={userTemplates}
 								reloadSlides={() => this.loadImageClips()}
 								video={video}
+								updateAvatarType={(type) => this.updateAvatarType(type)}
 							/>
 						</Grid>}
 					</Grid>

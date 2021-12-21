@@ -264,6 +264,7 @@ class ImageMapItems extends Component {
 				this.props.setSelectedAvatar(item);
 				this.props.setAvatarPosition(avatarPositionValues.center);
 				this.props.setAvatarSize("100");
+				this.props.updateAvatarType(item.model);
 			}
 			const target = canvasRef.handler.add(option, centered, false, onSaveSlide);
 

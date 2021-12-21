@@ -4,6 +4,7 @@ export const createAvatarObject = (avatar) => {
   return {
     "name": avatar.avatar_name,
     "type": "avatar",
+    "model": avatar.model_type,
     "option": {
       "type": "image",
       "name": avatar.avatar_name,
