@@ -95,7 +95,7 @@ const GenerateVideo = (props) => {
           const objects = canvasRef.handler.exportJSON();
           const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
           if (avatar) {
-            canvasRef.handler?.remove(avatar, true);
+            canvasRef.handler?.removeById(avatar.id, true);
           }
 
           const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
@@ -146,6 +146,10 @@ const GenerateVideo = (props) => {
               history.push(`${path}/${video.package_id}`);
             });
           });
+        }).catch((error) => {
+          console.log(error);
+          showAlert('There was a problem while trying to play the video.', 'error');
+          dispatch(setShowBackdrop(false));
         });
       },
       () => {
