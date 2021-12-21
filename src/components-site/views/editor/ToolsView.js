@@ -95,7 +95,7 @@ const ToolsView = (props) => {
   const [avatarPose, setAvatarPose] = useState(avatarPoseEnum.all_around);
 
   useEffect(() => {
-    dispatch(setActiveTab(1));
+    dispatch(setActiveTab(0));
     dispatch(setActiveObject(null));
   }, []);
 
@@ -449,15 +449,17 @@ const ToolsView = (props) => {
   return (
     <Grid container sx={{ height: '100%', justifyContent: 'end' }}>
       <Grid item xs={8.5} md={10} lg={9} xl={10} sx={{ backgroundColor: '#3c4045' }}>
-        <TabPanel name="main" value={activeTab} index={0}>
+        {/* <TabPanel name="main" value={activeTab} index={0}>
           <TemplateDetail userTemplates={props.userTemplates} reloadSlides={props.reloadSlides} video={props.video} />
-        </TabPanel>
+        </TabPanel> */}
 
-        <TabPanel name="main" value={activeTab} index={1}>
-          <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar, size and alignment</Typography>
+        <TabPanel name="main" value={activeTab} index={0}>
+        {/* <TabPanel name="main" value={activeTab} index={1}> */}
+          <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar{/*, size and alignment*/}</Typography>
           <Box sx={{ height: '520px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
 
           <Box sx={{ width: '100%' }}>
+            {renderAvatarPose()}
             {/* <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
               <Tabs 
                 value={avatarTab} 
@@ -472,7 +474,7 @@ const ToolsView = (props) => {
               </Tabs>
             </Box> */}
             {/* <TabPanel name="avatar" value={avatarTab} index={0}> */}
-              <Box sx={{ px: 2, py: 3, backgroundColor: '#262c34', width: '100%' }}>
+              {/* <Box sx={{ px: 2, py: 3, backgroundColor: '#262c34', width: '100%' }}>
                 <Box sx={{ display: 'flex' }}>
                   <Button
                     variant={avatarPosition === avatarPositionValues.left ? 'contained' : 'text'}
@@ -507,7 +509,7 @@ const ToolsView = (props) => {
                     <PersonIcon fontSize="large" sx={{ color: '#fff' }} />
                   </Stack>
                 </Box>
-              </Box>
+              </Box> */}
             {/* </TabPanel>
             <TabPanel name="avatar" value={avatarTab} index={1}>Circle</TabPanel>
             <TabPanel name="avatar" value={avatarTab} index={2}>
@@ -518,7 +520,8 @@ const ToolsView = (props) => {
           </Box>
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={2}>
+        <TabPanel name="main" value={activeTab} index={1}>
+        {/* <TabPanel name="main" value={activeTab} index={2}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Select background</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
@@ -537,17 +540,20 @@ const ToolsView = (props) => {
           </Box>
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={3}>
+        <TabPanel name="main" value={activeTab} index={2}>
+        {/* <TabPanel name="main" value={activeTab} index={3}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Text</Typography>
           {props.texts}
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={4}>
+        <TabPanel name="main" value={activeTab} index={3}>
+        {/* <TabPanel name="main" value={activeTab} index={4}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Select shape</Typography>
           {props.shapes}
         </TabPanel>
 
-        <TabPanel name="main" value={activeTab} index={5}>
+        <TabPanel name="main" value={activeTab} index={4}>
+        {/* <TabPanel name="main" value={activeTab} index={5}> */}
           <Typography variant="h6" sx={{ mb: '10px' }}>Select images</Typography>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ width: '100%', borderBottom: '1px solid #fff' }}>
@@ -594,7 +600,7 @@ const ToolsView = (props) => {
             }
           }}
         >
-          <Tab label="Template" {...a11yProps(0)} />
+          {/* <Tab label="Template" {...a11yProps(0)} /> */}
           <Tab label="Avatar" {...a11yProps(1)} />
           <Tab label="Background" {...a11yProps(2)} />
           <Tab label="Text" {...a11yProps(3)} />

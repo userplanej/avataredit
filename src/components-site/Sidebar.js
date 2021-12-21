@@ -75,7 +75,7 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
           <ListItemText primary={'Videos'} />
         </ListItem>
 
-        <ListItem 
+        {/* <ListItem 
           button 
           key={keys.templates} 
           sx={listItemStyle} 
@@ -83,7 +83,7 @@ const DrawerItems = ({ active, onClickMenu, handleClickUserMenu }) => {
           onClick={() => onClickMenu(keys.templates)}
         >
           <ListItemText primary={'Templates'} />
-        </ListItem>
+        </ListItem> */}
 
         {/* <ListItem 
           button 
