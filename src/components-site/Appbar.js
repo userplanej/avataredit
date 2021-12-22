@@ -32,7 +32,7 @@ import { drawerWidth } from './constants/Drawer';
 
 import { showAlert } from '../utils/AlertUtils';
 import { avatarPoseEnum } from '../enums/AvatarPose';
-import { avatarPositionValues } from '../enums/AvatarPosition';
+import { avatarPositionEnum } from '../enums/AvatarPosition';
 
 const boxStyle = {
   display: 'flex', 
@@ -131,7 +131,7 @@ const Appbar = (props) => {
       background_type: null,
       text_script: '',
       avatar_pose: avatarPoseEnum.all_around,
-      avatar_position: avatarPositionValues.center,
+      avatar_position: avatarPositionEnum.center,
       avatar_size: 100,
       clip_order: 1
     }
@@ -247,6 +247,11 @@ const Appbar = (props) => {
       return;
     }
 
+    if (activeSlide.avatar_size === null || activeSlide.avatar_position === null || activeSlide.avatar_pose === null) {
+      showAlert('You need to select the avatar size, position and pose.', 'error');
+      return;
+    }
+
     dispatch(setShowBackdrop(true));
 
     try {
@@ -279,8 +284,11 @@ const Appbar = (props) => {
         const videoData = {
           file: file,
           script: script,
-          action: activeSlide.avatar_pose,
-          model: activeSlide.avatar_type
+          // action: activeSlide.avatar_pose,
+          model: activeSlide.avatar_type,
+          size: activeSlide.avatar_size,
+          position: activeSlide.avatar_position,
+          pose: activeSlide.avatar_pose
         }
 
         await requestVideo(videoData).then((res) => {

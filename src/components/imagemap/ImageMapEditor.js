@@ -28,7 +28,7 @@ import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 import { setActiveSlide, setActiveSlideId, setSelectedAvatar } from '../../redux/video/videoSlice';
-import { setLeft, setTop, setWidth, setHeight, setIsBack, setIsFront, setAvatarPosition, setAvatarSize } from '../../redux/object/objectSlice';
+import { setLeft, setTop, setWidth, setHeight, setIsBack, setIsFront, setAvatarPosition, setAvatarSize, setAvatarType } from '../../redux/object/objectSlice';
 
 import { getAllImagePackage, getImagePackage } from '../../api/image/package';
 import { getAllUserImages, getAllDefaultImages } from '../../api/image/image';
@@ -48,6 +48,9 @@ import {
 	createBackgroundColorObject
 } from '../../utils/CanvasObjectUtils';
 import { showAlert } from '../../utils/AlertUtils';
+
+import { avatarPositionEnum } from '../../enums/AvatarPosition';
+import { avatarSizeEnum } from '../../enums/AvatarSize';
 
 const propertiesToInclude = [
 	'id',
@@ -78,7 +81,11 @@ const propertiesToInclude = [
 	'loadType',
 	'subtype',
 	'crossOrigin',
-	'src_thumbnail'
+	'src_thumbnail',
+	'lockMovementX',
+	'lockMovementY',
+	'hasControls',
+	'selectable'
 ];
 
 const defaultOption = {
@@ -212,7 +219,7 @@ class ImageMapEditor extends Component {
 
 			if (avatars && avatars.length > 0) {
 				const avatarArray = [];
-				avatars.forEach(avatar => {
+				avatars.filter(avatar => avatar.is_active).forEach(avatar => {
 					const avatarObject = createAvatarObject(avatar);
 					avatarArray.push(avatarObject);
 				});
@@ -753,6 +760,7 @@ class ImageMapEditor extends Component {
 			if (!avatar) {
 				this.props.setSelectedAvatar(null);
 				this.props.setAvatarPosition(null);
+				this.props.setAvatarType(null);
 				this.props.setAvatarSize(null);
 			}
 			if (activeSlide.avatar_position !== avatarPosition) {
@@ -972,7 +980,13 @@ class ImageMapEditor extends Component {
 
 	updateAvatarType = async (type) => {
 		const { activeSlideId } = this.props;
-		await updateImageClip(activeSlideId, { avatar_type: type }).then(() => this.loadImageClips());
+		const dataToSend = {
+			avatar_type: type,
+			avatar_size: avatarSizeEnum.full,
+			avatar_pose: null,
+			avatar_position: avatarPositionEnum.center
+		}
+		await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
 	}
 
 	render() {
@@ -1137,6 +1151,7 @@ const mapDispatchToProps  = {
 	setSelectedAvatar,
 	setAvatarPosition,
 	setAvatarSize,
+	setAvatarType,
 	setLeft,
 	setTop,
 	setWidth,

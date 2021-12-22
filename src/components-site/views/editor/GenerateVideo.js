@@ -82,6 +82,11 @@ const GenerateVideo = (props) => {
       return;
     }
 
+    if (activeSlide.avatar_size === null || activeSlide.avatar_position === null || activeSlide.avatar_pose === null) {
+      showAlert('You need to select the avatar size, position and pose.', 'error');
+      return;
+    }
+
     close();
     dispatch(setShowBackdrop(true));
 
@@ -118,8 +123,11 @@ const GenerateVideo = (props) => {
         const videoData = {
           file: file,
           script: script,
-          action: activeSlide.avatar_pose,
-          model: activeSlide.avatar_type
+          // action: activeSlide.avatar_pose,
+          model: activeSlide.avatar_type,
+          size: activeSlide.avatar_size,
+          position: activeSlide.avatar_position,
+          pose: activeSlide.avatar_pose
         }
 
         await requestVideo(videoData).then(async (res) => {

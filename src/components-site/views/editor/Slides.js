@@ -14,12 +14,12 @@ import { postImageClip, deleteImageClip } from '../../../api/image/clip';
 import { updateImagePackage } from '../../../api/image/package';
 
 import { setActiveSlideId, setActiveSlide, setIsSaving, setSelectedAvatar, setIsLoadSlide } from '../../../redux/video/videoSlice';
-import { setAvatarPosition, setAvatarPose, setAvatarSize } from '../../../redux/object/objectSlice';
+import { setAvatarPosition, setAvatarPose, setAvatarSize, setAvatarType } from '../../../redux/object/objectSlice';
 
 import { showAlert } from '../../../utils/AlertUtils';
 
 import { avatarPoseEnum } from '../../../enums/AvatarPose';
-import { avatarPositionValues } from '../../../enums/AvatarPosition';
+import { avatarPositionEnum } from '../../../enums/AvatarPosition';
 
 const ITEM_HEIGHT = 48;
 
@@ -122,7 +122,7 @@ const Slides = (props) => {
       background_type: null,
       html5_script: JSON.stringify(objects),
       text_script: '',
-      avatar_position: avatarPositionValues.center,
+      avatar_position: avatarPositionEnum.center,
       avatar_pose: avatarPoseEnum.all_around,
       avatar_size: 100,
       clip_order: slides.length + 1
@@ -167,13 +167,23 @@ const Slides = (props) => {
           dispatch(setSelectedAvatar(avatar));
           dispatch(setAvatarPosition(slideToLoad.avatar_position));
           dispatch(setAvatarSize(slideToLoad.avatar_size));
+          dispatch(setAvatarPose(slideToLoad.avatar_pose));
+          dispatch(setAvatarType(slideToLoad.avatar_type));
         } else {
+          dispatch(setSelectedAvatar(null));
           dispatch(setAvatarPosition(null));
-          dispatch(setAvatarSize("100"));
+          dispatch(setAvatarSize(null));
+          dispatch(setAvatarType(null));
+          // dispatch(setAvatarSize("100"));
         }
+      } else {
+        dispatch(setSelectedAvatar(null));
+        dispatch(setAvatarPosition(null));
+        dispatch(setAvatarSize(null));
+        dispatch(setAvatarPose(null));
+        dispatch(setAvatarType(null));
       }
     }
-    dispatch(setAvatarPose(slideToLoad.avatar_pose));
   }
 
   const deleteSlide = async () => {

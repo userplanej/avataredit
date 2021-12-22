@@ -36,7 +36,8 @@ import {
 import { scaling } from '../../../components/canvas/constants';
 
 import { avatarPoseEnum, avatarPoseValues } from '../../../enums/AvatarPose';
-import { avatarPositionValues } from '../../../enums/AvatarPosition';
+import { avatarSizeEnum, avatarSizeValues } from '../../../enums/AvatarSize';
+import { avatarPositionEnum, avatarPositionValues } from '../../../enums/AvatarPosition';
 
 const propertiesNames = {
   position: 'position',
@@ -85,14 +86,22 @@ const ToolsView = (props) => {
   const currentAvatarPose = useSelector(state => state.object.avatarPose);
   const avatarSizeSaved = useSelector(state => state.object.avatarSize);
   const avatarPositionSaved = useSelector(state => state.object.avatarPosition);
+  const avatarType = useSelector(state => state.object.avatarType);
   const activeSlide = useSelector(state => state.video.activeSlide);
 
   const [avatarTab, setAvatarTab] = useState(0);
   const [backgroundTab, setBackgroundTab] = useState(0);
   const [imageTab, setImageTab] = useState(0);
-  const [avatarSize, setAvatarSize] = useState(100);
-  const [avatarPosition, setAvatarPosition] = useState(null);
-  const [avatarPose, setAvatarPose] = useState(avatarPoseEnum.all_around);
+  // const [avatarSize, setAvatarSize] = useState(100);
+  const [avatarSize, setAvatarSize] = useState(avatarSizeEnum.full);
+  // const [avatarPosition, setAvatarPosition] = useState(null);
+  const [avatarPosition, setAvatarPosition] = useState(avatarPositionEnum.center);
+  const [avatarPose, setAvatarPose] = useState(avatarPoseEnum.wait);
+  // TEMP
+  const [avatarPoseList, setAvatarPoseList] = useState(avatarPoseValues);
+
+  const objects = props.canvasRef.handler.getObjects();
+  const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
   useEffect(() => {
     dispatch(setActiveTab(0));
@@ -110,6 +119,20 @@ const ToolsView = (props) => {
   useEffect(() => {
     setAvatarSize(avatarSizeSaved);
   }, [avatarSizeSaved]);
+
+  // TEMP
+  useEffect(() => {
+    if (avatarType === null) {
+      setAvatarPoseList([]);
+    }
+    if (avatarType === 'KHJO') {
+      const poseList = avatarPoseValues.filter(pose => pose.value === avatarPoseEnum.all_around);
+      setAvatarPoseList(poseList);
+    } else {
+      const poseList = avatarPoseValues.filter(pose => pose.value !== avatarPoseEnum.all_around);
+      setAvatarPoseList(poseList);
+    }
+  }, [avatarType]);
 
   const handleChange = (event, newValue) => {
     dispatch(setActiveTab(newValue));
@@ -130,17 +153,61 @@ const ToolsView = (props) => {
     props.resetSearch();
   }
 
-  const handleChangeAvatarSize = (event, newValue) => {
-    const { canvasRef } = props;
-    const objects = canvasRef.handler.getObjects();
-    const avatar = objects.find((obj) => obj.subtype === 'avatar');
+  const handleChangeAvatarSize = async (event, newValue) => {
+    // const { canvasRef } = props;
+    // const objects = canvasRef.handler.getObjects();
+    // const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
-    if (!avatar) {
-      return;
-    }
+    // if (!avatar) {
+    //   return;
+    // }
 
     setAvatarSize(newValue);
-    updateAvatarSize(newValue);
+    // updateAvatarSize(newValue);
+
+    const { canvasRef, onSaveSlide } = props;
+    // const objects = canvasRef.handler.getObjects();
+    // const avatar = objects.find((obj) => obj.subtype === 'avatar');
+
+    const isFull = newValue === avatarSizeEnum.full;
+
+    let newScale = isFull ? scaling.AVATAR : scaling.AVATAR + 0.1;
+    canvasRef.handler.setByObject(avatar, 'scaleX', newScale);
+    canvasRef.handler.setByObject(avatar, 'scaleY', newScale);
+
+    const workareaWidth = canvasRef.handler.workarea.width;
+    const workareaHeight = canvasRef.handler.workarea.height;
+    let positionX = 0;
+    let originX = 'center';
+    switch (avatarPosition) {
+      case avatarPositionEnum.left:
+        originX = 'left';
+        break;
+      case avatarPositionEnum.center:
+        positionX = workareaWidth / 2;
+        break;
+      case avatarPositionEnum.right:
+        positionX = workareaWidth;
+        originX = 'right';
+        break;
+      default:
+        break;
+    }
+    if (!isFull) {
+      avatar.setPositionByOrigin(new fabric.Point(positionX, workareaHeight / 4), originX, 'top');
+    } else {
+      avatar.setPositionByOrigin(new fabric.Point(positionX, workareaHeight / 2), originX, 'center');
+    }
+    avatar.setCoords();
+    canvasRef.handler.renderAll();
+    
+    setTimeout(() => onSaveSlide(), 100);
+
+    const id = activeSlide.clip_id;
+    await updateImageClip(id, { avatar_size: newValue }).then(() => {
+      dispatch(setCurrentAvatarSize(newValue));
+      props.reloadSlides();
+    });
   };
 
   const handleChangeAvatarPose = (newValue) => {
@@ -148,10 +215,21 @@ const ToolsView = (props) => {
     updateAvatarPose(newValue);
   }
 
+  const handleChangeAvatarPosition = async (newValue) => {
+    alignAvatar(newValue);
+    setAvatarPosition(newValue);
+
+    const id = activeSlide.clip_id;
+    await updateImageClip(id, { avatar_position: newValue }).then(() => {
+      dispatch(setCurrentAvatarPosition(newValue));
+      props.reloadSlides();
+    });
+  }
+
   const updateAvatarSize = (size) => {
     const { canvasRef, onSaveSlide } = props;
-    const objects = canvasRef.handler.getObjects();
-    const avatar = objects.find((obj) => obj.subtype === 'avatar');
+    // const objects = canvasRef.handler.getObjects();
+    // const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
     const defaultScale = scaling.AVATAR - 0.01;
     let newScale = (parseInt(size) * defaultScale) / 100;
@@ -268,7 +346,7 @@ const ToolsView = (props) => {
    */
   const updateBackFrontValues = () => {
     const { canvasRef } = props;
-    const objects = canvasRef.handler.getObjects();
+    // const objects = canvasRef.handler.getObjects();
     const activeObject = canvasRef.handler.getActiveObject();
     dispatch(setIsBack(objects[0] === activeObject));
     dispatch(setIsFront(objects[objects.length - 1] === activeObject));
@@ -366,15 +444,42 @@ const ToolsView = (props) => {
   const renderAvatarPose = () => {
     return (
       <Box>
-        <InputLabel sx={{ mt: '20px' }}>Pose</InputLabel>
-        <SelectInput 
-          items={avatarPoseValues}
-          id="avatar-pose"
-          name="avatar-pose"
-          value={avatarPose}
-          noEmptyValue
-          onChange={(event) => handleChangeAvatarPose(event.target.value)}
-        />
+        <Box>
+          <InputLabel sx={{ mt: '20px' }}>Size</InputLabel>
+          <SelectInput 
+            items={avatarSizeValues}
+            id="avatar-size"
+            name="avatar-size"
+            value={avatarSize}
+            noEmptyValue
+            onChange={(event) => handleChangeAvatarSize(event, event.target.value)}
+            disabled={!avatar}
+          />
+        </Box>
+        <Box>
+          <InputLabel sx={{ mt: '20px' }}>Position</InputLabel>
+          <SelectInput 
+            items={avatarPositionValues}
+            id="avatar-position"
+            name="avatar-position"
+            value={avatarPosition}
+            noEmptyValue
+            onChange={(event) => handleChangeAvatarPosition(event.target.value)}
+            disabled={!avatar}
+          />
+        </Box>
+        <Box>
+          <InputLabel sx={{ mt: '20px' }}>Pose</InputLabel>
+          <SelectInput 
+            items={avatarPoseList}
+            id="avatar-pose"
+            name="avatar-pose"
+            value={avatarPose}
+            noEmptyValue
+            onChange={(event) => handleChangeAvatarPose(event.target.value)}
+            disabled={!avatar}
+          />
+        </Box>
       </Box>
     );
   }
@@ -421,31 +526,36 @@ const ToolsView = (props) => {
    */
   const alignAvatar = (position) => {
     const { canvasRef, onSaveSlide } = props;
-    const objects = canvasRef.handler.getObjects();
-    const avatar = objects.find((obj) => obj.subtype === 'avatar');
+    // const objects = canvasRef.handler.getObjects();
+    // const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
     if (!avatar) {
       return;
     }
 
-    if (position === avatarPositionValues.left) {
-      avatar.centerV();
-      avatar.setCoords();
-      avatar.setPositionByOrigin(new fabric.Point(0, avatar.top), 'left', 'center');
-      dispatch(setCurrentAvatarPosition(avatarPositionValues.left));
+    const isFull = avatarSize === avatarSizeEnum.full;
+    const workareaWidth = canvasRef.handler.workarea.width;
+    const workareaHeight = canvasRef.handler.workarea.height;
+    if (position === avatarPositionEnum.left) {
+      const point = new fabric.Point(0, isFull ? avatar.top : workareaHeight / 4);
+      avatar.setPositionByOrigin(point, 'left', isFull ? 'center' : 'top');
     }
-    if (position === avatarPositionValues.center) {
-      avatar.center();
-      avatar.setCoords();
-      dispatch(setCurrentAvatarPosition(avatarPositionValues.center));
+    if (position === avatarPositionEnum.center) {
+      if (isFull) {
+        avatar.center();
+      } else {
+        avatar.setPositionByOrigin(new fabric.Point(workareaWidth / 2, workareaHeight / 4), 'center', 'top');
+      }
     }
-    if (position === avatarPositionValues.right) {
-      const workareaWidth = canvasRef.handler.workarea.width;
-      avatar.centerV();
-      avatar.setCoords();
-      avatar.setPositionByOrigin(new fabric.Point(workareaWidth, avatar.top), 'right', 'center');
-      dispatch(setCurrentAvatarPosition(avatarPositionValues.right));
+    if (position === avatarPositionEnum.right) {
+      const point = new fabric.Point(workareaWidth, isFull ? avatar.top : workareaHeight / 4);
+      avatar.setPositionByOrigin(point, 'right', isFull ? 'center' : 'top');
     }
+
+    avatar.setCoords();
+    canvasRef.handler.renderAll();
+
+    dispatch(setCurrentAvatarPosition(position));
     setTimeout(() => onSaveSlide(), 100);
   }
 
@@ -458,8 +568,8 @@ const ToolsView = (props) => {
 
         <TabPanel name="main" value={activeTab} index={0}>
         {/* <TabPanel name="main" value={activeTab} index={1}> */}
-          <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar{/*, size and alignment*/}</Typography>
-          <Box sx={{ height: '520px', maxHeight: '550px', overflowY: 'auto' }}>{props.avatars}</Box>
+          <Typography variant="h6" sx={{ mb: '10px' }}>Select avatar, size, position and pose</Typography>
+          <Box sx={{ height: '500px', maxHeight: '500px', overflowY: 'auto' }}>{props.avatars}</Box>
 
           <Box sx={{ width: '100%' }}>
             {renderAvatarPose()}
@@ -480,26 +590,26 @@ const ToolsView = (props) => {
               {/* <Box sx={{ px: 2, py: 3, backgroundColor: '#262c34', width: '100%' }}>
                 <Box sx={{ display: 'flex' }}>
                   <Button
-                    variant={avatarPosition === avatarPositionValues.left ? 'contained' : 'text'}
+                    variant={avatarPosition === avatarPositionEnum.left ? 'contained' : 'text'}
                     fullWidth
-                    sx={avatarPosition === avatarPositionValues.left ? null : { color: '#8c8d8d' }}
-                    onClick={() => alignAvatar(avatarPositionValues.left)}
+                    sx={avatarPosition === avatarPositionEnum.left ? null : { color: '#8c8d8d' }}
+                    onClick={() => alignAvatar(avatarPositionEnum.left)}
                   >
                     Left
                   </Button>
                   <Button
-                    variant={avatarPosition === avatarPositionValues.center ? 'contained' : 'text'}
+                    variant={avatarPosition === avatarPositionEnum.center ? 'contained' : 'text'}
                     fullWidth
-                    sx={avatarPosition === avatarPositionValues.center ? null : { color: '#8c8d8d' }}
-                    onClick={() => alignAvatar(avatarPositionValues.center)}
+                    sx={avatarPosition === avatarPositionEnum.center ? null : { color: '#8c8d8d' }}
+                    onClick={() => alignAvatar(avatarPositionEnum.center)}
                   >
                     Center
                   </Button>
                   <Button
-                    variant={avatarPosition === avatarPositionValues.right ? 'contained' : 'text'}
+                    variant={avatarPosition === avatarPositionEnum.right ? 'contained' : 'text'}
                     fullWidth
-                    sx={avatarPosition === avatarPositionValues.right ? null : { color: '#8c8d8d' }}
-                    onClick={() => alignAvatar(avatarPositionValues.right)}
+                    sx={avatarPosition === avatarPositionEnum.right ? null : { color: '#8c8d8d' }}
+                    onClick={() => alignAvatar(avatarPositionEnum.right)}
                   >
                     Right
                   </Button>

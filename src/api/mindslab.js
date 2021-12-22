@@ -23,11 +23,14 @@ export const requestVideo = async (props) => {
     /**
      * Avatar action
      */
-    action,
+    // action,
     /**
      * Model type
      */
-    model
+    model,
+    size,
+    position,
+    pose
   } = props;
 
   const formData = new FormData();
@@ -39,10 +42,14 @@ export const requestVideo = async (props) => {
 
   let payload = {
     "text": script,
-    "width": "1280",
-    "height": "720",
+    "width": "1080",
+    "height": "1920",
     "speaker_id": "0",
-    "action": action,
+    // "action": action,
+    "action": "default",
+    "size": size,
+    "position": position,
+    "pose": pose,
     "modelType": model,
     "apiId": "hoho105e032bc05d138",
     "apiKey": "563e1097eeb64c5897990c43d391203d"

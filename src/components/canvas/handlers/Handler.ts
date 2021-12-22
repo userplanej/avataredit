@@ -1558,7 +1558,10 @@ class Handler implements HandlerOptions {
 			if (obj.superType === 'element') {
 				obj.id = v4();
 			}
-			this.add(obj, false, true);
+			const target = this.add(obj, false, true);
+			if (obj.subtype === 'avatar') {
+				target.set({ lockMovementX: true, lockMovementY: true, selectable: false, hasControls: false });
+			}
 			this.canvas.renderAll();
 		});
 		this.objects = this.getObjects();
@@ -1985,6 +1988,10 @@ class Handler implements HandlerOptions {
 
 	public discardActiveObject = () => {
 		this.canvas.discardActiveObject();
+	}
+
+	public renderAll = () => {
+		this.canvas.renderAll();
 	}
 }
 

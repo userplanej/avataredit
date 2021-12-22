@@ -35,6 +35,10 @@ const SelectInput = (props) => {
      */
     noEmptyValue,
     /**
+     * Disabled
+     */
+    disabled,
+    /**
      * Add CSS styles using MUI system
      */
     sx
@@ -48,6 +52,7 @@ const SelectInput = (props) => {
       value={value}
       variant="filled"
       disableUnderline
+      disabled={disabled}
       fullWidth
       sx={sx}
     >
