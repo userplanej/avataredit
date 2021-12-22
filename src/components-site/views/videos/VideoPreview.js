@@ -458,7 +458,7 @@ const VideoPreview = () => {
                   </ListItemButton>
                 </ListItem>
 
-                {!video.is_template &&
+                {/* {!video.is_template &&
                   <ListItem disablePadding onClick={() => handleCreateVideoOrTemplate(true)}>
                     <ListItemButton>
                       <ListItemIcon>
@@ -467,7 +467,7 @@ const VideoPreview = () => {
                       <ListItemText primary="Create template" />
                     </ListItemButton>
                   </ListItem>
-                }
+                } */}
 
                 <ListItem disablePadding onClick={handleOpenConfirmDialog}>
                   <ListItemButton>
