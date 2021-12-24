@@ -23,7 +23,7 @@ import { postImage, deleteImage } from '../../api/image/image';
 import { postBackground, deleteBackground } from '../../api/background/background';
 
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
-import { setLeft, setTop, setWidth, setHeight, setAvatarPosition, setAvatarSize, setAvatarType } from '../../redux/object/objectSlice';
+import { setLeft, setTop, setWidth, setHeight, setAvatarPosition, setAvatarSize, setAvatarType, setAvatarPose } from '../../redux/object/objectSlice';
 import { setSelectedAvatar } from '../../redux/video/videoSlice';
 
 import { avatarPositionEnum } from '../../enums/AvatarPosition';
@@ -266,13 +266,14 @@ class ImageMapItems extends Component {
 				this.props.setAvatarPosition(avatarPositionEnum.center);
 				// this.props.setAvatarSize("100");
 				this.props.setAvatarSize(avatarSizeEnum.full);
-				this.props.updateAvatarType(item.model);
 				this.props.setAvatarType(item.model);
+				this.props.setAvatarPose(null);
+				this.props.updateAvatarType(item.model);
 			}
 			const target = canvasRef.handler.add(option, centered, false, onSaveSlide);
 
 			if (item.type === 'avatar') {
-				target.set({ lockMovementX: true, lockMovementY: true, selectable: false, hasControls: false });
+				target.set({ lockMovementX: true, lockMovementY: true, hasControls: false });
 			}
 
 			// Update format values
@@ -786,7 +787,8 @@ const mapDispatchToProps  = {
 	setHeight,
 	setAvatarPosition,
 	setAvatarSize,
-	setAvatarType
+	setAvatarType,
+	setAvatarPose
 }
 
 export default connect(null, mapDispatchToProps)(ImageMapItems);

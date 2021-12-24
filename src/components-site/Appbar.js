@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import axios from 'axios';
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -26,6 +27,8 @@ import { postImageClip } from '../api/image/clip';
 import { postImagePackage, updateImagePackage } from '../api/image/package';
 import { updateUser } from '../api/user/user';
 import { requestVideo } from '../api/mindslab';
+import { uploadFile } from '../api/s3';
+import { joinVideo } from '../api/videojoiner';
 
 import { pathnameEnum } from './constants/Pathname';
 import { drawerWidth } from './constants/Drawer';
@@ -46,6 +49,10 @@ const Appbar = (props) => {
      * Current video
      */
     video,
+    /**
+     * Slides
+     */
+    slides,
     /**
      * Update the current video
      */
@@ -255,64 +262,116 @@ const Appbar = (props) => {
     dispatch(setShowBackdrop(true));
 
     try {
-      let file = null;
-      let canvasImagePromise = new Promise((resolve, reject) => {
-        try {
-          const objects = canvasRef.handler.exportJSON();
-          const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
-          if (avatar) {
-            canvasRef.handler?.removeById(avatar.id, true);
+      // let file = null;
+      // let canvasImagePromise = new Promise((resolve, reject) => {
+      //   try {
+      //     const objects = canvasRef.handler.exportJSON();
+      //     const avatar = objects.find(obj => obj.subtype && obj.subtype === 'avatar');
+      //     if (avatar) {
+      //       canvasRef.handler?.removeById(avatar.id, true);
+      //     }
+
+      //     const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
+      //     file = new File([canvasBlob], "canvas.png", { type: "image/png" });
+
+      //     if (avatar) {
+      //       canvasRef.handler.clear();
+      //       canvasRef.handler.importJSON(objects);
+      //       canvasRef.handler.transactionHandler.state = objects;
+      //     }
+
+      //     resolve();
+      //   } catch (error) {
+      //     console.log(error);
+      //     reject();
+      //   }
+      // });
+      const packageId = video.package_id;
+      const videoPathList = [];
+      let slidePromise = new Promise((resolve, reject) => {
+        slides.forEach(async (slide, index) => {
+          console.log(slide.clip_id)
+          let file = null;
+          await axios.get(slide.background_dir, { responseType: 'blob' }).then((res) => {
+            const blob = res.data;
+            const filename = `video-${packageId}-slide-${slide.clip_id}-background.png`;
+            file = new File([blob], filename, { type: "image/png" });
+          });
+          console.log('image retrieved')
+
+          const videoData = {
+            file: file,
+            script: slide.text_script,
+            model: slide.avatar_type,
+            size: slide.avatar_size,
+            position: slide.avatar_position,
+            pose: slide.avatar_pose
           }
 
-          const canvasBlob = canvasRef.handler?.getCanvasImageAsBlob();
-          file = new File([canvasBlob], "canvas.png", { type: "image/png" });
+          await requestVideo(videoData).then(async (res) => {
+            console.log('video retrieved')
+            const blob = res.data;
+            const filename = `video-${packageId}-slide-${slide.clip_id}.mp4`;
+            const file = new File([blob], filename, { type: "video/mp4" });
+            const formData = new FormData();
+            formData.append('files', file);
 
-          if (avatar) {
-            canvasRef.handler.clear();
-            canvasRef.handler.importJSON(objects);
-            canvasRef.handler.transactionHandler.state = objects;
-          }
+            await uploadFile(formData, 'generated-video').then((res) => { 
+              console.log('video uploaded')
+              const upload = res.data.body[0];
+              videoPathList.push(upload.file_dir);
 
-          resolve();
-        } catch (error) {
-          console.log(error);
-          reject();
-        }
+              if (videoPathList.length === slides.length) {
+                console.log('resolve')
+                resolve();
+              }
+            });
+          }).catch((error) => {
+            console.log(error);
+            showAlert('There was a problem while trying to get the video.', 'error');
+            dispatch(setShowBackdrop(false));
+            reject();
+          });
+        });
       });
-      
-      canvasImagePromise.then(async () => {
-        const videoData = {
-          file: file,
-          script: script,
-          // action: activeSlide.avatar_pose,
-          model: activeSlide.avatar_type,
-          size: activeSlide.avatar_size,
-          position: activeSlide.avatar_position,
-          pose: activeSlide.avatar_pose
+
+      slidePromise.then(async () => {
+        console.log('join')
+        const dataToSend = {
+          filePath: videoPathList
         }
-
-        await requestVideo(videoData).then((res) => {
+        await joinVideo(dataToSend).then((res) => {
+          console.log(res);
           dispatch(setShowBackdrop(false));
-
-          const blob = res.data;
-          var reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = function () {
-            var b64 = reader.result.replace(/^data:.+;base64,/, '');
-            var src = "data:video/webm;base64," + b64;
-            changeVideoSource(src);
-            openPlayVideo();
-          }
         }).catch((error) => {
           console.log(error);
-          showAlert('There was a problem while trying to play the video.', 'error');
+          showAlert('There was a problem while trying to merge videos.', 'error');
           dispatch(setShowBackdrop(false));
         });
-      },
-      () => {
-        showAlert('There was a problem while converting the canvas to image.', 'error');
-        dispatch(setShowBackdrop(false));
       });
+
+        // await requestVideo(videoData).then((res) => {
+        //   dispatch(setShowBackdrop(false));
+
+        //   const blob = res.data;
+        //   var reader = new FileReader();
+        //   reader.readAsDataURL(blob);
+        //   reader.onloadend = function () {
+        //     var b64 = reader.result.replace(/^data:.+;base64,/, '');
+        //     var src = "data:video/webm;base64," + b64;
+        //     changeVideoSource(src);
+        //     openPlayVideo();
+        //   }
+        // }).catch((error) => {
+        //   console.log(error);
+        //   showAlert('There was a problem while trying to play the video.', 'error');
+        //   dispatch(setShowBackdrop(false));
+        // });
+      // },
+      // () => {
+      //   showAlert('There was a problem while converting the canvas to image.', 'error');
+      //   dispatch(setShowBackdrop(false));
+      // });
     } catch (error) {
       console.log(error);
       showAlert('An error occured while trying to play the video', 'error');

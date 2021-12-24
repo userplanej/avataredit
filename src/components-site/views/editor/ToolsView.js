@@ -166,8 +166,8 @@ const ToolsView = (props) => {
     // updateAvatarSize(newValue);
 
     const { canvasRef, onSaveSlide } = props;
-    // const objects = canvasRef.handler.getObjects();
-    // const avatar = objects.find((obj) => obj.subtype === 'avatar');
+    const objects = canvasRef.handler.getObjects();
+    const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
     const isFull = newValue === avatarSizeEnum.full;
 
@@ -206,7 +206,6 @@ const ToolsView = (props) => {
     const id = activeSlide.clip_id;
     await updateImageClip(id, { avatar_size: newValue }).then(() => {
       dispatch(setCurrentAvatarSize(newValue));
-      props.reloadSlides();
     });
   };
 
@@ -222,14 +221,13 @@ const ToolsView = (props) => {
     const id = activeSlide.clip_id;
     await updateImageClip(id, { avatar_position: newValue }).then(() => {
       dispatch(setCurrentAvatarPosition(newValue));
-      props.reloadSlides();
     });
   }
 
   const updateAvatarSize = (size) => {
     const { canvasRef, onSaveSlide } = props;
-    // const objects = canvasRef.handler.getObjects();
-    // const avatar = objects.find((obj) => obj.subtype === 'avatar');
+    const objects = canvasRef.handler.getObjects();
+    const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
     const defaultScale = scaling.AVATAR - 0.01;
     let newScale = (parseInt(size) * defaultScale) / 100;
@@ -346,7 +344,7 @@ const ToolsView = (props) => {
    */
   const updateBackFrontValues = () => {
     const { canvasRef } = props;
-    // const objects = canvasRef.handler.getObjects();
+    const objects = canvasRef.handler.getObjects();
     const activeObject = canvasRef.handler.getActiveObject();
     dispatch(setIsBack(objects[0] === activeObject));
     dispatch(setIsFront(objects[objects.length - 1] === activeObject));
@@ -526,8 +524,8 @@ const ToolsView = (props) => {
    */
   const alignAvatar = (position) => {
     const { canvasRef, onSaveSlide } = props;
-    // const objects = canvasRef.handler.getObjects();
-    // const avatar = objects.find((obj) => obj.subtype === 'avatar');
+    const objects = canvasRef.handler.getObjects();
+    const avatar = objects.find((obj) => obj.subtype === 'avatar');
 
     if (!avatar) {
       return;

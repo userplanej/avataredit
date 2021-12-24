@@ -49,7 +49,7 @@ const slideContainerStyle = {
 const addSlideContainerStyle = {
   minWidth: '185px',
   maxWidth: '185px',
-  height: '128px',
+  height: '110px',
   border: 'solid 2px #e8e9e9',
   color: '#fff',
   backgroundColor: '#3c4045',
@@ -174,6 +174,7 @@ const Slides = (props) => {
           dispatch(setAvatarPosition(null));
           dispatch(setAvatarSize(null));
           dispatch(setAvatarType(null));
+          dispatch(setAvatarPose(null));
           // dispatch(setAvatarSize("100"));
         }
       } else {
@@ -302,13 +303,13 @@ const Slides = (props) => {
                   sx={{ 
                     minWidth: '185px',
                     maxWidth: '185px',
-                    height: '128px',
+                    height: '110px',
                     border: isActive ? '3px solid #df678c' : null,
                     backgroundColor: !hasImage ? '#f7f7f7' : null,
                     backgroundImage: hasImage ? `url(${slide.html5_dir})` : '',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center',
-                    backgroundSize: 'cover',
+                    backgroundSize: 'contain',
                     display: 'flex',
                     justifyContent: 'right'
                   }}

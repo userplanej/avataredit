@@ -28,7 +28,7 @@ import { setActiveObject } from '../../redux/canvas/canvasSlice';
 import { setActiveTab, setPreviousTab } from '../../redux/toolbar/toolbarSlice';
 import { setShowBackdrop } from '../../redux/backdrop/backdropSlice';
 import { setActiveSlide, setActiveSlideId, setSelectedAvatar } from '../../redux/video/videoSlice';
-import { setLeft, setTop, setWidth, setHeight, setIsBack, setIsFront, setAvatarPosition, setAvatarSize, setAvatarType } from '../../redux/object/objectSlice';
+import { setLeft, setTop, setWidth, setHeight, setIsBack, setIsFront, setAvatarPosition, setAvatarSize, setAvatarType, setAvatarPose } from '../../redux/object/objectSlice';
 
 import { getAllImagePackage, getImagePackage } from '../../api/image/package';
 import { getAllUserImages, getAllDefaultImages } from '../../api/image/image';
@@ -746,22 +746,33 @@ class ImageMapEditor extends Component {
 			const { packageId } = this.state;
 			const { activeSlideId, activeSlide, avatarPosition, avatarSize } = this.props;
 
-			const canvasBlob = this.canvasRef?.handler?.getCanvasImageAsBlob();
-			const fileName = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
-			const oldLocation = activeSlide.html5_dir;
+			const imageWithAvatar = this.canvasRef?.handler?.getCanvasImageAsBlob();
+			const fileNameWithAvatar = `video-${packageId}-slide-${activeSlideId}-${new Date().getTime()}.png`;
+			const oldLocationWithAvatar = activeSlide.html5_dir;
 			const objects = this.canvasRef.handler.exportJSON();
 			const dataToSend = {
 				html5_script: JSON.stringify(objects),
 				activeSlideId
 			}
 
-			// Update avatar props
 			const avatar = objects.find(object => object.subtype === 'avatar');
-			if (!avatar) {
+			let imageWithoutAvatar = null;
+			const fileNameWithoutAvatar = `video-${packageId}-slide-${activeSlideId}-background.png`;
+			if (avatar) {
+				this.canvasRef.handler?.removeById(avatar.id, true);
+
+				imageWithoutAvatar = this.canvasRef.handler?.getCanvasImageAsBlob();
+
+				this.canvasRef.handler.clear();
+				this.canvasRef.handler.importJSON(objects);
+				this.canvasRef.handler.transactionHandler.state = objects;
+			} else {
+				// Update avatar props
 				this.props.setSelectedAvatar(null);
 				this.props.setAvatarPosition(null);
 				this.props.setAvatarType(null);
 				this.props.setAvatarSize(null);
+				this.props.setAvatarPose(null);
 			}
 			if (activeSlide.avatar_position !== avatarPosition) {
 				dataToSend.avatar_position = avatarPosition;
@@ -771,7 +782,7 @@ class ImageMapEditor extends Component {
 			}
 
 			const socket = this.context;
-			socket.emit('update-slide', oldLocation, fileName, canvasBlob, dataToSend);
+			socket.emit('update-slide', oldLocationWithAvatar, fileNameWithAvatar, imageWithAvatar, dataToSend, imageWithoutAvatar, fileNameWithoutAvatar);
 		}
 	};
 
@@ -986,7 +997,7 @@ class ImageMapEditor extends Component {
 			avatar_pose: null,
 			avatar_position: avatarPositionEnum.center
 		}
-		await updateImageClip(activeSlideId, dataToSend).then(() => this.loadImageClips());
+		await updateImageClip(activeSlideId, dataToSend);
 	}
 
 	render() {
@@ -1041,6 +1052,7 @@ class ImageMapEditor extends Component {
 				{this.canvasRef && video &&
 					<Appbar 
 						video={video}
+						slides={slides}
 						setVideo={(video) => this.setVideo(video)}
 						handleDrawerToggle={() => this.handleDrawerToggle()}
 						canvasRef={this.canvasRef}
@@ -1152,6 +1164,7 @@ const mapDispatchToProps  = {
 	setAvatarPosition,
 	setAvatarSize,
 	setAvatarType,
+	setAvatarPose,
 	setLeft,
 	setTop,
 	setWidth,
