@@ -13,6 +13,7 @@ import MultilineInput from '../../inputs/MultilineInput';
 
 import { getImageClip, updateImageClip } from '../../../api/image/clip';
 import { requestTts } from '../../../api/mindslab';
+import { uploadFile } from '../../../api/s3';
 
 import { setActiveSlide, setIsSaving } from '../../../redux/video/videoSlice';
 
@@ -55,6 +56,7 @@ const Script = (props) => {
     accept: 'audio/wav',
     maxFiles: 1,
     onDropAccepted: (file) => {
+      updateSlideVoiceFile(file[0]);
       setVoiceFile(file[0]);
     }
   }
@@ -207,6 +209,22 @@ const Script = (props) => {
 
   const handleRemoveVoiceFile = () => {
     setVoiceFile(null);
+  }
+
+  const updateSlideVoiceFile = async (file) => {
+    if (file) {
+      const formData = new FormData();
+      formData.append('files', file);
+
+      await uploadFile(formData, 'voice').then(async (res) => {
+        const location = res.data.body[0].file_dir;
+
+        const dataToSend = {
+          voice_dir: location
+        }
+        await updateImageClip(activeSlideId, dataToSend);
+      });
+    }
   }
 
   return (
