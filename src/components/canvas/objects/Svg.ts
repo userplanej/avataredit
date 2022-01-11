@@ -19,7 +19,8 @@ const Svg = fabric.util.createClass(fabric.Group, {
 		const createdObj = fabric.util.groupSVGElements(objects, options, path) as SvgObject;
 		this.set(options);
 		if (createdObj.getObjects) {
-			(<FabricGroup>createdObj).getObjects().forEach(obj => this.add(obj));
+			// @ts-ignore
+			(createdObj).getObjects().forEach(obj => this.add(obj));
 		} else {
 			createdObj.set({
 				originX: 'center',
