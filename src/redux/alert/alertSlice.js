@@ -1,5 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+/**
+ * States used for alert.
+ * - message: Message displayed in alert.
+ * - severity: Defines alert's color. Can be [error, info, success, warning]. Default is info.
+ * - open: Should alert display or not.
+ */
+
 const initialState = {
   message: '',
   severity: 'info',

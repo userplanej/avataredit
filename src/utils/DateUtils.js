@@ -1,13 +1,33 @@
 import moment from 'moment';
 
+// Functions related to date.
+
+/**
+ * Returns a date from a string.
+ * 
+ * @param {*} string Date in string format. Ex: 2022-01-01.
+ * @param {*} format Format of date. Ex: YYYY-MM-DD.
+ * @returns The date in specified format.
+ */
 export const formatDateFromString = (string, format) => {
   return moment(string, moment.ISO_8601, true).utc().format(format);
 }
 
+/**
+ * Returns the current date.
+ * 
+ * @returns Today's date
+ */
 export const getToday = () => {
   return moment();
 }
 
+/**
+ * Returns the time elapsed between the specified date and current date.
+ * 
+ * @param {*} date Starting date.
+ * @returns Time elapsed in seconds/minutes/hours/days/months/years. 
+ */
 export const getTimeElapsedSinceDate = (date) => {
   const today = getToday();
   const todayOffset = today.utcOffset();

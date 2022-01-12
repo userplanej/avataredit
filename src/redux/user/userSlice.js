@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+/**
+ * States used in user informations update.
+ */
 const initialState = {
   canSave: false,
   userUpdated: null,

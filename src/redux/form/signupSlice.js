@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+/**
+ * States used in signup form.
+ */
 const initialState = {
   name: '',
   email: '',

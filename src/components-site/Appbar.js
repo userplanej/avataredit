@@ -89,8 +89,6 @@ const Appbar = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const routeMatchEditor = useRouteMatch([`${pathnameEnum.editor}/:id`, `${pathnameEnum.editorTemplate}/:id`]);
-  const routeMatchPreview = useRouteMatch([`${pathnameEnum.videos}/:id`, `${pathnameEnum.templates}/:id`]);
 
   const pathName = useSelector(state => state.navigation.pathName);
   // User settings page
@@ -104,9 +102,13 @@ const Appbar = (props) => {
   const [title, setTitle] = useState('');
   const [titleSaved, setTitleSaved] = useState('');
   
+  // Canvas verifications
   const cannotUndo = canvasRef && !canvasRef.handler?.transactionHandler.undos.length;
   const cannotRedo = canvasRef && !canvasRef.handler?.transactionHandler.redos.length;
   const hasCanvasObjects = canvasRef && canvasRef.handler?.getObjects().length > 0;
+  // Route verifications
+  const routeMatchEditor = useRouteMatch([`${pathnameEnum.editor}/:id`, `${pathnameEnum.editorTemplate}/:id`]);
+  const routeMatchPreview = useRouteMatch([`${pathnameEnum.videos}/:id`, `${pathnameEnum.templates}/:id`]);
   const isEditorPage = routeMatchEditor !== null;
   const isPreviewVideoPage = routeMatchPreview !== null;
   const isEditTemplate = isEditorPage && routeMatchEditor.url.includes("template");
@@ -122,6 +124,13 @@ const Appbar = (props) => {
     }
   }, []);
 
+  /**
+   * Create a new video or template with one slide.
+   * 1. Create image package (= video or template)
+   * 2. Create image clip (= slide)
+   * 3. Update image package with created image clip ID (to define the last modified slide)
+   * @param {boolean} isTemplate if true, we create a template, else we create a video
+   */
   const createNewImagePackage = async (isTemplate) => {
     dispatch(setShowBackdrop(true));
 
@@ -195,9 +204,7 @@ const Appbar = (props) => {
   }
 
   const saveUser = async () => {
-    // Show backdrop
     dispatch(setShowBackdrop(true));
-    // Update user info
     await updateUser(userUpdated.userId, userUpdated).then((res) => {
       updateSessionUser();
       // Show dialog success
@@ -208,7 +215,7 @@ const Appbar = (props) => {
       // Tell components to update user info displayed
       dispatch(setReloadUser(true));
       dispatch(setCanSave(false));
-      // Hide backdrop
+
       dispatch(setShowBackdrop(false));
     });
   }

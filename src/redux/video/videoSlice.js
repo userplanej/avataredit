@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+/**
+ * States used for video/slide props.
+ */
 const initialState = {
   video: null,
   slides: {},

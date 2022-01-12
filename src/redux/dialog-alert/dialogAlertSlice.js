@@ -1,5 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+/**
+ * States used for dialog.
+ * - open: If dialog is displayed or not.
+ * - title: Defines the title displayed at the top.
+ * - message: Defines the content displayed under title.
+ * - buttonText: Defines the text displayed in the button.
+ */
 const initialState = {
   open: false,
   title: '',

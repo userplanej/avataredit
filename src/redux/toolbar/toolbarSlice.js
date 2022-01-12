@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+/**
+ * States used to define editor toolbar props.
+ */
 const initialState = {
   activeTab: 0,
   previousTab: 0

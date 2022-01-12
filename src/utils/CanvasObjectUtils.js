@@ -1,5 +1,7 @@
 import { scaling } from '../components/canvas/constants';
 
+// This is used to create canvas object based on the item's type and properties
+
 export const createAvatarObject = (avatar) => {
   return {
     "name": avatar.avatar_name,

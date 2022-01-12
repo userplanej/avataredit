@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+/**
+ * States used to define the avatar props.
+ */
 const initialState = {
   top: 0,
   left: 0,
